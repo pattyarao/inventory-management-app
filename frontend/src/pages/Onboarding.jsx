@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function () {
+const Onboarding = () => {
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center gap-6">
       <div className="w-[30%] px-10 py-4 bg-blue-400 flex items-center justify-center rounded-lg">
@@ -27,4 +27,6 @@ export default function () {
       </div>
     </div>
   );
-}
+};
+
+export default Onboarding;
