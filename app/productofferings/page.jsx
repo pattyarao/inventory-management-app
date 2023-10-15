@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-//import SalesOrderList from "../components/SalesOrderList";
+import ProductOfferList from "../components/ProductOfferList";
 //import AddProductSales from "../components/AddProductSales";
 
 const ProductOfferings = () => {
@@ -14,7 +14,7 @@ const ProductOfferings = () => {
         <h3 className="text-xl font-bold">&nbsp;Name</h3>
         <hr className="w-full border-2 mb-4" style={{ backgroundColor: '#DDE6ED', color: 'white' }}></hr>
 
-        {/* <SalesOrderList/>*/}
+        <ProductOfferList/>
 
         
       </div>
