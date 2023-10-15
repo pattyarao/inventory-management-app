@@ -10,7 +10,7 @@ const ProductOfferList = () => {
   const [productList, setProductList] = useState([
     {
       name: "Product 1",
-      status: "active",
+      status: "Active",
       materials: [
         { name: "Material A", amount: 100, unit: "g" },
         { name: "Material B", amount: 200, unit: "g" },
@@ -18,12 +18,12 @@ const ProductOfferList = () => {
     },
     {
       name: "Product 2",
-      status: "active",
+      status: "Active",
       materials: [{ name: "Material C", amount: 500, unit: "ml" }],
     },
     {
       name: "Product 3",
-      status: "active",
+      status: "Active",
       materials: [
         { name: "Material D", amount: 50, unit: "g" },
         { name: "Material E", amount: 1, unit: "L" },
@@ -31,7 +31,7 @@ const ProductOfferList = () => {
     },
     {
       name: "Product 4",
-      status: "active",
+      status: "Active",
       materials: [{ name: "Material F", amount: 250, unit: "mg" }],
     },
 ]);
@@ -52,12 +52,12 @@ const handleCloseProductDetailsModal = () => {
 const handleToggleStatus = (index) => {
     const updatedProductList = [...productList];
     updatedProductList[index].status =
-    updatedProductList[index].status === "active" ? "inactive" : "active";
+    updatedProductList[index].status === "Active" ? "Inactive" : "Active";
     setProductList(updatedProductList);
   };
 
   const addProductToList = (newProduct) => {
-    const productWithStatus = { ...newProduct, status: "active" };
+    const productWithStatus = { ...newProduct, status: "Active" };
   setProductList([...productList, productWithStatus]);
   };
 
@@ -76,13 +76,13 @@ const handleToggleStatus = (index) => {
                 {productList.length !== 0 ? (
                   <>
                     <div
-                      className="px-3 w-full grid grid-cols-5 text-xs rounded-lg"
+                      className="px-3 w-full grid grid-cols-5 text-xs rounded-lg mb-3"
                       style={{ backgroundColor: "#526D82", color: "white" }}
                     >
-                      <div className="col-span-3 md:col-span-4  text-sm ms-5">
+                      <div className="col-span-3 md:col-span-4  text-xl font-semibold ms-5 ">
                         Name
                       </div>
-                      <div className="col-span-2 md:col-span-1 text-sm flex items-center justify-center">
+                      <div className="col-span-2 md:col-span-1 text-xl font-semibold flex items-center justify-center">
                         Status
                       </div>
                     </div>
@@ -104,10 +104,10 @@ const handleToggleStatus = (index) => {
                             
                           <button
                               className={`${
-                                product.status === "active"
+                                product.status === "Active"
                                   ? "bg-green-500"
                                   : "bg-red-500"
-                              } text-white font-bold w-1/2 mx-auto`}
+                              } text-white text-lg font-bold w-1/2 mx-auto rounded-lg`}
                               onClick={() => handleToggleStatus(index)}
                             >
                             {product.status}
@@ -128,7 +128,7 @@ const handleToggleStatus = (index) => {
                   </div>
                 )}
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-4">
                 <AddProductOffer addProductToList={addProductToList}/>
                 {showProductDetailsModal && selectedProduct && (
                   <ViewProduct
