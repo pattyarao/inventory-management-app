@@ -14,7 +14,7 @@ const RecordOrder = (props) => {
       
 
   const [showModal, setShowModal] = useState(false);
-  const [success, setSuccess] = useState(true);
+  const [success, setSuccess] = useState(false);
   
 
   return (
@@ -65,7 +65,7 @@ const RecordOrder = (props) => {
                     className="flex justify-center text-white font-bold uppercase text-sm px-6 py-3 mb-5"
                     style={{ fontSize: "30px", color: "white" }}
                   >
-                    Order Successful
+                    Order Recorded Successfully
                   </div>
 
                   <div className="flex justify-center">
