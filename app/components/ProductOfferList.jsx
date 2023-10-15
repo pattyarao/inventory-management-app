@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 
 const ProductOfferList = () => {
   //stores all ordered products
-  const [orderList, setOrderList] = useState([
+  const [productList, setProductList] = useState([
     { name: "Apple", status: "active" },
     { name: "Baboy", status: "active" },
     { name: "Cat Food", status: "active" },
@@ -15,14 +15,14 @@ const ProductOfferList = () => {
 ]);
 
 const handleToggleStatus = (index) => {
-    const updatedOrderList = [...orderList];
-    updatedOrderList[index].status =
-      updatedOrderList[index].status === "active" ? "inactive" : "active";
-    setOrderList(updatedOrderList);
+    const updatedProductList = [...productList];
+    updatedProductList[index].status =
+    updatedProductList[index].status === "active" ? "inactive" : "active";
+    setProductList(updatedProductList);
   };
 
   const handleClear = () => {
-    setOrderList([]); // Clear orderList
+    setProductList([]); // Clear orderList
   };
   
 
@@ -33,7 +33,7 @@ const handleToggleStatus = (index) => {
           <div className="w-full flex flex-col items-center gap-4">
             <div className="w-full flex flex-col text-xs">
               <div className="flex flex-col">
-                {orderList.length !== 0 ? (
+                {productList.length !== 0 ? (
                   <>
                     <div
                       className="px-3 w-full grid grid-cols-5 text-xs rounded-lg"
@@ -47,7 +47,7 @@ const handleToggleStatus = (index) => {
                       </div>
                     </div>
 
-                    {orderList.map((product, index) => (
+                    {productList.map((product, index) => (
                       <div key={index}>
                         <div
                           className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
@@ -83,14 +83,14 @@ const handleToggleStatus = (index) => {
                     style={{ backgroundColor: "#9DB2BF", color: "#27374D" }}
                   >
                     <div className="font-black text-xl flex items-center justify-center">
-                      Your Order List is Empty
+                      Your Product List is Empty
                     </div>
                   </div>
                 )}
               </div>
               <div className="flex justify-end">
                 {/*<AddProductSales />*/}
-                {orderList.length !== 0 ? (
+                {productList.length !== 0 ? (
                     <>
                     {/*<ClearOrderList onConfirmClear={() => handleClear()}/>*/}
                     {/*<RecordOrder/>*/}
