@@ -113,7 +113,7 @@ const AddProductOffer = ({ addProductToList }) => {
                   <div className="relative p-6 flex-auto rounded-b-lg" style={{ backgroundColor: '#526D82'}}>
                     
                   <div className="flex space-x-4 mb-4">
-                    <label className="mt-2">Name of Product</label>
+                    <label className="flex items-center text-lg">Name of Product</label>
                     <input
                         type="text"
                         className="flex-grow p-2 rounded"
@@ -155,35 +155,35 @@ const AddProductOffer = ({ addProductToList }) => {
                             
                             <div className="w-full p-20 text-xs rounded-lg" style={{ backgroundColor: '#9DB2BF', color: '#27374D' }}>
                             <div className="font-black text-xl flex items-center justify-center">
-                            No Records Found
+                            No Materials Added
                             </div>
                         </div>
                         )}
                     </div>
                     <div>
-                        <div className="flex space-x-4 mb-4 mt-4">
-                            <label className="mt-2">Name of Material</label>
+                        <div className="flex justify-center space-x-4 mb-4 mt-4">
+                            <label className="w-32 text-right mt-2">Name of Material</label>
                             <input 
-                                className="flex-grow p-2 rounded"
+                                className="w-72 rounded-md appearance-none border border-gray-300 py-2 px-2 bg-white text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent"
                                 style={{ backgroundColor: '#DDE6ED', color:"#27374D"}}
                                 value={newMaterial.name}
                                 onChange={handleMaterialNameChange}
                             />  
                         </div>
                         
-                        <div className="flex space-x-4 mb-4">
-                            <label className="mt-2">Amount</label>
+                        <div className="flex justify-center space-x-4 mb-4 pl-4">
+                            <label className="text-right mt-2 ">Amount</label>
                             <input 
-                                className="flex-grow p-2 rounded"
+                                className="focus:outline-none focus:ring-2 focus:ring-sky-600 w-56 text-gray-700 py-2 px-3 border border-gray-300 bg-white rounded-md w-42 p-2 rounded"
                                 style={{ backgroundColor: '#DDE6ED', color:"#27374D"}}
                                 value={newMaterial.amount}
                                 onChange={handleMaterialAmountChange}
                             />
                         </div>
-                        <div className="flex space-x-4 mb-4">
-                            <label className="mt-2">Unit</label>
+                        <div className="flex justify-center space-x-4 mb-4 pl-3 pr-52">
+                            <label className="w-32 text-right mt-2">Unit</label>
                             <select 
-                                className="flex-grow p-2 rounded"
+                                className="w-24 p-2 rounded"
                                 style={{ backgroundColor: '#DDE6ED', color:"#27374D"}}
                                 value={newMaterial.unit}
                                 onChange={handleMaterialUnitChange}
@@ -196,7 +196,7 @@ const AddProductOffer = ({ addProductToList }) => {
                         </div>
                         <div className="flex items-center justify-center">
                            <button
-                                className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                className="text-white font-semibold uppercase text-sm px-6 py-3 rounded-3xl shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                 style={{ backgroundColor: "#097969" }}
                                 type="button"
                                 onClick={handleAddMaterial}
@@ -207,14 +207,14 @@ const AddProductOffer = ({ addProductToList }) => {
                         
                     </div>
                     <div className="mt-5">
-                  <div className="flex justify-end"> 
+                  <div className="flex justify-center"> 
                     <button
                       className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#A12323"}}
                       type="button"
                       onClick={handleClose}
                     >
-                      Close
+                      Cancel
                     </button>
                     <button
                       className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
@@ -222,7 +222,7 @@ const AddProductOffer = ({ addProductToList }) => {
                       type="button"
                       onClick={handleAddProduct}
                     >
-                      Add Product
+                     &nbsp;&nbsp;&nbsp;&nbsp;Save&nbsp;&nbsp;&nbsp;&nbsp;
                     </button>
                   </div>
                 </div>
