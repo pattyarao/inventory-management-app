@@ -1,24 +1,64 @@
 "use client";
 
 import { useState, useEffect } from "react";
-//import AddProductSales from "./AddProductSales";
-//import ClearOrderList from "./ClearOrderList";
+import AddProductOffer from "./AddProductOffer";
+import ViewProduct from "./ViewProduct";
 //import RecordOrder from "./RecordOrder";
 
 const ProductOfferList = () => {
   //stores all ordered products
   const [productList, setProductList] = useState([
-    { name: "Apple", status: "active" },
-    { name: "Baboy", status: "active" },
-    { name: "Cat Food", status: "active" },
-    { name: "Dog Food", status: "active" },
+    {
+      name: "Product 1",
+      status: "active",
+      materials: [
+        { name: "Material A", amount: 100, unit: "g" },
+        { name: "Material B", amount: 200, unit: "g" },
+      ],
+    },
+    {
+      name: "Product 2",
+      status: "active",
+      materials: [{ name: "Material C", amount: 500, unit: "ml" }],
+    },
+    {
+      name: "Product 3",
+      status: "active",
+      materials: [
+        { name: "Material D", amount: 50, unit: "g" },
+        { name: "Material E", amount: 1, unit: "L" },
+      ],
+    },
+    {
+      name: "Product 4",
+      status: "active",
+      materials: [{ name: "Material F", amount: 250, unit: "mg" }],
+    },
 ]);
+
+const [selectedProduct, setSelectedProduct] = useState(null);
+const [showProductDetailsModal, setShowProductDetailsModal] = useState(false);
+
+const handleProductClick = (product) => {
+  setSelectedProduct(product);
+  setShowProductDetailsModal(true);
+};
+
+const handleCloseProductDetailsModal = () => {
+  setSelectedProduct(null);
+  setShowProductDetailsModal(false);
+};
 
 const handleToggleStatus = (index) => {
     const updatedProductList = [...productList];
     updatedProductList[index].status =
     updatedProductList[index].status === "active" ? "inactive" : "active";
     setProductList(updatedProductList);
+  };
+
+  const addProductToList = (newProduct) => {
+    const productWithStatus = { ...newProduct, status: "active" };
+  setProductList([...productList, productWithStatus]);
   };
 
   const handleClear = () => {
@@ -56,7 +96,7 @@ const handleToggleStatus = (index) => {
                             color: "#27374D",
                           }}
                         >
-                          <div className="col-span-3 md:col-span-4  font-black text-xl ms-5 mt-2">
+                          <div className="col-span-3 md:col-span-4  font-black text-xl ms-5 mt-2" key={index} onClick={() => handleProductClick(product)} style={{ cursor: "pointer" }}>
                             {product.name}
                           </div>
 
@@ -89,13 +129,13 @@ const handleToggleStatus = (index) => {
                 )}
               </div>
               <div className="flex justify-end">
-                {/*<AddProductSales />*/}
-                {productList.length !== 0 ? (
-                    <>
-                    {/*<ClearOrderList onConfirmClear={() => handleClear()}/>*/}
-                    {/*<RecordOrder/>*/}
-                  </>
-                ) : null}
+                <AddProductOffer addProductToList={addProductToList}/>
+                {showProductDetailsModal && selectedProduct && (
+                  <ViewProduct
+                    product={selectedProduct}
+                    onClose={handleCloseProductDetailsModal}
+                  />
+                )}
               </div>
             </div>
           </div>
