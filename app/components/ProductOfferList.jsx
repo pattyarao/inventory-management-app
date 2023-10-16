@@ -49,6 +49,21 @@ const handleCloseProductDetailsModal = () => {
   setShowProductDetailsModal(false);
 };
 
+const toggleProductStatus = (productToToggle) => {
+  const updatedProductList = productList.map((product) => {
+    if (product.name === productToToggle.name) {
+      // Toggle the status for the selected product
+      return {
+        ...product,
+        status: product.status === "Active" ? "Inactive" : "Active",
+      };
+    }
+    return product;
+  });
+
+  setProductList(updatedProductList);
+};
+
 const handleToggleStatus = (index) => {
     const updatedProductList = [...productList];
     updatedProductList[index].status =
@@ -134,6 +149,7 @@ const handleToggleStatus = (index) => {
                   <ViewProduct
                     product={selectedProduct}
                     onClose={handleCloseProductDetailsModal}
+                    toggleProductStatus={toggleProductStatus}
                   />
                 )}
               </div>

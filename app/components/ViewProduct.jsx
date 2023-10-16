@@ -3,11 +3,22 @@
 import { useState } from "react";
 
 
-const ViewProduct = ({ product, onClose }) => {
+const ViewProduct = ({ product, onClose, toggleProductStatus }) => {
     console.log("Product in ViewProduct: ", product);
     //determines if the modal for adding a product is shown or not
     const [showModal, setShowModal] = useState(true);
     const [showOverlay, setShowOverlay] = useState(true);
+    const [buttonLabel, setButtonLabel] = useState(
+      product.status === "Active" ? "Deactivate" : "Reactivate"
+    );
+
+    const handleStatusToggle = () => {
+      toggleProductStatus(product); // Call the function to toggle the product's status
+      // Update the button label
+      setButtonLabel((prevLabel) =>
+        prevLabel === "Deactivate" ? "Reactivate" : "Deactivate"
+      );
+    };
 
     //closes the modal and removes all previous personalizations
     const handleClose= () => {
@@ -72,6 +83,14 @@ const ViewProduct = ({ product, onClose }) => {
                     onClick={handleClose}
                   >
                     Close
+                  </button> 
+                  <button
+                    className={`text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 ${
+                      buttonLabel === "Deactivate" ? 'bg-red-500' : 'bg-green-500'}`}
+                    type="button"
+                    onClick={handleStatusToggle}
+                  >
+                    {buttonLabel}
                   </button> 
                 </div>
                 </div>
