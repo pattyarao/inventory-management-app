@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import AddNewVariant from "./AddNewVariant";
+import AddMaterialPurchase from "./AddMaterialPurchase";
+import RecordPurchase from "./RecordPurchase";
+import ClearPurchaseList from "./ClearPurchaseList";
 
 const PurchaseList = () => {
   //stores all ordered products
@@ -8,43 +12,34 @@ const PurchaseList = () => {
     {
       name: "Material A",
       metric: "0",
-      variants: [
-        { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-      ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material B",
       metric: "1",
-      variants: [
-        { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-      ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material C",
       metric: "0",
-      variants: [
-        { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-      ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material D",
       metric: "1",
-      variants: [
-        { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-      ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material E",
       metric: "1",
-      variants: [
-        { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-      ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
   ]);
 
-  console.log(purchaseList)
+  console.log(purchaseList);
 
   const [edit, setEdit] = useState(false);
+  const [addVariantCondition, setAddVariantCondition] = useState(false);
 
   const addVariant = (productIndex) => {
     const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
@@ -52,12 +47,13 @@ const PurchaseList = () => {
     newPurchaseList[productIndex].variants.push(newVariant);
     setPurchaseList(newPurchaseList);
   };
-  
+
   //handles changes with the input if number is manually typed in
   const handleVariantNameChange = (productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
     if (event.target.value === "Add New Variant") {
-      
+      console.log("OPEN");
+      setAddVariantCondition(true);
       return;
     }
     newPurchaseList[productIndex].variants[variantIndex].variantName =
@@ -71,27 +67,27 @@ const PurchaseList = () => {
       event.target.value;
     setPurchaseList(newPurchaseList);
   };
-  
+
   const handleQtyChange = (productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
     newPurchaseList[productIndex].variants[variantIndex].quantity =
       event.target.valueAsNumber;
     setPurchaseList(newPurchaseList);
   };
-  
+
   const handleAmtChange = (productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
     newPurchaseList[productIndex].variants[variantIndex].amount =
       event.target.valueAsNumber;
     setPurchaseList(newPurchaseList);
   };
-  
+
   const handleIncrement = (productIndex, variantIndex) => {
     const newPurchaseList = [...purchaseList];
     newPurchaseList[productIndex].variants[variantIndex].quantity++;
     setPurchaseList(newPurchaseList);
   };
-  
+
   const handleDecrement = (productIndex, variantIndex) => {
     const newPurchaseList = [...purchaseList];
     if (newPurchaseList[productIndex].variants[variantIndex].quantity > 1) {
@@ -103,15 +99,13 @@ const PurchaseList = () => {
   const handleRemove = (productIndex, variantIndex) => {
     const newPurchaseList = [...purchaseList];
     newPurchaseList[productIndex].variants.splice(variantIndex, 1);
-  
+
     // Check if there are no more variants in the product
     if (newPurchaseList[productIndex].variants.length === 0) {
       newPurchaseList.splice(productIndex, 1);
     }
     setPurchaseList(newPurchaseList);
   };
-  
-  
 
   return (
     <div
@@ -161,9 +155,7 @@ const PurchaseList = () => {
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Amount
                         </div>
-                        <div className="col-span-1 text-sm ms-5">
-                          Unit
-                        </div>
+                        <div className="col-span-1 text-sm ms-5">Unit</div>
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Qty. Purchased
                         </div>
@@ -180,7 +172,7 @@ const PurchaseList = () => {
                           >
                             <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
                               <button
-                                onClick={()=>addVariant(index)}
+                                onClick={() => addVariant(index)}
                                 className="h-7 w-6 rounded-lg cursor-pointer flex items-center justify-center mt-2"
                                 style={{ backgroundColor: "#097969" }}
                               >
@@ -203,20 +195,22 @@ const PurchaseList = () => {
                                     <select
                                       value={variant.variantName}
                                       onChange={(event) =>
-                                        handleVariantNameChange(index, variantIndex, event)
+                                        handleVariantNameChange(
+                                          index,
+                                          variantIndex,
+                                          event,
+                                        )
                                       }
                                       id="large"
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                    > 
+                                    >
                                       <option value="0">None</option>
                                       <option value="1">Variant A</option>
                                       <option value="2">Variant B</option>
                                       <option value="3">Variant C</option>
                                       <option value="4">Variant D</option>
                                       <option disabled>─────────────</option>
-                                      <option>
-                                         Add New Variant
-                                      </option>
+                                      <option>Add New Variant</option>
                                     </select>
                                   </div>
                                 </div>
@@ -227,7 +221,11 @@ const PurchaseList = () => {
                                     className="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
                                     value={variant.amount}
                                     onChange={(event) =>
-                                      handleAmtChange(index, variantIndex, event)
+                                      handleAmtChange(
+                                        index,
+                                        variantIndex,
+                                        event,
+                                      )
                                     }
                                   />
                                 </div>
@@ -238,7 +236,11 @@ const PurchaseList = () => {
                                       id="large"
                                       value={variant.unit}
                                       onChange={(event) =>
-                                        handleUnitChange(index, variantIndex, event)
+                                        handleUnitChange(
+                                          index,
+                                          variantIndex,
+                                          event,
+                                        )
                                       }
                                       class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
@@ -266,7 +268,11 @@ const PurchaseList = () => {
                                     className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
                                     value={variant.quantity}
                                     onChange={(event) =>
-                                      handleQtyChange(index, variantIndex,event)
+                                      handleQtyChange(
+                                        index,
+                                        variantIndex,
+                                        event,
+                                      )
                                     }
                                   />
                                   <button
@@ -287,7 +293,9 @@ const PurchaseList = () => {
                                         backgroundColor: "#FF0000",
                                         color: "#FFFFFF",
                                       }}
-                                      onClick={() => handleRemove(index, variantIndex)}
+                                      onClick={() =>
+                                        handleRemove(index, variantIndex)
+                                      }
                                     >
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -326,13 +334,25 @@ const PurchaseList = () => {
                   )}
                 </div>
                 <div className="flex justify-end">
-                  {purchaseList.length !== 0 ? <>Hello</> : null}
+                  <AddMaterialPurchase />
+                  {purchaseList.length !== 0 ? (
+                    <>
+                      <ClearPurchaseList
+                        onConfirmClear={() => setPurchaseList([])}
+                      />
+                      <RecordPurchase />
+                    </>
+                  ) : null}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {addVariantCondition ? (
+        <AddNewVariant onClose={() => setAddVariantCondition(false)} />
+      ) : null}
     </div>
   );
 };
