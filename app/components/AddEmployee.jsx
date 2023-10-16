@@ -17,7 +17,9 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
     <div className="absolute min-w-full min-h-screen flex flex-col items-center justify-center bg-black/50">
       <div className="w-[30%] p-4 flex justify-between items-center bg-[#526D82] rounded-t-md">
         <p>Add New Employee</p>
-        <p onClick={handleClose}>Cancel</p>
+        <p onClick={handleClose} className="cursor-pointer">
+          Cancel
+        </p>
       </div>
       <div className="w-[30%] px-4 py-8 bg-[#DDE6ED] flex flex-col items-center justify-center gap-6 rounded-b-md">
         <div>

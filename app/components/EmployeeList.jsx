@@ -42,7 +42,7 @@ const EmployeeList = () => {
       )}
       <div className="w-[50%] bg-[#9DB2BF] p-4">
         <div className="py-4 flex justify-between items-center border-b-2 border-black">
-          <h3>Employee Roles</h3>
+          <h3 className="font-bold text-2xl">Employee Roles</h3>
           <button onClick={() => setShow(true)}>Add Employee</button>
         </div>
         <div className="w-full py-4 flex justify-between items-center">
