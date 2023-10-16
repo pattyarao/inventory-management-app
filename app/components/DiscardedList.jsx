@@ -152,7 +152,7 @@ const DiscardedList = () => {
                   {discardedList.length !== 0 ? (
                     <>
                       <div
-                        className="px-3 w-full grid grid-cols-5 text-xs rounded-lg"
+                        className="px-3 w-full grid grid-cols-6 text-xs rounded-lg"
                         style={{ backgroundColor: "#526D82", color: "white" }}
                       >
                         <div className="col-span-1 text-sm flex items-center justify-center">
@@ -167,6 +167,9 @@ const DiscardedList = () => {
                         <div className="col-span-1 text-sm ms-5">
                           Unit
                         </div>
+                        <div className="col-span-1 text-sm ms-5">
+                          Reason for Discard
+                        </div>
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Qty. Discarded
                         </div>
@@ -175,7 +178,7 @@ const DiscardedList = () => {
                       {discardedList.map((product, index) => (
                         <div key={index}>
                           <div
-                            className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
+                            className="w-full p-3 mb-4 grid grid-cols-6 text-xs rounded-lg"
                             style={{
                               backgroundColor: "#9DB2BF",
                               color: "#27374D",
@@ -250,6 +253,21 @@ const DiscardedList = () => {
                                   </div>
                                 </div>
 
+                                <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent ">
+                                    <select
+                                      id="large"
+                                      onChange={(event) =>
+                                        handleUnitChange(index, variantIndex, event)
+                                      }
+                                      class="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
+                                    >
+                                      <option>Not Detemrined</option>
+                                      <option value="0">Expired</option>
+                                      <option>Add New Reason</option>
+                                      <option disabled>─────────────</option>
+                                    </select>
+                                </div>
+
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
                                   <button
                                     onClick={() =>
@@ -320,7 +338,7 @@ const DiscardedList = () => {
                         <div className="h-[300px] px-10 py-4 rounded-lg flex flex-row items-center justify-center gap-6 bg-[#9DB2BF]">
                         <div className="text-xl">**insert icon here**</div>
                         <div className="flex flex-col">
-                            <div className="text-3xl justify-center ">
+                            <div className="text-3xl justify-center text-grey ">
                                 Your <b>Expired Material List</b> is <b>Empty</b>
                             </div>
                             <div className="text-black text-xl mt-6">
