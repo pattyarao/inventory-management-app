@@ -19,7 +19,7 @@ const ProductOfferList = () => {
     {
       name: "Product 2",
       status: "Active",
-      materials: [{ name: "Material C", amount: 500, unit: "ml" }],
+      materials: [{ name: "Material C", amount: 500, unit: "mL" }],
     },
     {
       name: "Product 3",

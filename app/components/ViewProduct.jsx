@@ -35,14 +35,33 @@ const ViewProduct = ({ product, onClose }) => {
                 <div className="flex space-x-4 mb-4 mt-3 items-center justify-center">
                     <h4 className="text-2xl mb-2">Needed Raw Materials</h4>
                 </div>
-                <div className="flex items-center justify-center mt-5">
-                    <ul>
-                    {product.materials.map((material, index) => (
-                        <li key={index}>
-                        {material.name} - {material.amount} {material.unit}
-                        </li>
-                    ))}
-                    </ul>
+                <div className="rounded-lg overflow-hidden">
+                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                          <tr>
+                              
+                              <th scope="col" className="px-6 py-3">
+                                  Material name
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                  Amount
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                  Unit
+                              </th>
+                              
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {product.materials.map((material, index) => (
+                          <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={material.id}>
+                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.name}</td>
+                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.amount}</td>
+                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.unit}</td>
+                          </tr>
+                          ))}
+                      </tbody>
+                  </table>
                 </div>
                 
                 <div className="flex items-center justify-center mt-5">
