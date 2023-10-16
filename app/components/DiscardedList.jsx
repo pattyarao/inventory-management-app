@@ -261,7 +261,7 @@ const DiscardedList = () => {
                                       }
                                       class="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
                                     >
-                                      <option>Not Detemrined</option>
+                                      <option>Not Determined</option>
                                       <option value="0">Expired</option>
                                       <option>Add New Reason</option>
                                       <option disabled>─────────────</option>
