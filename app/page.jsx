@@ -3,12 +3,12 @@ import { useAmp } from "next/amp";
 import Image from "next/image";
 import { useEffect } from "react";
 import supabase from "../app/supabase";
-import withAuthentication from "../app/auth"
-import { useRouter } from 'next/navigation';
+import withAuthentication from "../app/auth";
+import { useRouter } from "next/navigation";
+import Navbar from "./components/Navbar";
 // export default function Home() {
 
-
-//   const testFunc = async () => { 
+//   const testFunc = async () => {
 
 //     const { data: { user }, error } = await supabase.auth.getUser()
 //     if (error) {
@@ -37,10 +37,9 @@ import { useRouter } from 'next/navigation';
 //     return;
 //   }
 
-  
 // }
 
-//   useEffect(() => { 
+//   useEffect(() => {
 //     testFunc()
 //   }, [])
 
@@ -51,39 +50,12 @@ import { useRouter } from 'next/navigation';
 //   );
 // }
 
-
-
 const Home = ({ userType }) => {
-  const router = useRouter();
-  const logOut = async () => {
-    
-    const { data: { user }, error } = await supabase.auth.getUser()
-  
-    if(!user){
-        router.push('/onboarding');
-        return;
-    }
-    else{
-      await supabase.auth.signOut();  
-      router.push('/onboarding');
-    }
-    
-    
-  };
-  
   return (
-    
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      this is the home page is for Stock Controller = {userType}
-      <button className="bg-blue-800 text-white py-2 px-4 rounded-md mt-4"
-            onClick={logOut}>
-            
-              Log Out
-            </button>
+    <main className="flex w-full min-h-screen">
+      <Navbar userType={userType} />
     </main>
-
-
   );
 };
 
-export default withAuthentication(Home, ['Stock Controller', 'Owner']);
+export default withAuthentication(Home, ["Stock Controller", "Owner"]);
