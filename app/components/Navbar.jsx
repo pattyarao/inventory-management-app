@@ -10,6 +10,7 @@ import Link from "next/link";
 
 const Navbar = ({ userType }) => {
   const router = useRouter();
+
   const logOut = async () => {
     const {
       data: { user },
@@ -35,6 +36,11 @@ const Navbar = ({ userType }) => {
             <div className="flex gap-4">
               <Link href="/">Home</Link>
               <Link href="/assignroles">Assign Roles</Link>
+            </div>
+          ) : userType === "Stock Controller" ? (
+            <div className="flex gap-4">
+              <Link href="/">Home</Link>
+              <Link href="/recordpurchases">Assign Roles</Link>
             </div>
           ) : null}
         </div>

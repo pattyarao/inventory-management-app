@@ -4,10 +4,8 @@ import Image from "next/image";
 import { useEffect } from "react";
 import supabase from "../app/supabase";
 import withAuthentication from "../app/auth";
-import { useRouter } from "next/navigation";
 import Navbar from "./components/Navbar";
 import Dashboard from "./dashboard/page";
-// import { Suspense } from "react";
 
 const Home = ({ userType }) => {
   if (!userType) {
