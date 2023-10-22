@@ -2,30 +2,47 @@
 
 import { useState, useEffect } from "react";
 import AddEmployee from "./AddEmployee";
+import { GET } from "../api/employees/route";
 
 const EmployeeList = () => {
   const [isShowed, setShow] = useState(false);
-
-  const [employees, setEmployees] = useState([
-    { name: "Patty Arao", role: "Stock Controller", status: "Active" },
-    { name: "Carlo Reyes", role: "Manufacturing Head", status: "Active" },
-    { name: "Miguel Perez", role: "Sales Person", status: "Not Active" },
-    { name: "Jerrick Santos", role: "Stock Controller", status: "Not Active" },
-  ]);
+  const [employees, setEmployees] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log(employees);
-  }, [employees]);
+    async function getEmployees() {
+      try {
+        const response = await GET();
+        const { employees, error } = await response.json();
 
-  const handleClick = (employee, index) => {
-    const temp = [...employees];
-    let newStatus;
-    employee.status === "Active"
-      ? (newStatus = "Not Active")
-      : (newStatus = "Active");
-    temp[index].status = newStatus;
-    setEmployees(temp);
-  };
+        if (error) {
+          setError(error);
+        } else {
+          setEmployees(employees);
+        }
+      } catch (error) {
+        setError(error.message);
+      }
+    }
+    getEmployees();
+  }, []);
+
+  // const [employees, setEmployees] = useState([
+  //   { name: "Patty Arao", role: "Stock Controller", status: "Active" },
+  //   { name: "Carlo Reyes", role: "Manufacturing Head", status: "Active" },
+  //   { name: "Miguel Perez", role: "Sales Person", status: "Not Active" },
+  //   { name: "Jerrick Santos", role: "Stock Controller", status: "Not Active" },
+  // ]);
+
+  // const handleClick = (employee, index) => {
+  //   const temp = [...employees];
+  //   let newStatus;
+  //   employee.status === true
+  //     ? (newStatus = "Not Active")
+  //     : (newStatus = "Active");
+  //   temp[index].status = newStatus;
+  //   setEmployees(temp);
+  // };
 
   const handleClose = () => {
     setShow(false);
@@ -55,25 +72,37 @@ const EmployeeList = () => {
           <p className="w-[45%]">Role</p>
           <p className="w-[10%]">Status</p>
         </div>
-        <div className="flex flex-col gap-4">
-          {employees.map((employee, index) => (
-            <div
-              key={index}
-              className="w-full flex items-center p-4 border-b border-black"
-            >
-              <p className="w-[45%]">{employee.name}</p>
-              <p className="w-[45%]">{employee.role}</p>
-              <button
-                className={`w-[10%] p-2 rounded-md text-center ${
-                  employee.status === "Active" ? "bg-green-500" : "bg-red-500"
-                }`}
-                onClick={() => handleClick(employee, index)}
-              >
-                {employee.status}
-              </button>
-            </div>
-          ))}
-        </div>
+
+        {error && <div>{error}</div>}
+        {employees.length > 0 && (
+          <div className="w-full">
+            {employees.map((employee) => (
+              <div key={employee.id} className="w-full flex gap-10">
+                <p className="w-[50%]">
+                  {employee.first_name} {employee.last_name}
+                </p>
+                <p className="w-[25%]">
+                  {employee.user_type === 1
+                    ? "Owner"
+                    : employee.user_type === 2
+                    ? "Stock Controller"
+                    : employee.user_type === 3
+                    ? "Manufacturing Head"
+                    : employee.user_type === 4
+                    ? "Sales Person"
+                    : "Invalid"}
+                </p>
+                <p className="w-[25%]">
+                  {employee.status === true
+                    ? "Active"
+                    : employee.status === false
+                    ? "Not Active"
+                    : "No status"}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

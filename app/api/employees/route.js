@@ -1,7 +1,6 @@
-import supabase from "@/app/supabase";
-import {NextRequest, NextResponse} from "next/server";
+import supabase from "../../supabase";
 
-export async function GET(request) {
+export async function GET() {
   const { data: employees, error } = await supabase
     .from("MD_PROFILES")
     .select("*");
@@ -14,7 +13,7 @@ export async function GET(request) {
   }
 
   const json = {
-    name: employees[0].first_name,
+    employees: employees,
   };
 
   return new Response(JSON.stringify(json), {
