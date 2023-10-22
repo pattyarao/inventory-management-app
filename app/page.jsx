@@ -6,6 +6,7 @@ import supabase from "../app/supabase";
 import withAuthentication from "../app/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "./components/Navbar";
+import Dashboard from "./dashboard/page";
 // export default function Home() {
 
 //   const testFunc = async () => {
@@ -52,8 +53,9 @@ import Navbar from "./components/Navbar";
 
 const Home = ({ userType }) => {
   return (
-    <main className="flex w-full min-h-screen">
+    <main className="flex flex-col w-full min-h-screen">
       <Navbar userType={userType} />
+      <Dashboard role={userType} />
     </main>
   );
 };

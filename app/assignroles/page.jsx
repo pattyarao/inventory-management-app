@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 const AssignRoles = () => {
   return (
     <main className="w-full h-full flex flex-col items-center justify-between gap-8 bg-[#F1F3F8]">
-      <Navbar />
+      <Navbar userType={"Owner"} />
       <EmployeeList />
 
       {/* <AddEmployee /> */}

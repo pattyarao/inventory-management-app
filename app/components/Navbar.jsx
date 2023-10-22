@@ -26,14 +26,21 @@ const Navbar = ({ userType }) => {
   };
   return (
     <div className="w-full h-fit flex p-4 justify-between items-center bg-[#D6E0F0]">
-      <h3>Inventory Management</h3>
-
-      <div className="flex items-center gap-4">
+      <div className="w-[35%] flex justify-between items-center">
+        <h3 className="text-2xl text-white font-bold bg-[#393B44] p-2 rounded-md">
+          Inventory Management
+        </h3>
         <div>
           {userType === "Owner" ? (
-            <Link href="/assignroles">Assign Roles</Link>
+            <div className="flex gap-4">
+              <Link href="/">Home</Link>
+              <Link href="/assignroles">Assign Roles</Link>
+            </div>
           ) : null}
         </div>
+      </div>
+
+      <div className="flex items-center gap-4">
         <div className="flex items-center gap-6">
           <p className="bg-[#8D93AB] p-2 rounded-md">
             Signed in as{" "}
