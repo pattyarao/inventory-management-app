@@ -11,6 +11,11 @@ const DiscardedList = () => {
 
   const [edit, setEdit] = useState(false);
 
+
+  const handleSubmit = (obj) => {
+    setDiscardedList(obj)
+  }
+
   const addVariant = (productIndex) => {
     const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
     const newDiscardedList = [...discardedList];
@@ -76,46 +81,6 @@ const DiscardedList = () => {
     setDiscardedList(newDiscardedList);
   };
   
-  const handleAdd = () => {
-    const materials = [
-        {
-            name: "Material A",
-            metric: "0",
-            variants: [
-              { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-            ],
-        },
-        {
-            name: "Material B",
-            metric: "1",
-            variants: [
-              { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-            ],
-        },
-        {
-            name: "Material C",
-            metric: "0",
-            variants: [
-              { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-            ],
-        },
-        {
-            name: "Material D",
-            metric: "1",
-            variants: [
-              { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-            ],
-        },
-        {
-            name: "Material E",
-            metric: "1",
-            variants: [
-                { variantName: "0", amount: 0, unit: "0", quantity: 1 },
-            ],
-        },
-    ]
-    setDiscardedList(materials)
-  }
 
   return (
     <div
@@ -208,7 +173,7 @@ const DiscardedList = () => {
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
                                     <select
-                                      value={variant.variantName}
+                                      value={variant.name}
                                       onChange={(event) =>
                                         handleVariantNameChange(index, variantIndex, event)
                                       }
@@ -216,12 +181,7 @@ const DiscardedList = () => {
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     > 
                                       {/** replace with data */}
-                                      <option value="0">None</option>
-                                      <option value="1">Variant A</option>
-                                      <option value="2">Variant B</option>
-                                      <option value="3">Variant C</option>
-                                      <option value="4">Variant D</option>
-                                      <option disabled>─────────────</option>
+                                      <option value={variantIndex}>{variant.name}</option>
                                     </select>
                                   </div>
                                 </div>
@@ -230,7 +190,7 @@ const DiscardedList = () => {
                                   <input
                                     type="number"
                                     className="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
-                                    value={variant.amount}
+                                    value={variant.amt}
                                     onChange={(event) =>
                                       handleAmtChange(index, variantIndex, event)
                                     }
@@ -343,7 +303,7 @@ const DiscardedList = () => {
                                 Your <b>Expired Material List</b> is <b>Empty</b>
                             </div>
                             <div className="text-black text-xl mt-6">
-                                <AddMaterialPurchase />
+                                <AddMaterialPurchase handleSubmit={handleSubmit} />
                             </div>
                         </div>
                         </div>
@@ -351,7 +311,7 @@ const DiscardedList = () => {
                   )}
                 </div>
                 <div className="flex justify-end">
-                  {discardedList.length !== 0 ? <>Hello</> : null}
+                  {discardedList.length !== 0 ? <AddMaterialPurchase /> : null}
                 </div>
               </div>
             </div>
