@@ -60,6 +60,11 @@ const AddProductOffer = ({ addProductToList }) => {
         setMaterialList([]);
         setShowModal(false);
       };
+
+    const [selectedOption, setSelectedOption] = useState("new");
+    const handleOptionChange = (e) => {
+      setSelectedOption(e.target.value);
+    }
     
     //determines if the modal for adding a product is shown or not
     const [showModal, setShowModal] = useState(false);
@@ -160,8 +165,39 @@ const AddProductOffer = ({ addProductToList }) => {
                         </div>
                         )}
                     </div>
+
+                    <div className="flex flex-wrap justify-center">
+                        <div className="flex items-center mr-4 mt-5">
+                          <input 
+                            id="new-material-radio" 
+                            type="radio" 
+                            name="material-radio" 
+                            value="new" 
+                            checked={selectedOption === "new"} 
+                            onChange={handleOptionChange} 
+                            className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                          <label 
+                            for="new-material-radio" 
+                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Add New Material</label>
+                        </div>
+                        <div className="flex items-center mr-4 mt-5">
+                          <input 
+                            id="existing-material-radio" 
+                            type="radio" 
+                            value="existing" 
+                            name="material-radio" 
+                            checked={selectedOption === "existing"} 
+                            onChange={handleOptionChange} 
+                            class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                          <label 
+                            for="existing-material-radio" 
+                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Add Existing Material</label>
+                        </div>
+                    </div>
+                  {selectedOption === "new" ? (
+                    <>
                     <div>
-                        <div className="flex justify-center space-x-4 mb-4 mt-4">
+                      <div className="flex justify-center space-x-4 mb-4 mt-4">
                             <label className="w-32 text-right mt-2">Name of Material</label>
                             <input 
                                 className="w-72 rounded-md appearance-none border border-gray-300 py-2 px-2 bg-white text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent"
@@ -201,11 +237,61 @@ const AddProductOffer = ({ addProductToList }) => {
                                 type="button"
                                 onClick={handleAddMaterial}
                             >
-                                Add Material
+                                Add New Material
                             </button> 
                         </div>
+                      </div>
+                    </>
+                  ):(
+                    <>
+                      <div>
+                      <div className="flex justify-center space-x-4 mb-4 mt-4">
+                            <label className="w-32 text-right mt-2">Name of Material</label>
+                            <input 
+                                className="w-72 rounded-md appearance-none border border-gray-300 py-2 px-2 bg-white text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent"
+                                style={{ backgroundColor: '#DDE6ED', color:"#27374D"}}
+                                value={newMaterial.name}
+                                onChange={handleMaterialNameChange}
+                            />  
+                        </div>
                         
-                    </div>
+                        <div className="flex justify-center space-x-4 mb-4 pl-4">
+                            <label className="text-right mt-2 ">Amount</label>
+                            <input 
+                                className="focus:outline-none focus:ring-2 focus:ring-sky-600 w-56 text-gray-700 py-2 px-3 border border-gray-300 bg-white rounded-md w-42 p-2 rounded"
+                                style={{ backgroundColor: '#DDE6ED', color:"#27374D"}}
+                                value={newMaterial.amount}
+                                onChange={handleMaterialAmountChange}
+                            />
+                        </div>
+                        <div className="flex justify-center space-x-4 mb-4 pl-3 pr-52">
+                            <label className="w-32 text-right mt-2">Unit</label>
+                            <select 
+                                className="w-24 p-2 rounded"
+                                style={{ backgroundColor: '#DDE6ED', color:"#27374D"}}
+                                value={newMaterial.unit}
+                                onChange={handleMaterialUnitChange}
+                            >
+                                <option value="mg">mg</option>
+                                <option value="g">g</option>
+                                <option value="mL">mL</option>
+                                <option value="L">L</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center justify-center">
+                           <button
+                                className="text-white font-semibold uppercase text-sm px-6 py-3 rounded-3xl shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                style={{ backgroundColor: "#097969" }}
+                                type="button"
+                                onClick={handleAddMaterial}
+                            >
+                                Add Existing Material
+                            </button> 
+                        </div>
+                      </div>
+                    </>
+                  )}
+                    
                     <div className="mt-5">
                   <div className="flex justify-center"> 
                     <button
