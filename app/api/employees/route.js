@@ -1,4 +1,5 @@
 import supabase from "@/app/supabase";
+import {NextRequest, NextResponse} from "next/server";
 
 export async function GET(request) {
   const { data: employees, error } = await supabase
