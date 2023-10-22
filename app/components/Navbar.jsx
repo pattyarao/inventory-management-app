@@ -25,7 +25,7 @@ const Navbar = ({ userType }) => {
     }
   };
   return (
-    <div className="w-full h-fit flex p-4 justify-between items-center bg-[#526D82]">
+    <div className="w-full h-fit flex p-4 justify-between items-center bg-[#D6E0F0]">
       <h3>Inventory Management</h3>
 
       <div className="flex items-center gap-4">
@@ -35,7 +35,7 @@ const Navbar = ({ userType }) => {
           ) : null}
         </div>
         <div className="flex items-center gap-6">
-          <p className="bg-[#9DB2BF] p-2 rounded-md">
+          <p className="bg-[#8D93AB] p-2 rounded-md">
             Signed in as{" "}
             <span className="font-bold text-[#041C32]">{userType}</span>
           </p>

@@ -1,10 +1,13 @@
 import AddEmployee from "../components/AddEmployee";
 import EmployeeList from "../components/EmployeeList";
+import Navbar from "../components/Navbar";
 
 const AssignRoles = () => {
   return (
-    <main className="w-full h-screen flex items-center justify-center bg-[#27374D]">
+    <main className="w-full h-full flex flex-col items-center justify-between gap-8 bg-[#F1F3F8]">
+      <Navbar />
       <EmployeeList />
+
       {/* <AddEmployee /> */}
     </main>
   );

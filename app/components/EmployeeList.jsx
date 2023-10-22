@@ -40,26 +40,31 @@ const EmployeeList = () => {
           setEmployees={setEmployees}
         />
       )}
-      <div className="w-[50%] bg-[#9DB2BF] p-4">
+      <div className="w-[90%] h-fit mb-8 bg-[#D6E0F0] p-4 flex flex-col gap-4 rounded-md">
         <div className="py-4 flex justify-between items-center border-b-2 border-black">
-          <h3 className="font-bold text-2xl">Employee Roles</h3>
-          <button onClick={() => setShow(true)}>Add Employee</button>
+          <h3 className="font-bold text-4xl">Employee Roles</h3>
+          <button
+            onClick={() => setShow(true)}
+            className="bg-[#8D93AB] py-2 px-6 rounded-md text-[#F1F3F8] font-bold"
+          >
+            Add Employee
+          </button>
         </div>
-        <div className="w-full py-4 flex justify-between items-center">
-          <p className="w-[33.33%]">Name</p>
-          <p className="w-[33.33%]">Role</p>
-          <p className="w-[33.33%]">Status</p>
+        <div className="w-full py-4 px-2 flex justify-between items-center bg-[#8D93AB] rounded-md text-[#F1F3F8] font-bold">
+          <p className="w-[45%]">Name</p>
+          <p className="w-[45%]">Role</p>
+          <p className="w-[10%]">Status</p>
         </div>
         <div className="flex flex-col gap-4">
           {employees.map((employee, index) => (
             <div
               key={index}
-              className="w-full flex items-center bg-[#DDE6ED] p-4"
+              className="w-full flex items-center p-4 border-b border-black"
             >
-              <p className="w-[33.33%]">{employee.name}</p>
-              <p className="w-[33.33%]">{employee.role}</p>
+              <p className="w-[45%]">{employee.name}</p>
+              <p className="w-[45%]">{employee.role}</p>
               <button
-                className={`w-[33.33%] p-2 text-center ${
+                className={`w-[10%] p-2 rounded-md text-center ${
                   employee.status === "Active" ? "bg-green-500" : "bg-red-500"
                 }`}
                 onClick={() => handleClick(employee, index)}
