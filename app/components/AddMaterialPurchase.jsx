@@ -33,7 +33,7 @@ const AddMaterialPurchase = () => {
     } else {
       // Filter products based on the search term
       const filteredProducts = materialsList.filter((product) =>
-        product.toLowerCase().includes(searchValue.toLowerCase()),
+        product.name.toLowerCase().includes(searchValue.toLowerCase()),
       );
       setFilteredProductsList(filteredProducts);
     }
@@ -45,17 +45,16 @@ const AddMaterialPurchase = () => {
     if (sortOption === "name-desc") {
       filteredProductsList.sort((a, b) => {
         // Compare two items for sorting in descending order (Z-A)
-        const nameA = a;
-        const nameB = b;
-
+        const nameA = a.name;
+        const nameB = b.name;
         // Use localeCompare to perform a case-insensitive comparison
         return nameA.localeCompare(nameB);
       });
     } else if (sortOption === "name-asc") {
       filteredProductsList.sort((a, b) => {
         // Compare two items for sorting in ascending order (A-Z)
-        const nameA = a;
-        const nameB = b;
+        const nameA = a.name;
+        const nameB = b.name;
 
         // Use localeCompare to perform a case-insensitive comparison
         return nameB.localeCompare(nameA);
@@ -65,7 +64,7 @@ const AddMaterialPurchase = () => {
 
   // handles selected items in the checkbox
   const handleSelect = (e) => {
-    const index = e.target.value
+    const index = parseInt(e.target.value)
     if (selectedIndex.includes(index)){
       setSelectedIndex(selectedIndex.filter((i) => i !== index))
     }
@@ -77,6 +76,7 @@ const AddMaterialPurchase = () => {
   // testing handleSelect function: functional
   useEffect(() => {
     console.log(selectedIndex)
+    console.log(materialsList)
   }, [selectedIndex])
 
   const handleSubmit = () => {
@@ -89,8 +89,16 @@ const AddMaterialPurchase = () => {
       .from('MD_RAW_MATERIALS')
       .select('name, qty_available')
       .eq('status', true)
-    
-    !error ? setMaterialsList(data) : console.log(error)
+
+    // set an object that stores the index of material from data which serves as reference when material list elements is passed to filtered list
+    if (!error) {
+      data.map((x,i) => {
+        x.index = i
+      })
+
+      setMaterialsList(data)
+
+    } else { console.log(error) }
   }
   
   // fetch data on load
@@ -187,7 +195,8 @@ const AddMaterialPurchase = () => {
                                 <input
                                   id="vue-checkbox"
                                   type="checkbox"
-                                  value={index}
+                                  value={product.index}
+                                  checked={selectedIndex.includes(product.index)}
                                   onChange={handleSelect}
                                   className="me-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                 />
