@@ -69,11 +69,18 @@ const Signup = () => {
 
     if (isValid) {
       try {
-        // Sign up the user with email and password
-        const { data, error } = await supabase.auth.signUp({
+
+        //CREATE USER
+        const { data, error } = await supabase.auth.admin.createUser({
           email: email,
           password: password,
-        });
+        })
+
+        // Sign up the user with email and password
+        // const { data, error } = await supabase.auth.signUp({
+        //   email: email,
+        //   password: password,
+        // });
 
         if (error) {
           console.error("Error signing up:", error.message);
