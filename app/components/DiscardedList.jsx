@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import AddMaterialPurchase from "./AddMaterialPurchase";
 
 const DiscardedList = () => {
   //stores all ordered products
@@ -342,9 +343,7 @@ const DiscardedList = () => {
                                 Your <b>Expired Material List</b> is <b>Empty</b>
                             </div>
                             <div className="text-black text-xl mt-6">
-                            <button className="btn btn-success bg-white rounded-lg text-2xl" onClick={handleAdd}>
-                                Add Expired Material  {/** replace with add material modal */}
-                            </button>
+                                <AddMaterialPurchase />
                             </div>
                         </div>
                         </div>

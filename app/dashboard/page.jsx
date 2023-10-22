@@ -6,13 +6,13 @@ import StockControllerHome from "../components/StockControllerHome";
 
 const Dashboard = ({ role }) => {
   let renderComponent;
-  if (role === "owner") {
+  if (role === "Owner") {
     renderComponent = <OwnerHome />;
-  } else if (role === "stockcontroller") {
+  } else if (role === "Stock Controller") {
     renderComponent = <StockControllerHome />;
-  } else if (role === "manufacturer") {
+  } else if (role === "Manufacturer") {
     renderComponent = <ManufacturerHome />;
-  } else if (role === "salesperson") {
+  } else if (role === "Sales Person") {
     renderComponent = <SalesPersonHome />;
   } else {
     renderComponent = (
