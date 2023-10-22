@@ -6,6 +6,10 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
 
+  const handleSelect = (event) => {
+    setRole(event.target.value);
+  };
+
   const handleAddEmployee = () => {
     const newEmployee = { name, role, status: "Active" };
     if ((name === "") | (role === "")) return;
@@ -14,7 +18,7 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
   };
 
   return (
-    <div className="absolute min-w-full min-h-screen flex flex-col items-center justify-center bg-black/50">
+    <div className="absolute min-w-full min-h-screen flex flex-col items-center justify-center bg-black/70">
       <div className="w-[30%] p-4 flex justify-between items-center bg-[#526D82] rounded-t-md">
         <p>Add New Employee</p>
         <p onClick={handleClose} className="cursor-pointer">
@@ -34,13 +38,18 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
         </div>
         <div>
           <p>Role</p>
-          <input
-            type="text"
-            required="true"
-            className="p-1.5 bg-white border border-black rounded-lg"
-            onChange={(e) => setRole(e.target.value)}
-            value={role}
-          />
+          <div className="">
+            <select
+              className="pl-2 pr-16 py-2 bg-white border border-black rounded-lg text-sm focus:outline-none"
+              id="role"
+              onChange={handleSelect}
+              value={role || ""}
+            >
+              <option value="stockController">Stock Controller</option>
+              <option value="manufacturingHead">Manufacturing Head</option>
+              <option value="salesPerson">Sales Person</option>
+            </select>
+          </div>
         </div>
         <div>
           <button
