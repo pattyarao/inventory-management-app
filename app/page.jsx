@@ -7,8 +7,16 @@ import withAuthentication from "../app/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "./components/Navbar";
 import Dashboard from "./dashboard/page";
+// import { Suspense } from "react";
 
 const Home = ({ userType }) => {
+  if (!userType) {
+    return (
+      <div>
+        <p>Loading</p>
+      </div>
+    );
+  }
   return (
     <main className="flex flex-col w-full min-h-screen">
       <Navbar userType={userType} />
