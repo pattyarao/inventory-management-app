@@ -1,3 +1,6 @@
+'use client'
+
+import withAuthentication from "../auth";
 import DiscardedList from "../components/DiscardedList";
 
 const RecordExpired = () => {
@@ -13,4 +16,6 @@ const RecordExpired = () => {
   );
 };
 
-export default RecordExpired;
+export default withAuthentication(RecordExpired, ['Stock Controller'])
+
+// export default RecordExpired;
