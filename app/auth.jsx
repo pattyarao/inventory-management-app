@@ -13,6 +13,12 @@ const withAuthentication = (WrappedComponent, allowedUserTypes) => {
   return function WithAuthentication(props) {
     const router = useRouter();
     const [currUserType, setCurrUserType] = useState("");
+    const [userInfo, setUserInfo] = useState({
+      email: "",
+      first_name: "",
+      last_name: "",
+      user_id: "",
+    });
     const checkValidation = async () => { 
     
 
@@ -49,7 +55,16 @@ const withAuthentication = (WrappedComponent, allowedUserTypes) => {
           }
         
         
+
         console.log(userTypeDataValue[0].description)
+
+        setUserInfo({
+          email: user.email,
+          first_name: userTypeData[0].first_name,
+          last_name: userTypeData[0].last_name,
+          user_id: user.id,
+        });
+
         setCurrUserType(userTypeDataValue[0].description)
     
         if (!allowedUserTypes.includes(userTypeDataValue[0].description)) {
@@ -67,11 +82,12 @@ const withAuthentication = (WrappedComponent, allowedUserTypes) => {
 
       useEffect(() => {
         console.log(currUserType);
+        console.log(userInfo)
       }, [currUserType]);
 
 
 
-    return <WrappedComponent {...props} userType={currUserType}/>;
+    return <WrappedComponent {...props} userType={currUserType} userInfo={userInfo}/>;
   };
 };
 
