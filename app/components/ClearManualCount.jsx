@@ -8,12 +8,12 @@ const ClearManualCount = (props) => {
   return (
     <>
       <button
-        className="text-sm px-6 py-3 ms-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
-        style={{ backgroundColor: "#A12323", color: "white" }}
+        className="text-sm font-semibold px-6 py-3 ms-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+        style={{ backgroundColor: "#A12323", color: "black" }}
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Clear Materials List
+        Clear Manual Count
       </button>
 
       {showModal ? (
@@ -26,15 +26,15 @@ const ClearManualCount = (props) => {
               {/*content*/}
               <div
                 className="border-0 rounded-lg relative flex flex-col w-full outline-none focus:outline-none"
-                style={{ backgroundColor: "#526D82" }}
+                style={{ backgroundColor: "D6E0F0" }}
               >
                 {/*body*/}
                 <div
                   className="relative p-6 flex-auto rounded-lg"
-                  style={{ backgroundColor: "#526D82" }}
+                  style={{ backgroundColor: "#D6E0F0" }}
                 >
                   <svg
-                    class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+                    class="mx-auto mb-4 text-black-400 w-12 h-12 dark:text-gray-200"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -49,12 +49,13 @@ const ClearManualCount = (props) => {
                     />
                   </svg>
                   <div className="flex justify-center p-5 mb-5 text-2xl">
-                    Are you sure you want to clear the Manual Count for this Product?
+                    
+                    Are you sure you want to clear this Manual Count?
                   </div>
 
                   <div className="flex justify-center">
                     <button
-                      className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                      className="text-black font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#27374D" }}
                       type="button"
                       onClick={() => setShowModal(false)}
@@ -62,7 +63,7 @@ const ClearManualCount = (props) => {
                       No, Cancel
                     </button>
                     <button
-                      className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                      className="text-black font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#A12323" }}
                       type="button"
                       onClick={() => {
