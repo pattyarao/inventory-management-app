@@ -27,8 +27,9 @@ const useSignup = () => {
       if (!response.ok) {
         setIsLoading(false);
         setError(json.error);
-        return;
+        return "error";
       }
+      return "success";
 
       //   router.push("/assignroles");
     } catch (e) {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import useSignup from "../../hooks/useSignup";
 import { New_Tegomin } from "next/font/google";
+import { useRouter } from "next/navigation";
 
 const AddEmployee = ({ handleClose, employees, setEmployees }) => {
   const { signup } = useSignup();
@@ -11,6 +12,7 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("Stock Controller");
+  const router = useRouter();
 
   const handleFirstnameChange = (e) => {
     setFirstName(e.target.value);
@@ -36,9 +38,6 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
     password,
     selectedRole
   ) => {
-    // const newEmployee = { name, role, status: "Active" };
-    // if ((name === "") | (role === "")) return;
-    // setEmployees([...employees, newEmployee]);
     const newEmployeeData = await signup(
       firstName,
       lastName,
@@ -46,10 +45,29 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
       password,
       selectedRole
     );
-    if (newEmployeeData) {
-      setEmployees([...employees, newEmployeeData]);
+
+    let newRole;
+    if (selectedRole === "Stock Controller") {
+      newRole = 2;
+    } else if (selectedRole === "Manufacturing Head") {
+      newRole = 3;
+    } else if (selectedRole === "Sales Person") {
+      newRole = 4;
+    }
+
+    if (newEmployeeData === "success") {
+      setEmployees([
+        ...employees,
+        {
+          first_name: firstName,
+          last_name: lastName,
+          user_type: newRole,
+          status: false,
+        },
+      ]);
     }
     handleClose();
+    console.log(selectedRole);
   };
 
   return (
