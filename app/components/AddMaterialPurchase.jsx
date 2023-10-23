@@ -1,30 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { GET } from "../api/purchase/route";
 
-const AddMaterialPurchase = () => {
+const AddMaterialPurchase = (props) => {
   //stores all products in the database
-  const [materialsList, setMaterialsList] = useState([
-    "Material F",
-    "Material G",
-    "Material H",
-    "Material I",
-  ]);
+  const [materialsList, setMaterialsList] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
+    //determines if the modal for adding a product is shown or not
+    const [showModal, setShowModal] = useState(false);
+  
+    useEffect(() => {
+      async function getMaterials() {
+        try {
+          const response = await GET();
+          const { materials, error } = await response.json();
+    
+          if (error) {
+            setError(error);
+            console.log("err0 " + error);
+          } else {
+            
+            // Filter out materials that are already in props.purchaseList
+            const filteredMaterials = materials.filter((material) =>
+              props.purchaseList.every(
+                (purchaseMaterial) => purchaseMaterial.id !== material.id
+              )
+            );
 
-  //determines if the modal for adding a product is shown or not
-  const [showModal, setShowModal] = useState(false);
+            setMaterialsList(filteredMaterials);
+            setFilteredProductsList(filteredMaterials);
+            setLoading(false); // Data has been loaded
+          }
+        } catch (error) {
+          setError(error.message);
+        }
+      }
+      getMaterials();
+    }, [showModal]);
+    
+
+
+
+
 
   //closes the modal and removes all previous personalizations
   const handleClose = () => {
     setSearchTerm("");
-    setSortOption("name-asc");
     setFilteredProductsList(materialsList);
+    setSortOption("name-asc");
+    setShowModal(false);
+  };
+
+  const handleAddtoPurchaseList = () => {
+    // Filter selected products based on the 'checked' property
+    console.log(materialsList)
+    const selectedMaterials = filteredProductsList.filter((mat) => mat.checked);
+
+    // Call the parent component's function to update selected products
+    props.onAddMaterials(selectedMaterials);
+    // Close the modal or perform any other action
     setShowModal(false);
   };
 
   //Sort and Search Mechanisms
-  const [filteredProductsList, setFilteredProductsList] =
-    useState(materialsList);
+  const [filteredProductsList, setFilteredProductsList] = useState(materialsList);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("name-asc"); // Initialize the default sorting option
 
@@ -38,7 +79,7 @@ const AddMaterialPurchase = () => {
     } else {
       // Filter products based on the search term
       const filteredProducts = materialsList.filter((product) =>
-        product.toLowerCase().includes(searchValue.toLowerCase()),
+        product.name.toLowerCase().includes(searchValue.toLowerCase()),
       );
       setFilteredProductsList(filteredProducts);
     }
@@ -50,8 +91,8 @@ const AddMaterialPurchase = () => {
     if (sortOption === "name-desc") {
       filteredProductsList.sort((a, b) => {
         // Compare two items for sorting in descending order (Z-A)
-        const nameA = a;
-        const nameB = b;
+        const nameA = a.name;
+        const nameB = b.name;
 
         // Use localeCompare to perform a case-insensitive comparison
         return nameA.localeCompare(nameB);
@@ -59,13 +100,27 @@ const AddMaterialPurchase = () => {
     } else if (sortOption === "name-asc") {
       filteredProductsList.sort((a, b) => {
         // Compare two items for sorting in ascending order (A-Z)
-        const nameA = a;
-        const nameB = b;
+        const nameA = a.name;
+        const nameB = b.name;
 
         // Use localeCompare to perform a case-insensitive comparison
         return nameB.localeCompare(nameA);
       });
     }
+  };
+
+  const handleCheckboxChange = (product) => {
+    const updatedProducts = filteredProductsList.map((item) => {
+      if (item === product) {
+        return {
+          ...item,
+          checked: !item.checked, // Toggle the checked status
+        };
+      }
+      return item;
+    });
+    setMaterialsList(updatedProducts);
+    setFilteredProductsList(updatedProducts);
   };
 
   return (
@@ -133,7 +188,7 @@ const AddMaterialPurchase = () => {
                     </select>
                   </div>
                   <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    {filteredProductsList.length !== 0 ? (
+                    {filteredProductsList.length > 0 ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                           <tr>
@@ -144,21 +199,24 @@ const AddMaterialPurchase = () => {
                         </thead>
                         <tbody>
                           {filteredProductsList.map((product, index) => (
-                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={product.id}>
                               <th
                                 scope="row"
                                 className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                               >
                                 <input
-                                  id="vue-checkbox"
+                                  id={`checkbox-${product.id}`} // Use a unique ID for each checkbox
                                   type="checkbox"
                                   value=""
+                                  checked={product.checked} // Bind the checked status to the 'checked' property
+                                  onChange={() => handleCheckboxChange(product)} // Handle checkbox change
                                   className="me-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                 />
-                                {product}
+                                {product.name}
                               </th>
                             </tr>
                           ))}
+
                         </tbody>
                       </table>
                     ) : (
@@ -183,11 +241,13 @@ const AddMaterialPurchase = () => {
                         Close
                       </button>
                       <button
-                        className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        style={{ backgroundColor: "#097969" }}
-                        type="button"
-                        onClick={handleClose}
-                      >
+                          className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                          style={{ backgroundColor: "#097969" }}
+                          type="button"
+                          onClick={() => {
+                            handleAddtoPurchaseList();
+                          }}
+                        >
                         Add Products
                       </button>
                     </div>

@@ -40,7 +40,7 @@ const Navbar = ({ userType }) => {
           ) : userType === "Stock Controller" ? (
             <div className="flex gap-4">
               <Link href="/">Home</Link>
-              <Link href="/recordpurchases">Assign Roles</Link>
+              <Link href="/recordpurchases">Record Purchases</Link>
             </div>
           ) : null}
         </div>
