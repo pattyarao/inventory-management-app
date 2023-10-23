@@ -382,7 +382,7 @@ const handleAddMaterials = (materials) => {
                       <ClearPurchaseList
                         onConfirmClear={() => setPurchaseList([])}
                       />
-                      <RecordPurchase  purchaseList={purchaseList}  />
+                      <RecordPurchase  purchaseList={purchaseList}  onConfirmClear={() => setPurchaseList([])} />
                     </>
                   ) : null}
                 </div>
