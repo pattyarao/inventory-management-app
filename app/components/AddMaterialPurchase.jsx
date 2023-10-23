@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import supabase from "../supabase"
 
-const AddMaterialPurchase = () => {
+const AddMaterialPurchase = ({ handleSubmit }) => {
   //stores all products in the database
   const [materialsList, setMaterialsList] = useState([]);
 
@@ -15,7 +15,11 @@ const AddMaterialPurchase = () => {
     setSearchTerm("");
     setSortOption("name-asc");
     setFilteredProductsList(materialsList);
+    setSelectedIndex([])
     setShowModal(false);
+
+    
+    
   };
 
   //Sort and Search Mechanisms
@@ -38,6 +42,12 @@ const AddMaterialPurchase = () => {
       setFilteredProductsList(filteredProducts);
     }
   };
+
+  // submit handler
+  const handleAdd = () => {
+    handleClose()
+    handleSubmit(materialsList.filter(material => selectedIndex.includes(material.index)))
+  }
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
@@ -79,16 +89,14 @@ const AddMaterialPurchase = () => {
     console.log(materialsList)
   }, [selectedIndex])
 
-  const handleSubmit = () => {
-
-  }
 
  // testing database querying materials: functional
   async function fetchData() {
     const { data, error } = await supabase
       .from('MD_RAW_MATERIALS')
-      .select('name, qty_available')
+      .select('name, qty_available, variants:MD_MATVARIATION!left( amt, name )')
       .eq('status', true)
+      .eq('MD_MATVARIATION.status', true)
 
     // set an object that stores the index of material from data which serves as reference when material list elements is passed to filtered list
     if (!error) {
@@ -231,7 +239,7 @@ const AddMaterialPurchase = () => {
                         className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                         style={{ backgroundColor: "#097969" }}
                         type="button"
-                        onClick={handleClose}
+                        onClick={handleAdd}
                       >
                         Add Products
                       </button>
