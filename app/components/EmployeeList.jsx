@@ -27,23 +27,6 @@ const EmployeeList = () => {
     getEmployees();
   }, []);
 
-  // const [employees, setEmployees] = useState([
-  //   { name: "Patty Arao", role: "Stock Controller", status: "Active" },
-  //   { name: "Carlo Reyes", role: "Manufacturing Head", status: "Active" },
-  //   { name: "Miguel Perez", role: "Sales Person", status: "Not Active" },
-  //   { name: "Jerrick Santos", role: "Stock Controller", status: "Not Active" },
-  // ]);
-
-  // const handleClick = (employee, index) => {
-  //   const temp = [...employees];
-  //   let newStatus;
-  //   employee.status === true
-  //     ? (newStatus = "Not Active")
-  //     : (newStatus = "Active");
-  //   temp[index].status = newStatus;
-  //   setEmployees(temp);
-  // };
-
   const handleClose = () => {
     setShow(false);
   };

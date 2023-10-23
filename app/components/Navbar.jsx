@@ -30,7 +30,7 @@ const Navbar = ({ userType, email }) => {
   return (
     <div className="w-full h-fit flex flex-col">
       <div className="w-full flex justify-between items-center bg-[#D6E0F0] p-4">
-        <h3 className="text-3xl text-[#393B44] font-black text-[#393B44] uppercase">
+        <h3 className="text-3xl font-black text-[#393B44] uppercase">
           Inventory Management.
         </h3>
         <div className="flex items-center gap-2">
