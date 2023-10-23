@@ -1,5 +1,6 @@
 import supabase from "../../supabase";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function POST(req, res) {
   try {
@@ -58,6 +59,7 @@ export async function POST(req, res) {
 
     // Form submitted successfully
     console.log("Form submitted with data:", profileData);
+    // revalidateTag("employees");
     return NextResponse.json("Success");
   } catch (error) {
     console.error("Error during signup:", error.message);
