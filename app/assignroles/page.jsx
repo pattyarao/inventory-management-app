@@ -1,11 +1,21 @@
+"use client";
+
 import AddEmployee from "../components/AddEmployee";
 import EmployeeList from "../components/EmployeeList";
 import Navbar from "../components/Navbar";
+import withAuthentication from "../auth";
 
-const AssignRoles = () => {
+const AssignRoles = ({ userType, userInfo }) => {
+  if (!userType) {
+    return (
+      <div>
+        <p>Loading</p>
+      </div>
+    );
+  }
   return (
     <main className="w-full h-full flex flex-col items-center justify-between gap-8 bg-[#F1F3F8]">
-      <Navbar userType={"Owner"} />
+      <Navbar userType={userType} email={userInfo.email} />
       <EmployeeList />
 
       {/* <AddEmployee /> */}
@@ -13,4 +23,4 @@ const AssignRoles = () => {
   );
 };
 
-export default AssignRoles;
+export default withAuthentication(AssignRoles, ["Owner"]);
