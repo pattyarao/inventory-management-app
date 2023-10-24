@@ -7,8 +7,8 @@ import supabase from "../supabase";
 import withAuthentication from "../auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-// import { FaUserAlt } from "react-icons/fa";
-// import { MdLogout } from "react-icons/md";
+import { FaUserAlt } from "react-icons/fa";
+import { MdLogout } from "react-icons/md";
 
 const Navbar = ({ userType, email }) => {
   const router = useRouter();
@@ -36,7 +36,7 @@ const Navbar = ({ userType, email }) => {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-4 bg-[#8D93AB] rounded-md py-2 px-6">
             <div className="bg-[#D6E0F0] p-2 rounded-full">
-              {/* <FaUserAlt /> */}
+              <FaUserAlt />
             </div>
             <div className="flex flex-col">
               <p className="font-bold text-sm text-[#041C32]">{email}</p>
@@ -49,7 +49,7 @@ const Navbar = ({ userType, email }) => {
             className="flex items-center gap-2 px-4 py-2"
           >
             {" "}
-            {/* <MdLogout /> */}
+            <MdLogout />
             Logout
           </button>
         </div>
@@ -80,7 +80,7 @@ const Navbar = ({ userType, email }) => {
         ) : userType === "Stock Controller" ? (
           <div className="flex gap-4">
             <Link href="/">Home</Link>
-            <Link href="/recordpurchases">Assign Roles</Link>
+            <Link href="/recordpurchases">Record Purchases</Link>
           </div>
         ) : null}
       </div>
