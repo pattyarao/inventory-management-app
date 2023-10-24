@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import AddProductOffer from "./AddProductOffer";
 import ViewProduct from "./ViewProduct";
+import { GET } from "../api/productlist/route";
 //import RecordOrder from "./RecordOrder";
 
 const ProductOfferList = () => {
   //stores all ordered products
-  const [productList, setProductList] = useState([
+  {/*const [productList, setProductList] = useState([
     {
       name: "Product 1",
       status: "Active",
@@ -34,10 +35,39 @@ const ProductOfferList = () => {
       status: "Active",
       materials: [{ name: "Material F", amount: 250, unit: "mg" }],
     },
-]);
+]);*/}
 
+const [productList, setProductList] = useState([]);
 const [selectedProduct, setSelectedProduct] = useState(null);
 const [showProductDetailsModal, setShowProductDetailsModal] = useState(false);
+
+useEffect(() => {
+  // Fetch products from your Supabase API
+  async function fetchProducts() {
+    try {
+      const response = await GET(); // Make an API request to get products
+      const data = await response.json();
+
+      if (response.status === 200) {
+        // If the request is successful, update the productList state
+        const productsWithStatus = data.products.map((product) => ({
+          ...product,
+          status: "Active", // Set the initial status as "Active"
+        }));
+
+        console.log("Products with materials:", productsWithStatus);
+        setProductList(productsWithStatus);
+      } else {
+        // Handle any error here
+        console.error("Error fetching products:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  }
+
+  fetchProducts();
+}, []);
 
 const handleProductClick = (product) => {
   setSelectedProduct(product);
@@ -64,12 +94,12 @@ const toggleProductStatus = (productToToggle) => {
   setProductList(updatedProductList);
 };
 
-const handleToggleStatus = (index) => {
+{/*const handleToggleStatus = (index) => {
     const updatedProductList = [...productList];
     updatedProductList[index].status =
     updatedProductList[index].status === "Active" ? "Inactive" : "Active";
     setProductList(updatedProductList);
-  };
+  };*/}
 
   const addProductToList = (newProduct) => {
     const productWithStatus = { ...newProduct, status: "Active" };
@@ -123,7 +153,7 @@ const handleToggleStatus = (index) => {
                                   ? "bg-green-500"
                                   : "bg-red-500"
                               } text-white text-lg font-bold w-1/2 mx-auto rounded-lg`}
-                              onClick={() => handleToggleStatus(index)}
+                              disabled
                             >
                             {product.status}
                             </button>

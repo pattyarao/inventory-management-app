@@ -47,6 +47,7 @@ const ViewProduct = ({ product, onClose, toggleProductStatus }) => {
                     <h4 className="text-2xl mb-2">Needed Raw Materials</h4>
                 </div>
                 <div className="rounded-lg overflow-hidden">
+                {product.materials ? (                
                   <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                           <tr>
@@ -55,7 +56,7 @@ const ViewProduct = ({ product, onClose, toggleProductStatus }) => {
                                   Material name
                               </th>
                               <th scope="col" className="px-6 py-3">
-                                  Amount
+                                  Quantity
                               </th>
                               <th scope="col" className="px-6 py-3">
                                   Unit
@@ -65,14 +66,17 @@ const ViewProduct = ({ product, onClose, toggleProductStatus }) => {
                       </thead>
                       <tbody>
                           {product.materials.map((material, index) => (
-                          <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={material.id}>
-                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.name}</td>
-                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.amount}</td>
-                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.unit}</td>
+                          <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={index}>
+                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.materialName}</td>
+                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.qty_needed}</td>
+                              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{material.metricUnit}</td>
                           </tr>
                           ))}
                       </tbody>
                   </table>
+                  ) : ( 
+                    <div>No materials available for this product</div>
+                  )}
                 </div>
                 
                 <div className="flex items-center justify-center mt-5">

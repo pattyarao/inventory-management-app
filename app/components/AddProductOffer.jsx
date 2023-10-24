@@ -94,19 +94,6 @@ const AddProductOffer = ({ addProductToList }) => {
     });
   };
 
-  const handleUnitChange = (selectedMaterialId) => {
-    // Find the selected material in the material list
-    const selectedMaterial = materialList.find((material) => material.id === selectedMaterialId);
-  
-    // Extract the unit from the selected material and set it in the state
-    if (selectedMaterial) {
-      setExistingMaterial({
-        ...existingMaterial,
-        unit: selectedMaterial.REF_METRIC.metric_unit,
-      });
-    }
-  };
-
   const handleAddExistingMaterial = () => {
     if (selectedExistingMaterial && existingMaterial.amount) {
       // Use the selected existing material's name to fetch the unit from unitMap
