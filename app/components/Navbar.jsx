@@ -78,9 +78,31 @@ const Navbar = ({ userType, email }) => {
             </Link>
           </div>
         ) : userType === "Stock Controller" ? (
-          <div className="flex gap-4">
-            <Link href="/">Home</Link>
-            <Link href="/recordpurchases">Record Purchases</Link>
+          <div className="w-full flex items-center justify-center gap-4 ">
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/"
+            >
+              Home
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/recordpurchases"
+            >
+              Record Purchases
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/recordexpired"
+            >
+              Record Discarded
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/manualcount"
+            >
+              Perform Manual Count
+            </Link>
           </div>
         ) : null}
       </div>
