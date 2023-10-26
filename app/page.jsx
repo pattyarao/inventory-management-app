@@ -7,7 +7,7 @@ import withAuthentication from "../app/auth";
 import Navbar from "./components/Navbar";
 import Dashboard from "./dashboard/page";
 
-const Home = ({ userType }) => {
+const Home = ({ userType, userInfo }) => {
   if (!userType) {
     return (
       <div>
@@ -17,7 +17,7 @@ const Home = ({ userType }) => {
   }
   return (
     <main className="flex flex-col w-full min-h-screen">
-      <Navbar userType={userType} />
+      <Navbar userType={userType} email={userInfo.email} />
       <Dashboard role={userType} />
     </main>
   );
