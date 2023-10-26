@@ -38,9 +38,11 @@ const Navbar = ({ userType, email }) => {
             <div className="bg-[#D6E0F0] p-2 rounded-full">
               <FaUserAlt />
             </div>
+
             <div className="flex flex-col">
               <p className="font-bold text-sm text-[#041C32]">{email}</p>
               <p className="text-xs">{userType}</p>
+
             </div>
           </div>
 

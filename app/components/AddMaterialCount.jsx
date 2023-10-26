@@ -1,72 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { GET } from "../api/purchase/route";
+import { useState } from "react";
 
-const AddMaterialPurchase = (props) => {
+const AddMaterialCount = () => {
   //stores all products in the database
-  const [materialsList, setMaterialsList] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true); // Add loading state
-    //determines if the modal for adding a product is shown or not
-    const [showModal, setShowModal] = useState(false);
-  
-    useEffect(() => {
-      async function getMaterials() {
-        try {
-          const response = await GET();
-          const { materials, error } = await response.json();
-    
-          if (error) {
-            setError(error);
-            console.log("err0 " + error);
-          } else {
-            
-            // Filter out materials that are already in props.purchaseList
-            const filteredMaterials = materials.filter((material) =>
-              props.purchaseList.every(
-                (purchaseMaterial) => purchaseMaterial.id !== material.id
-              )
-            );
+  const [materialsList, setMaterialsList] = useState([
+    "Material F",
+    "Material G",
+    "Material H",
+    "Material I",
+  ]);
 
-            setMaterialsList(filteredMaterials);
-            setFilteredProductsList(filteredMaterials);
-            setLoading(false); // Data has been loaded
-          }
-        } catch (error) {
-          setError(error.message);
-        }
-      }
-      getMaterials();
-    }, [showModal]);
-    
-
-
-
-
+  //determines if the modal for adding a product is shown or not
+  const [showModal, setShowModal] = useState(false);
 
   //closes the modal and removes all previous personalizations
   const handleClose = () => {
     setSearchTerm("");
-    setFilteredProductsList(materialsList);
     setSortOption("name-asc");
-    setShowModal(false);
-  };
-
-  const handleAddtoPurchaseList = () => {
-    // Filter selected products based on the 'checked' property
-    console.log(materialsList)
-    const selectedMaterials = filteredProductsList.filter((mat) => mat.checked);
-
-    // Call the parent component's function to update selected products
-    props.onAddMaterials(selectedMaterials);
-    // Close the modal or perform any other action
+    setFilteredProductsList(materialsList);
     setShowModal(false);
   };
 
   //Sort and Search Mechanisms
-  const [filteredProductsList, setFilteredProductsList] = useState(materialsList);
-
+  const [filteredProductsList, setFilteredProductsList] =
+    useState(materialsList);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("name-asc"); // Initialize the default sorting option
 
@@ -80,12 +38,11 @@ const AddMaterialPurchase = (props) => {
     } else {
       // Filter products based on the search term
       const filteredProducts = materialsList.filter((product) =>
-        product.name.toLowerCase().includes(searchValue.toLowerCase()),
+        product.toLowerCase().includes(searchValue.toLowerCase()),
       );
       setFilteredProductsList(filteredProducts);
     }
   };
-
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
@@ -93,8 +50,8 @@ const AddMaterialPurchase = (props) => {
     if (sortOption === "name-desc") {
       filteredProductsList.sort((a, b) => {
         // Compare two items for sorting in descending order (Z-A)
-        const nameA = a.name;
-        const nameB = b.name;
+        const nameA = a;
+        const nameB = b;
 
         // Use localeCompare to perform a case-insensitive comparison
         return nameA.localeCompare(nameB);
@@ -102,8 +59,8 @@ const AddMaterialPurchase = (props) => {
     } else if (sortOption === "name-asc") {
       filteredProductsList.sort((a, b) => {
         // Compare two items for sorting in ascending order (A-Z)
-        const nameA = a.name;
-        const nameB = b.name;
+        const nameA = a;
+        const nameB = b;
 
         // Use localeCompare to perform a case-insensitive comparison
         return nameB.localeCompare(nameA);
@@ -111,29 +68,15 @@ const AddMaterialPurchase = (props) => {
     }
   };
 
-  const handleCheckboxChange = (product) => {
-    const updatedProducts = filteredProductsList.map((item) => {
-      if (item === product) {
-        return {
-          ...item,
-          checked: !item.checked, // Toggle the checked status
-        };
-      }
-      return item;
-    });
-    setMaterialsList(updatedProducts);
-    setFilteredProductsList(updatedProducts);
-  };
-
   return (
     <>
       <button
-        className="text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
-        style={{ backgroundColor: "#27374D", color: "white" }}
+        className="text-sm font-semibold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+        style={{ backgroundColor: "#8D93AB", color: "black" }}
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Add Products to Order List
+        Add Materials to the List
       </button>
 
       {showModal ? (
@@ -146,15 +89,15 @@ const AddMaterialPurchase = (props) => {
               {/*content*/}
               <div
                 className="border-0 rounded-lg relative flex flex-col w-full outline-none focus:outline-none"
-                style={{ backgroundColor: "#526D82" }}
+                style={{ backgroundColor: "#D6E0F0" }}
               >
                 {/*header*/}
                 <div
                   className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t"
-                  style={{ backgroundColor: "#27374D" }}
+                  style={{ backgroundColor: "#8D93AB" }}
                 >
                   <h3 className="text-3xl font-semibold">
-                    Select Products to Add
+                    Select Materials to Add
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -168,19 +111,19 @@ const AddMaterialPurchase = (props) => {
                 {/*body*/}
                 <div
                   className="relative p-6 flex-auto rounded-b-lg"
-                  style={{ backgroundColor: "#526D82" }}
+                  style={{ backgroundColor: "#D6E0F0" }}
                 >
                   <div className="flex space-x-4 mb-4">
                     <input
                       type="text"
                       placeholder="Search Products"
                       className="flex-grow p-2 rounded"
-                      style={{ backgroundColor: "#DDE6ED", color: "#27374D" }}
+                      style={{ backgroundColor: "#F1F3F8", color: "#27374D" }}
                       value={searchTerm}
                       onChange={handleSearchChange}
                     />
                     <select
-                      style={{ backgroundColor: "#DDE6ED", color: "#27374D" }}
+                      style={{ backgroundColor: "#F1F3F8", color: "#27374D" }}
                       value={sortOption}
                       onChange={handleSortChange}
                       className="p-2 rounded"
@@ -190,35 +133,32 @@ const AddMaterialPurchase = (props) => {
                     </select>
                   </div>
                   <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    {filteredProductsList.length > 0 ? (
+                    {filteredProductsList.length !== 0 ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                           <tr>
                             <th scope="col" className="px-6 py-3">
-                              Product name
+                              Material Name
                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           {filteredProductsList.map((product, index) => (
-                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={product.id}>
+                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                               <th
                                 scope="row"
                                 className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                               >
                                 <input
-                                  id={`checkbox-${product.id}`} // Use a unique ID for each checkbox
+                                  id="vue-checkbox"
                                   type="checkbox"
                                   value=""
-                                  checked={product.checked} // Bind the checked status to the 'checked' property
-                                  onChange={() => handleCheckboxChange(product)} // Handle checkbox change
                                   className="me-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                 />
-                                {product.name}
+                                {product}
                               </th>
                             </tr>
                           ))}
-
                         </tbody>
                       </table>
                     ) : (
@@ -235,7 +175,7 @@ const AddMaterialPurchase = (props) => {
                   <div className="mt-5">
                     <div className="flex justify-end">
                       <button
-                        className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                        className="text-black font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                         style={{ backgroundColor: "#A12323" }}
                         type="button"
                         onClick={handleClose}
@@ -243,14 +183,12 @@ const AddMaterialPurchase = (props) => {
                         Close
                       </button>
                       <button
-                          className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          style={{ backgroundColor: "#097969" }}
-                          type="button"
-                          onClick={() => {
-                            handleAddtoPurchaseList();
-                          }}
-                        >
-                        Add Products
+                        className="text-black font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                        style={{ backgroundColor: "#097969" }}
+                        type="button"
+                        onClick={handleClose}
+                      >
+                        Add Materials
                       </button>
                     </div>
                   </div>
@@ -265,4 +203,4 @@ const AddMaterialPurchase = (props) => {
   );
 };
 
-export default AddMaterialPurchase;
+export default AddMaterialCount;
