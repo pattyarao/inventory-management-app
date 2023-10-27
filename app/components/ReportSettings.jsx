@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import DetailedTable from "../components/DetailedTable"
+import { GET } from '../api/detailedmaterials/route';
 
 const ReportSettings = (props) => {
   const router = useRouter();
@@ -9,7 +11,15 @@ const ReportSettings = (props) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [reportType, setReportType] = useState("detailed"); // Initialize to "detailed"
+  const [reportData, setReportData] = useState([]); // State variable to store report data
 
+
+  // Function to toggle the selected report type
+  const handleReportTypeChange = (e) => {
+    setReportType(e.target.value);
+  };
+  
   // Function to toggle product selection section
   const toggleProductSelection = () => {
     setProductSelectionOpen(!isProductSelectionOpen);
@@ -38,12 +48,33 @@ const ReportSettings = (props) => {
       };
 
     // Function to generate the report and log selectedProducts
-    const generateReport = () => {
+    const generateReport = async () => {
+      try {
         console.log("Selected Products:", selectedProducts);
         console.log("Start Date:", startDate);
         console.log("End Date:", endDate);
-        // You can add additional logic for report generation here
-      };
+        console.log(reportType)
+
+
+        // Call the GET function with start_date and end_date
+        const response = await GET(startDate, endDate);
+    
+        if (response.status === 200) {
+          // Request was successful, log the data
+          const data = await response.json();
+          setReportData(data); // Store the data in the state variable
+          console.log("API Response:", data);
+        } else {
+          // Request failed, log the error
+          console.error("API Error:", response);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    console.log("wahoo:", reportData);
+    
 
   return (
     <>
@@ -57,13 +88,30 @@ const ReportSettings = (props) => {
           ) : null}
           <label className="text-lg font-semibold">Report Type:</label>
           <div className="flex gap-4">
-            <label className="inline-flex items-center">
-              <input type="radio" className="form-radio" name="reportType" value="summary" /> Summary
-            </label>
-            <label className="inline-flex items-center">
-              <input type="radio" className="form-radio" name="reportType" value="detailed" /> Detailed
-            </label>
-          </div>
+        <label className="text-lg font-semibold">Report Type:</label>
+        <div className="flex gap-4">
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              className="form-radio"
+              name="reportType"
+              value="summary"
+              checked={reportType === "summary"}
+              onChange={handleReportTypeChange}
+            /> Summary
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              className="form-radio"
+              name="reportType"
+              value="detailed"
+              checked={reportType === "detailed"}
+              onChange={handleReportTypeChange}
+            /> Detailed
+          </label>
+        </div>
+      </div>
         </div>
 
         <div>
@@ -134,6 +182,8 @@ const ReportSettings = (props) => {
             Generate Report
           </button>
         </div>
+
+        <DetailedTable reportData={reportData}/>
 
     </>
   );
