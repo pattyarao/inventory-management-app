@@ -7,6 +7,8 @@ const ReportSettings = (props) => {
   // State to control the expand/collapse of product selection
   const [isProductSelectionOpen, setProductSelectionOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Function to toggle product selection section
   const toggleProductSelection = () => {
@@ -25,9 +27,21 @@ const ReportSettings = (props) => {
     });
   };
 
+    // Function to handle start date change
+    const handleStartDateChange = (e) => {
+        setStartDate(e.target.value);
+      };
+    
+      // Function to handle end date change
+      const handleEndDateChange = (e) => {
+        setEndDate(e.target.value);
+      };
+
     // Function to generate the report and log selectedProducts
     const generateReport = () => {
         console.log("Selected Products:", selectedProducts);
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
         // You can add additional logic for report generation here
       };
 
@@ -91,15 +105,25 @@ const ReportSettings = (props) => {
         </div>
 
         <div className="flex gap-4">
-          <div>
-            <label className="text-lg font-semibold">Start Date:</label>
-            <input type="date" className="w-full p-2 bg-white border rounded" />
-          </div>
-          <div>
-            <label className="text-lg font-semibold">End Date:</label>
-            <input type="date" className="w-full p-2 bg-white border rounded" />
-          </div>
+        <div>
+          <label className="text-lg font-semibold">Start Date:</label>
+          <input
+            type="date"
+            className="w-full p-2 bg-white border rounded"
+            value={startDate}
+            onChange={handleStartDateChange}
+          />
         </div>
+        <div>
+          <label className="text-lg font-semibold">End Date:</label>
+          <input
+            type="date"
+            className="w-full p-2 bg-white border rounded"
+            value={endDate}
+            onChange={handleEndDateChange}
+          />
+        </div>
+      </div>
 
 
         <div className="w-full">
