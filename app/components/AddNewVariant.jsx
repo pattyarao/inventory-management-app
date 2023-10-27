@@ -218,6 +218,7 @@ const AddNewVariant = (props) => {
                       type="button"
 
                       onClick={handleSubmit}
+                      >
                       Add Variant
                     </button>
                   </div>
