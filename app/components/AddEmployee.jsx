@@ -11,7 +11,7 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Stock Controller");
+  const [role, setRole] = useState("Owner");
   const router = useRouter();
 
   const handleFirstnameChange = (e) => {
@@ -47,7 +47,9 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
     );
 
     let newRole;
-    if (selectedRole === "Stock Controller") {
+    if (selectedRole === "Owner") {
+      newRole = 1;
+    } else if (selectedRole === "Stock Controller") {
       newRole = 2;
     } else if (selectedRole === "Manufacturing Head") {
       newRole = 3;
@@ -71,7 +73,7 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
   };
 
   return (
-    <div className="absolute min-w-full min-h-screen flex flex-col items-center justify-center bg-black/80">
+    <div className="fixed min-w-full min-h-screen flex flex-col items-center justify-center bg-black/80">
       <div className="w-[50%] p-4 flex justify-between items-center bg-[#393B44] rounded-t-md">
         <p className="text-xl text-white font-bold uppercase">
           Add New Employee
@@ -131,6 +133,7 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
               onChange={handleSelectRole}
               value={role}
             >
+              <option value="Owner">Owner</option>
               <option value="Stock Controller">Stock Controller</option>
               <option value="Manufacturing Head">Manufacturing Head</option>
               <option value="Sales Person">Sales Person</option>

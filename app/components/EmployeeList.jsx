@@ -4,9 +4,12 @@ import { useState, useEffect } from "react";
 import AddEmployee from "./AddEmployee";
 import { GET } from "../api/employees/route";
 import { useRouter } from "next/navigation";
+
+//icons
 import { FaUserAlt } from "react-icons/fa";
 import { BsFillGrid3X2GapFill } from "react-icons/bs";
 import { BsViewList } from "react-icons/bs";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
 
 const EmployeeList = () => {
   const [isShowed, setShow] = useState(false);
