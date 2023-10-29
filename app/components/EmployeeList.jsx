@@ -94,65 +94,56 @@ const EmployeeList = () => {
                 : "flex flex-col gap-4"
             }`}
           >
-            {employees
-              .sort((a, b) => {
-                // Sort by status first (active employees first)
-                if (a.status === b.status) {
-                  // If status is the same, sort by user type
-                  return a.user_type - b.user_type;
-                }
-                return a.status ? -1 : 1; // Active employees first
-              })
-              .map((employee, index) => (
-                <div
-                  key={index}
-                  className={`${
-                    view === "grid"
-                      ? "w-[30%] bg-[#F1F3F8] p-4 rounded-lg flex flex-col gap-2"
-                      : "w-full bg-[#F1F3F8] flex justify-between items-center p-4 rounded-lg"
-                  }`}
-                >
-                  <div className="flex gap-2 items-center">
-                    <div className="bg-slate-400 p-2 rounded-full">
-                      <FaUserAlt />
-                    </div>
-                    <div>
-                      <p className="font-semibold">
-                        {employee.last_name}, {employee.first_name}
-                      </p>
-                      <p className="text-xs">
-                        {employee.user_type === 1
-                          ? "Owner"
-                          : employee.user_type === 2
-                          ? "Stock Controller"
-                          : employee.user_type === 3
-                          ? "Manufacturing Head"
-                          : employee.user_type === 4
-                          ? "Sales Person"
-                          : "Invalid"}
-                      </p>
-                    </div>
+            {employees.map((employee, index) => (
+              <div
+                key={index}
+                className={`${
+                  view === "grid"
+                    ? "w-[30%] bg-[#F1F3F8] p-4 rounded-lg flex flex-col gap-2"
+                    : "w-full bg-[#F1F3F8] flex justify-between items-center p-4 rounded-lg"
+                }`}
+              >
+                <div className="flex gap-2 items-center">
+                  <div className="bg-slate-400 p-2 rounded-full">
+                    <FaUserAlt />
                   </div>
                   <div>
-                    <p
-                      className={`w-fit rounded-md px-2 py-0.5 text-xs ${
-                        employee.status === true
-                          ? "bg-green-300"
-                          : employee.status === false
-                          ? "bg-neutral-400"
-                          : "bg-red-200"
-                      }`}
-                    >
-                      Status:{" "}
-                      {employee.status === true
-                        ? "Active"
-                        : employee.status === false
-                        ? "Not Active"
-                        : "No Status"}
+                    <p className="font-semibold">
+                      {employee.last_name}, {employee.first_name}
+                    </p>
+                    <p className="text-xs">
+                      {employee.user_type === 1
+                        ? "Owner"
+                        : employee.user_type === 2
+                        ? "Stock Controller"
+                        : employee.user_type === 3
+                        ? "Manufacturing Head"
+                        : employee.user_type === 4
+                        ? "Sales Person"
+                        : "Invalid"}
                     </p>
                   </div>
                 </div>
-              ))}
+                <div>
+                  <p
+                    className={`w-fit rounded-md px-2 py-0.5 text-xs ${
+                      employee.status === true
+                        ? "bg-green-300"
+                        : employee.status === false
+                        ? "bg-neutral-400"
+                        : "bg-red-200"
+                    }`}
+                  >
+                    Status:{" "}
+                    {employee.status === true
+                      ? "Active"
+                      : employee.status === false
+                      ? "Not Active"
+                      : "No Status"}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
