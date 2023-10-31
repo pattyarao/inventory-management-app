@@ -1,6 +1,6 @@
 import supabase from "../../supabase";
 
-export async function GET(role) {
+export async function GET() {
   const { data: employees, error } = await supabase
     .from("MD_PROFILES")
     .select("*")

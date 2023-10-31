@@ -95,52 +95,61 @@ const EmployeeList = () => {
             }`}
           >
             {employees.map((employee, index) => (
+              // parent div
               <div
-                key={index}
+                key={employee}
                 className={`${
                   view === "grid"
                     ? "w-[30%] bg-[#F1F3F8] p-4 rounded-lg flex flex-col gap-2"
-                    : "w-full bg-[#F1F3F8] flex justify-between items-center p-4 rounded-lg"
+                    : "w-full bg-[#F1F3F8] flex justify-between items-baseline p-4 rounded-lg"
                 }`}
               >
-                <div className="flex gap-2 items-center">
-                  <div className="bg-slate-400 p-2 rounded-full">
-                    <FaUserAlt />
+                <div className="flex w-full justify-between">
+                  <div className="w-full flex flex-col gap-2">
+                    <div className="flex gap-2 items-center">
+                      <div className="bg-slate-400 p-2 rounded-full">
+                        <FaUserAlt />
+                      </div>
+                      <div>
+                        <p className="font-semibold">
+                          {employee.last_name}, {employee.first_name}
+                        </p>
+
+                        <p className="text-xs">
+                          {employee.user_type === 1
+                            ? "Owner"
+                            : employee.user_type === 2
+                            ? "Stock Controller"
+                            : employee.user_type === 3
+                            ? "Manufacturing Head"
+                            : employee.user_type === 4
+                            ? "Sales Person"
+                            : "Invalid"}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <p
+                        className={`w-fit rounded-md px-2 py-0.5 text-xs ${
+                          employee.status === true
+                            ? "bg-green-300"
+                            : employee.status === false
+                            ? "bg-neutral-400"
+                            : "bg-red-200"
+                        }`}
+                      >
+                        Status:{" "}
+                        {employee.status === true
+                          ? "Active"
+                          : employee.status === false
+                          ? "Not Active"
+                          : "No Status"}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold">
-                      {employee.last_name}, {employee.first_name}
-                    </p>
-                    <p className="text-xs">
-                      {employee.user_type === 1
-                        ? "Owner"
-                        : employee.user_type === 2
-                        ? "Stock Controller"
-                        : employee.user_type === 3
-                        ? "Manufacturing Head"
-                        : employee.user_type === 4
-                        ? "Sales Person"
-                        : "Invalid"}
-                    </p>
+                  <div className="h-fit rounded-full p-1.5 transition ease-in duration-70 hover:bg-slate-300">
+                    <BiDotsHorizontalRounded className="text-lg text-neutral-600" />
                   </div>
-                </div>
-                <div>
-                  <p
-                    className={`w-fit rounded-md px-2 py-0.5 text-xs ${
-                      employee.status === true
-                        ? "bg-green-300"
-                        : employee.status === false
-                        ? "bg-neutral-400"
-                        : "bg-red-200"
-                    }`}
-                  >
-                    Status:{" "}
-                    {employee.status === true
-                      ? "Active"
-                      : employee.status === false
-                      ? "Not Active"
-                      : "No Status"}
-                  </p>
                 </div>
               </div>
             ))}
