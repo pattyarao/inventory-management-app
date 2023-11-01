@@ -8,34 +8,6 @@ import { GET } from "../api/productlist/route";
 
 const ProductOfferList = () => {
   //stores all ordered products
-  {/*const [productList, setProductList] = useState([
-    {
-      name: "Product 1",
-      status: "Active",
-      materials: [
-        { name: "Material A", amount: 100, unit: "g" },
-        { name: "Material B", amount: 200, unit: "g" },
-      ],
-    },
-    {
-      name: "Product 2",
-      status: "Active",
-      materials: [{ name: "Material C", amount: 500, unit: "mL" }],
-    },
-    {
-      name: "Product 3",
-      status: "Active",
-      materials: [
-        { name: "Material D", amount: 50, unit: "g" },
-        { name: "Material E", amount: 1, unit: "L" },
-      ],
-    },
-    {
-      name: "Product 4",
-      status: "Active",
-      materials: [{ name: "Material F", amount: 250, unit: "mg" }],
-    },
-]);*/}
 
 const [productList, setProductList] = useState([]);
 const [selectedProduct, setSelectedProduct] = useState(null);

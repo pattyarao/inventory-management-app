@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { GET } from "../api/rawmaterials/route";
+import { POST } from "../api/productlist/route";
 
 const AddProductOffer = ({ addProductToList }) => {
   const [productName, setProductName] = useState("");
@@ -111,7 +112,47 @@ const AddProductOffer = ({ addProductToList }) => {
     }
   };
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
+    try {
+      // Create an array of objects for materials with name, amount, and unit properties
+      const materials = materialList.map((material) => ({
+        name: material.name,
+        amount: material.amount,
+        unit: material.unit,
+        material_id: material.material_id, // Include material_id in the object
+      }));
+  
+      // Create the newProduct object with the product name, status, and materials
+      const newProduct = {
+        name: productName,
+        status: "Active",
+        materials: materials,
+      };
+  
+      const response = await POST(newProduct);
+  
+      if (response.status === 200) {
+        // If the request is successful, add the new product to the list
+        addProductToList(newProduct);
+  
+        // Reset the input fields and close the modal
+        setProductName("");
+        setMaterialList([]);
+        setShowModal(false);
+      } else {
+        console.error("Error adding product. Server response:", response.status, response.statusText);
+        // You can also log the response body for more detailed error information.
+        const errorBody = await response.json();
+        console.error("Server error response body:", errorBody);
+        // Handle the error gracefully in your UI, e.g., show an error message.
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
+      // Handle unexpected errors here, e.g., network issues.
+    }
+  };
+
+  {/*const handleAddProduct = () => {
     // Create an array of objects for materials with name, amount, and unit properties
     const materials = materialList.map((material) => ({
       name: material.name,
@@ -133,7 +174,7 @@ const AddProductOffer = ({ addProductToList }) => {
     setProductName("");
     setMaterialList([]);
     setShowModal(false);
-  };
+  };*/}
 
   const [selectedOption, setSelectedOption] = useState("new");
   const handleOptionChange = (e) => {
@@ -227,7 +268,7 @@ const AddProductOffer = ({ addProductToList }) => {
                           {materialList.map((material, index) => (
                             <tr
                               className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
-                              key={material.id}
+                              key={index}
                             >
                               <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                                 {material.name}
@@ -266,7 +307,7 @@ const AddProductOffer = ({ addProductToList }) => {
                         className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                       />
                       <label
-                        for="new-material-radio"
+                        htmlFor="new-material-radio"
                         className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                       >
                         Add New Material
@@ -283,7 +324,7 @@ const AddProductOffer = ({ addProductToList }) => {
                         className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                       />
                       <label
-                        for="existing-material-radio"
+                        htmlFor="existing-material-radio"
                         className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                       >
                         Add Existing Material
