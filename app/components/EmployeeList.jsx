@@ -12,11 +12,11 @@ import { BsViewList } from "react-icons/bs";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 
 const EmployeeList = () => {
-  const [isShowed, setShow] = useState(false);
+  const [isAddModalShowed, setShowAddModal] = useState(false);
+  const [selectedEmpIndex, setIndex] = useState(null);
   const [view, setView] = useState("");
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
-  // const router = useRouter();
 
   useEffect(() => {
     async function getEmployees() {
@@ -39,12 +39,41 @@ const EmployeeList = () => {
   }, []);
 
   const handleClose = () => {
-    setShow(false);
+    setShowAddModal(false);
+  };
+
+  const handleShowEmployeeOptions = (index) => {
+    setIndex(index);
+  };
+
+  const handleDeactivateUser = async (id) => {
+    try {
+      const response = await fetch(`/api/changestatus/${id}`, {
+        method: "PATCH",
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      //
+
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((employee) =>
+          employee.id === id ? updatedEmployee : employee
+        )
+      );
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
     <>
-      {isShowed && (
+      {isAddModalShowed && (
         <AddEmployee
           handleClose={handleClose}
           employees={employees}
@@ -55,7 +84,7 @@ const EmployeeList = () => {
         <div className="py-4 flex justify-between items-center border-b-2 border-black">
           <h3 className="font-bold text-4xl">Employee Masterlist</h3>
           <button
-            onClick={() => setShow(true)}
+            onClick={() => setShowAddModal(true)}
             className="bg-[#8D93AB] py-2 px-6 rounded-md text-[#F1F3F8] font-bold"
           >
             Add Employee
@@ -147,8 +176,29 @@ const EmployeeList = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="h-fit rounded-full p-1.5 transition ease-in duration-70 hover:bg-slate-300">
-                    <BiDotsHorizontalRounded className="text-lg text-neutral-600" />
+                  <div className="h-fit  p-1.5 flex flex-col items-end">
+                    <BiDotsHorizontalRounded
+                      className="text-lg text-neutral-600 rounded-full transition ease-in duration-70 hover:bg-slate-300"
+                      onClick={() => handleShowEmployeeOptions(index)}
+                    />
+                    {selectedEmpIndex === index && (
+                      <div className="absolute mt-6 py-2 rounded-md bg-white text-sm drop-shadow">
+                        <ul className="flex flex-col gap-2">
+                          <li
+                            className="transition ease-in duration-50 hover:bg-slate-300 cursor-pointer px-6 py-2"
+                            onClick={() => handleDeactivateUser(employee.id)}
+                          >
+                            Deactivate User
+                          </li>
+                          <li
+                            className="transition ease-in duration-50 hover:bg-slate-300 cursor-pointer px-6 py-2"
+                            onClick={() => setIndex(null)}
+                          >
+                            Close
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
