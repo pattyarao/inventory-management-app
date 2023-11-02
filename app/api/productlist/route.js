@@ -78,102 +78,6 @@ import supabase from "../../supabase";
     });
   }
 
-  {/*export async function POST(newProduct) {
-      try {
-        const productResponse = await supabase
-          .from('MD_PRODUCTS')
-          .upsert([
-            {
-              name: newProduct.name,
-              status: true,
-            },
-          ])
-          .select();
-        if (productResponse.error) {
-          return new Response(JSON.stringify({ error: productResponse.error }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
-        }
-        if (productResponse.data && productResponse.data.length > 0) {
-        const product_id = productResponse.data[0].id;
-        const existingMaterials = [];
-        const newMaterials = [];
-        for (const material of newProduct.materials) {
-          const {name, amount, unit} = material;
-          const {data : existingMaterialData} = await supabase
-            .from('MD_RAW_MATERIALS')
-            .select('id')
-            .eq('name', name);
-
-          if (existingMaterialData.length > 0) {
-            const material_id = existingMaterialData[0].id;
-            existingMaterials.push(material_id);
-          } else {
-            const {data: newMaterialData, error: newMaterialError} = await supabase
-              .from('MD_RAW_MATERIALS')
-              .upsert([
-                {
-                  name: name,
-                  qty_available: 0,
-                  status: true,
-                  metric_id: '0df0ab18-3bac-43ff-b556-a723ebdbcdb9',
-                },
-              ]);
-
-            if (newMaterialError) {
-              return {error: 'Error adding new material'};
-            }
-
-            if (newMaterialData && newMaterialData.length > 0) {
-              const material_id = newMaterialData[0].id;
-              newMaterials.push(material_id);
-            } else {
-              console.error("Error: No material data found for", name);
-            }
-          }
-        }
-
-        const materialList = [...existingMaterials, ...newMaterials];
-        const materialData = materialList.map((material_id) => ({
-          product_id,
-          material_id,
-          qty_needed: newProduct.materials[index].amount,
-          status:true,
-        }));
-
-        const formulaResponse = await supabase
-          .from('ML_PRODUCT_FORMULA')
-          .upsert(materialData);
-
-        if (formulaResponse.error) {
-          return new Response(JSON.stringify({ error: formulaResponse.error }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
-        }
-
-        return new Response(
-          JSON.stringify({ success: "Product and materials added successfully" }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      } else {
-        return new Response(JSON.stringify({ error: "No product data found" }), {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-      } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-  }*/}
-
   export async function POST(newProduct) {
     try {
       const productResponse = await supabase
@@ -207,6 +111,11 @@ import supabase from "../../supabase";
           if (existingMaterialData.length > 0) {
             material_id = existingMaterialData[0].id; 
           } else {
+            const { data: newMaterialMetricID } = await supabase
+              .from('REF_METRIC')
+              .select('id')
+              .eq('metric_unit', unit);
+
             const { data: newMaterialData, error: newMaterialError } = await supabase
               .from('MD_RAW_MATERIALS')
               .upsert([
@@ -214,7 +123,7 @@ import supabase from "../../supabase";
                   name: name,
                   qty_available: 0,
                   status: true,
-                  metric_id: '0df0ab18-3bac-43ff-b556-a723ebdbcdb9',
+                  metric_id: newMaterialMetricID[0].id,
                 },
               ])
               .select();

@@ -139,6 +139,7 @@ const AddProductOffer = ({ addProductToList }) => {
         setProductName("");
         setMaterialList([]);
         setShowModal(false);
+        window.location.reload();
       } else {
         console.error("Error adding product. Server response:", response.status, response.statusText);
         // You can also log the response body for more detailed error information.
@@ -151,30 +152,6 @@ const AddProductOffer = ({ addProductToList }) => {
       // Handle unexpected errors here, e.g., network issues.
     }
   };
-
-  {/*const handleAddProduct = () => {
-    // Create an array of objects for materials with name, amount, and unit properties
-    const materials = materialList.map((material) => ({
-      name: material.name,
-      amount: material.amount,
-      unit: material.unit,
-    }));
-
-    // Create the newProduct object with the product name, status, and materials
-    const newProduct = {
-      name: productName,
-      status: "active",
-      materials: materials,
-    };
-
-    // Add the product to the list
-    addProductToList(newProduct);
-
-    // Reset the input fields and close the modal
-    setProductName("");
-    setMaterialList([]);
-    setShowModal(false);
-  };*/}
 
   const [selectedOption, setSelectedOption] = useState("new");
   const handleOptionChange = (e) => {
