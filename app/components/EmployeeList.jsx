@@ -17,6 +17,7 @@ const EmployeeList = () => {
   const [view, setView] = useState("");
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function getEmployees() {
@@ -59,16 +60,17 @@ const EmployeeList = () => {
       const data = await response.json();
       console.log(data);
 
-      //
-
-      setEmployees((prevEmployees) =>
-        prevEmployees.map((employee) =>
-          employee.id === id ? updatedEmployee : employee
-        )
+      const updatedEmployees = employees.map((employee) =>
+        employee.id === id
+          ? { ...employee, status: !employee.status }
+          : employee
       );
+      setEmployees(updatedEmployees);
     } catch (error) {
       console.error("Error:", error);
     }
+
+    router.refresh();
   };
 
   return (
