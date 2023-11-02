@@ -1,10 +1,9 @@
 import supabase from "../../supabase";
 
-export async function GET(start_date, end_date, selectedOptions) {
-
-    const { data, error } = await supabase
-    .rpc('summary_product', {start_date, end_date})
-    .in('product_name', selectedOptions)
+export async function GET() {
+  const { data: materials, error } = await supabase
+    .from("MD_RAW_MATERIALS")
+    .select("*");
 
   if (error) {
     return new Response(JSON.stringify({ error }), {
@@ -14,7 +13,7 @@ export async function GET(start_date, end_date, selectedOptions) {
   }
 
   const json = {
-    data: data,
+    materials: materials,
   };
 
   return new Response(JSON.stringify(json), {

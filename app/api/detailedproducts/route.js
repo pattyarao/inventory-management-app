@@ -1,12 +1,13 @@
 import supabase from "../../supabase";
 
-export async function GET(start_date, end_date) {
+export async function GET(start_date, end_date, selectedOptions) {
 
     const { data: detailedReport, error } = await supabase
     .from("PRODUCT_DETAILED")
     .select()
     .gte('date', start_date) 
     .lt('date', end_date)
+    .in('product_name', selectedOptions)
 
   if (error) {
     return new Response(JSON.stringify({ error }), {

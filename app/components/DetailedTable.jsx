@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const DetailedTable = ({ reportData }) => {
-    console.log("SHEEEEEEEEEESH")
-    console.log(reportData)
     return(
         <>
         {reportData.detailedReport != null && (

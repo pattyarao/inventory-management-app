@@ -1,19 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DetailedTable from "../components/DetailedTable"
-import { GET } from '../api/detailedmaterials/route';
+import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
+import { GET as getDetailedProducts} from '../api/detailedproducts/route';
+import { GET as getSummaryMaterials} from '../api/summarymaterials/route';
+import { GET as getSummaryProducts} from '../api/summaryproducts/route';
 
 const ReportSettings = (props) => {
   const router = useRouter();
 
   // State to control the expand/collapse of product selection
   const [isProductSelectionOpen, setProductSelectionOpen] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reportType, setReportType] = useState("detailed"); // Initialize to "detailed"
   const [reportData, setReportData] = useState([]); // State variable to store report data
+  const [options, setOptions]= useState([])
 
+
+  useEffect(() => {
+    async function getOptions() {
+      try {
+        let endpoint = "";
+        if (props.choice === 1) {
+          endpoint = "/api/allproducts";
+        } else if (props.choice === 2) { // Change this to 2 if it's a different choice
+          endpoint = "/api/allmaterials";
+        }
+  
+        if (endpoint) {
+          const response = await fetch(endpoint, {
+            cache: "no-store",
+          });
+          const data = await response.json();
+          
+          if (data.error) {
+            console.error(data.error);
+          } else {
+            // Extract the 'name' property from the response data
+
+            if (props.choice === 1) {
+              const names = data.products.map(item => item.name);
+              console.log("names: ", names)
+              setOptions(names);
+            } else if (props.choice === 2) { 
+              const names = data.materials.map(item => item.name);
+              console.log("names: ", names)
+              setOptions(names);
+            }
+            
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  
+    getOptions();
+  }, [props.choice]); // Add props.choice as a dependency
+  
 
   // Function to toggle the selected report type
   const handleReportTypeChange = (e) => {
@@ -28,7 +74,7 @@ const ReportSettings = (props) => {
   // Function to handle checkbox changes
   const handleProductChange = (e) => {
     const value = e.target.value;
-    setSelectedProducts((prevSelected) => {
+    setSelectedOptions((prevSelected) => {
       if (prevSelected.includes(value)) {
         return prevSelected.filter((product) => product !== value);
       } else {
@@ -50,30 +96,79 @@ const ReportSettings = (props) => {
     // Function to generate the report and log selectedProducts
     const generateReport = async () => {
       try {
-        console.log("Selected Products:", selectedProducts);
+        console.log("Selected Products:", selectedOptions);
         console.log("Start Date:", startDate);
         console.log("End Date:", endDate);
         console.log(reportType)
 
 
-        // Call the GET function with start_date and end_date
-        const response = await GET(startDate, endDate);
-    
-        if (response.status === 200) {
-          // Request was successful, log the data
-          const data = await response.json();
-          setReportData(data); // Store the data in the state variable
-          console.log("API Response:", data);
-        } else {
-          // Request failed, log the error
-          console.error("API Error:", response);
+        if (props.choice === 1) {
+          
+
+          if(reportType === "detailed"){
+            const response = await getDetailedProducts(startDate, endDate, selectedOptions);
+          
+            if (response.status === 200) {
+              // Request was successful, log the data
+              const data = await response.json();
+              setReportData(data); // Store the data in the state variable
+              console.log("API Response:", data);
+            } else {
+              // Request failed, log the error
+              console.error("API Error:", response);
+            }
+            
+          }
+          else if (reportType === "summary"){
+            const response = await getSummaryProducts(startDate, endDate, selectedOptions);
+          
+            if (response.status === 200) {
+              // Request was successful, log the data
+              const data = await response.json();
+              setReportData(data); // Store the data in the state variable
+              console.log("API Response:", data);
+            } else {
+              // Request failed, log the error
+              console.error("API Error:", response);
+            }
+
+          }
+        } else if (props.choice === 2) { 
+          
+          if(reportType === "detailed"){
+              const response = await getDetailedMaterials(startDate, endDate, selectedOptions);
+          
+              if (response.status === 200) {
+                // Request was successful, log the data
+                const data = await response.json();
+                setReportData(data); // Store the data in the state variable
+                console.log("API Response:", data);
+              } else {
+                // Request failed, log the error
+                console.error("API Error:", response);
+              }
+          }
+          else if (reportType === "summary"){
+              const response = await getSummaryMaterials(startDate, endDate, selectedOptions);
+            
+              if (response.status === 200) {
+                // Request was successful, log the data
+                const data = await response.json();
+                setReportData(data); // Store the data in the state variable
+                console.log("API Response:", data);
+              } else {
+                // Request failed, log the error
+                console.error("API Error:", response);
+              }
+          }
         }
+
+
+
       } catch (error) {
         console.error("Error:", error);
       }
     };
-
-    console.log("wahoo:", reportData);
     
 
   return (
@@ -131,7 +226,7 @@ const ReportSettings = (props) => {
               <label className="text-sm font-semibold">Select Products:</label>
               <div>
                 {/* Replace ["product1", "product2", "product3"] with GET from all product in master data */}
-                {["product1", "product2", "product3"].map((product) => (
+                {options.map((product) => (
                   <label
                     key={product}
                     className="inline-flex items-center mb-2"
@@ -140,7 +235,7 @@ const ReportSettings = (props) => {
                       type="checkbox"
                       className="form-checkbox mr-2"
                       value={product}
-                      checked={selectedProducts.includes(product)}
+                      checked={selectedOptions.includes(product)}
                       onChange={handleProductChange}
                     />
                     {product}
@@ -183,7 +278,7 @@ const ReportSettings = (props) => {
           </button>
         </div>
 
-        <DetailedTable reportData={reportData}/>
+        <DetailedTable reportData={reportData} reportType={reportType} choice={props.choice}/>
 
     </>
   );
