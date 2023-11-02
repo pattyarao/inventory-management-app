@@ -42,11 +42,9 @@ const ReportSettings = (props) => {
 
             if (props.choice === 1) {
               const names = data.products.map(item => item.name);
-              console.log("names: ", names)
               setOptions(names);
             } else if (props.choice === 2) { 
               const names = data.materials.map(item => item.name);
-              console.log("names: ", names)
               setOptions(names);
             }
             
@@ -96,10 +94,10 @@ const ReportSettings = (props) => {
     // Function to generate the report and log selectedProducts
     const generateReport = async () => {
       try {
-        console.log("Selected Products:", selectedOptions);
-        console.log("Start Date:", startDate);
-        console.log("End Date:", endDate);
-        console.log(reportType)
+        // console.log("Selected Products:", selectedOptions);
+        // console.log("Start Date:", startDate);
+        // console.log("End Date:", endDate);
+        // console.log(reportType)
 
 
         if (props.choice === 1) {
@@ -111,8 +109,8 @@ const ReportSettings = (props) => {
             if (response.status === 200) {
               // Request was successful, log the data
               const data = await response.json();
-              setReportData(data); // Store the data in the state variable
-              console.log("API Response:", data);
+              setReportData(data.detailedReport); // Store the data in the state variable
+              console.log("API Response:", data.detailedReport);
             } else {
               // Request failed, log the error
               console.error("API Error:", response);
@@ -125,8 +123,8 @@ const ReportSettings = (props) => {
             if (response.status === 200) {
               // Request was successful, log the data
               const data = await response.json();
-              setReportData(data); // Store the data in the state variable
-              console.log("API Response:", data);
+              setReportData(data.data); // Store the data in the state variable
+              console.log("API Response:", data.data);
             } else {
               // Request failed, log the error
               console.error("API Error:", response);
@@ -141,8 +139,8 @@ const ReportSettings = (props) => {
               if (response.status === 200) {
                 // Request was successful, log the data
                 const data = await response.json();
-                setReportData(data); // Store the data in the state variable
-                console.log("API Response:", data);
+                setReportData(data.detailedReport); // Store the data in the state variable
+                console.log("API Response:", data.detailedReport);
               } else {
                 // Request failed, log the error
                 console.error("API Error:", response);
@@ -154,8 +152,8 @@ const ReportSettings = (props) => {
               if (response.status === 200) {
                 // Request was successful, log the data
                 const data = await response.json();
-                setReportData(data); // Store the data in the state variable
-                console.log("API Response:", data);
+                setReportData(data.data); // Store the data in the state variable
+                console.log("API Response:", data.data);
               } else {
                 // Request failed, log the error
                 console.error("API Error:", response);
