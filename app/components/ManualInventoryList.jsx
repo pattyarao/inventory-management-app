@@ -14,12 +14,12 @@ const ManualCount
     {
       name: "Material A",
       metric: "0",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
+      variants: [{ variantName: "MA-V1", amount: 0, unit: "0", quantity: 1 }, { variantName: "MA-V2", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material B",
       metric: "1",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
+      variants: [{ variantName: "MB-V2", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material C",
@@ -158,14 +158,17 @@ const ManualCount
                                 {product.name}
                               </div>
                             </div>
+
+
                             {product.variants.map((variant, variantIndex) => (
                               <>
                                 {variantIndex !== 0 ? (
                                   <div className="col-span-1 me-5 mt-3 " />
                                 ) : null}
+
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
-                                    <ul
+                                    <li
                                       value={variant.variantName}
                                       onChange={(event) =>
                                         handleVariantNameChange(
@@ -177,11 +180,9 @@ const ManualCount
                                       id="large"
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-                                      <li value="0">Variant A</li>
-                                      <li value="1">Variant B</li>
-                                      <li value="2">Variant C</li>
-                                      <li value="3">Variant D</li>
-                                    </ul>
+                                      {variant.variantName}
+                                    </li>
+                                    
                                   </div>
                                 </div>
 
