@@ -1,14 +1,20 @@
 "use client";
 
+
 import { useState } from "react";
+
 
 const RecordManualCount = (props) => {
 
 
 
+
+
+
   const [showModal, setShowModal] = useState(false);
   const [success, setSuccess] = useState(false);
-  
+ 
+
 
   return (
     <>
@@ -19,8 +25,9 @@ const RecordManualCount = (props) => {
         onClick={() => setShowModal(true)}
       >
         Record Manual Count
-      
+     
       </button>
+
 
       {showModal ? (
         <>
@@ -55,13 +62,15 @@ const RecordManualCount = (props) => {
                     />
                   </svg>
 
+
                   <div
                     className="flex justify-center text-white font-bold uppercase text-sm px-6 py-3 mb-5"
                     style={{ fontSize: "30px", color: "black" }}
                   >
-                    ManualCount
+                    Manual Count
                    Recorded Successfully
                   </div>
+
 
                   <div className="flex justify-center">
                     <button
@@ -78,11 +87,13 @@ const RecordManualCount = (props) => {
             </div>
           </div>
 
+
           <div className="opacity-75 fixed inset-0 z-40 bg-black"></div>
         </>
       )  : null}
     </>
   );
 };
+
 
 export default RecordManualCount;

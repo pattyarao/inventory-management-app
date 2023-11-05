@@ -1,11 +1,9 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import AddNewMaterialVariant from "./AddNewMaterialVariant";
-import AddMaterialCount from "./AddMaterialCount";
 import RecordManualCount from "./RecordManualCount";
 import ClearManualCount
  from "./ClearManualCount";
+
 
 const ManualCount
  = () => {
@@ -40,53 +38,12 @@ const ManualCount
     },
   ]);
 
+
   console.log(ManualCount
     );
 
-  const [edit, setEdit] = useState(false);
-  const [addVariantCondition, setAddVariantCondition] = useState(false);
 
-  const addVariant = (productIndex) => {
-    const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants.push(newVariant);
-    setManualCount
-    (newManualCount
-      );
-  };
 
-  //handles changes with the input if number is manually typed in
-  const handleVariantNameChange = (productIndex, variantIndex, event) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    if (event.target.value === "Add New Variant") {
-      console.log("OPEN");
-      setAddVariantCondition(true);
-      return;
-    }
-    newManualCount
-    [productIndex].variants[variantIndex].variantName =
-      event.target.value;
-    setManualCount
-    (newManualCount
-      );
-  };
-
-  const handleUnitChange = (productIndex, variantIndex, event) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants[variantIndex].unit =
-      event.target.value;
-    setManualCount
-    (newManualCount
-      );
-  };
 
   const handleQtyChange = (productIndex, variantIndex, event) => {
     const newManualCount
@@ -100,6 +57,7 @@ const ManualCount
       );
   };
 
+
   const handleAmtChange = (productIndex, variantIndex, event) => {
     const newManualCount
      = [...ManualCount
@@ -112,6 +70,7 @@ const ManualCount
       );
   };
 
+
   const handleIncrement = (productIndex, variantIndex) => {
     const newManualCount
      = [...ManualCount
@@ -122,6 +81,7 @@ const ManualCount
     (newManualCount
       );
   };
+
 
   const handleDecrement = (productIndex, variantIndex) => {
     const newManualCount
@@ -137,23 +97,6 @@ const ManualCount
     }
   };
 
-  const handleRemove = (productIndex, variantIndex) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants.splice(variantIndex, 1);
-
-    // Check if there are no more variants in the product
-    if (newManualCount
-      [productIndex].variants.length === 0) {
-      newManualCount
-      .splice(productIndex, 1);
-    }
-    setManualCount
-    (newManualCount
-      );
-  };
 
   return (
     <div
@@ -163,21 +106,6 @@ const ManualCount
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
         <div className="col-span-3 md:col-span-4 text-xl font-bold">
           Materials List
-        </div>
-        <div className="col-span-2 md:col-span-1 text-md flex items-center justify-center">
-          {edit && ManualCount
-          .length !== 0 ? (
-            <button onClick={() => setEdit(false)}>
-              {" "}
-              <u> Done </u>{" "}
-            </button>
-          ) : !edit && ManualCount
-          .length !== 0 ? (
-            <button onClick={() => setEdit(true)}>
-              {" "}
-             Remove Items {" "}
-            </button>
-          ) : null}
         </div>
       </div>
       <hr
@@ -203,14 +131,14 @@ const ManualCount
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Variant
                         </div>
-                        <div className="col-span-1 me-5 text-sm flex items-center justify-center">
-                          Amount
-                        </div>
-                        <div className="col-span-1 text-sm ms-5">Unit</div>
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Qty. Count
                         </div>
+                        <div className="col-span-1 me-5 text-sm flex items-center justify-center">
+                          Partial Amount
+                        </div>
                       </div>
+
 
                       {ManualCount
                       .map((product, index) => (
@@ -223,15 +151,8 @@ const ManualCount
                             }}
                           >
                             <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
-                              <button
-                                onClick={() => addVariant(index)}
-                                className="h-7 w-6 rounded-lg cursor-pointer flex items-center justify-center mt-2"
-                                style={{ backgroundColor: "#097969" }} //to be edited upon realignment
-                              >
-                                <span className="text-xl font-bold text-black">
-                                  +
-                                </span>
-                              </button>
+       
+
 
                               <div className="font-black text-xl ms-3 mt-2">
                                 {product.name}
@@ -244,7 +165,7 @@ const ManualCount
                                 ) : null}
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
-                                    <select
+                                    <ul
                                       value={variant.variantName}
                                       onChange={(event) =>
                                         handleVariantNameChange(
@@ -256,54 +177,16 @@ const ManualCount
                                       id="large"
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-                                      <option value="0">None</option>
-                                      <option value="1">Variant A</option>
-                                      <option value="2">Variant B</option>
-                                      <option value="3">Variant C</option>
-                                      <option value="4">Variant D</option>
-                                      <option disabled>─────────────</option>
-                                      <option>Add New Variant</option>
-                                    </select>
+                                      <li value="0">Variant A</li>
+                                      <li value="1">Variant B</li>
+                                      <li value="2">Variant C</li>
+                                      <li value="3">Variant D</li>
+                                    </ul>
                                   </div>
                                 </div>
 
-                                <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent ">
-                                  <input
-                                    type="number"
-                                    className="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-white-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
-                                    value={variant.amount}
-                                    onChange={(event) =>
-                                      handleAmtChange(
-                                        index,
-                                        variantIndex,
-                                        event,
-                                      )
-                                    }
-                                  />
-                                </div>
 
-                                <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
-                                  <div className="relative">
-                                    <select
-                                      id="large"
-                                      value={variant.unit}
-                                      onChange={(event) =>
-                                        handleUnitChange(
-                                          index,
-                                          variantIndex,
-                                          event,
-                                        )
-                                      }
-                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                    >
-                                      <option value="0">g</option>
-                                      <option value="1">mg</option>
-                                      <option value="2">kg</option>
-                                    </select>
-                                  </div>
-                                </div>
-
-                                <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
+                                <div className="mt-3 col-span-1 flex flex-row h-11 w-full rounded-lg relative bg-transparent mt-1">
                                   <button
                                     onClick={() =>
                                       handleDecrement(index, variantIndex)
@@ -338,36 +221,27 @@ const ManualCount
                                       +
                                     </span>
                                   </button>
-                                  {edit ? (
-                                    <button
-                                      className="ms-3 col-span-1 p-2 flex items-center justify-center rounded-lg cursor-pointer"
-                                      style={{
-                                        backgroundColor: "#FF0000",
-                                        color: "#FFFFFF",
-                                      }}
-                                      onClick={() =>
-                                        handleRemove(index, variantIndex)
-                                      }
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-6 w-6"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth="2"
-                                          d="M6 18L18 6M6 6l12 12"
-                                        />
-                                      </svg>
-                                    </button>
-                                  ) : null}
+
+
+                                </div>
+                                <div className="ml-5 col-span-1 flex flex-row h-11 w-full rounded-lg relative bg-transparent ">
+                                  <input
+                                    type="number"
+                                    className="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-white-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
+                                    value={variant.amount}
+                                    onChange={(event) =>
+                                      handleAmtChange(
+                                        index,
+                                        variantIndex,
+                                        event,
+                                      )
+                                    }
+                                  />
                                 </div>
                               </>
+                             
                             ))}
+
 
                             <div className="col-span-2" />
                           </div>
@@ -376,25 +250,15 @@ const ManualCount
                     </>
                   ) : (
                     <div
-                      className="w-full p-20 mb-4 text-xs rounded-lg"
-                      style={{ backgroundColor: "#D6E0F0", color: "#27374D" }}
                     >
-                      <div className="font-black text-xl flex items-center justify-center">
-                        Your Materials List is Empty
-                      </div>
                     </div>
                   )}
                 </div>
                 <div className="flex justify-end">
-                  <AddMaterialCount />
                   {ManualCount
                   .length !== 0 ? (
-                    <>
-                      <ClearManualCount
-
-                        onConfirmClear={() => setManualCount
-                          ([])}
-                      />
+                    <>            
+ 
                       <RecordManualCount />
                     </>
                   ) : null}
@@ -405,12 +269,11 @@ const ManualCount
         </div>
       </div>
 
-      {addVariantCondition ? (
-        <AddNewMaterialVariant onClose={() => setAddVariantCondition(false)} />
-      ) : null}
+
     </div>
   );
 };
+
 
 export default ManualCount
 ;

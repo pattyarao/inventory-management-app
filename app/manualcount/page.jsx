@@ -1,7 +1,9 @@
 "use client";
-
 import { useState } from "react";
 import ManualInventoryList from "../components/ManualInventoryList";
+
+
+
 
 
 
@@ -11,15 +13,18 @@ const RecordManualCount = () => {
       <div className="w-[80%] px-10 py-4 bg-blue-400 rounded-lg" style={{ backgroundColor: '#8D93AB', color: 'white' }}>
         <h1 className="font-black text-xl" style={{ color: 'black'}}>Perform Manual Inventory Count</h1>
       </div>
-      
+     
+
 
         <ManualInventoryList/>
-        
+       
       </div>
    
 
-    
+
+   
   );
 };
+
 
 export default RecordManualCount;
