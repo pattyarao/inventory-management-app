@@ -73,10 +73,34 @@ const AddProductOffer = ({ addProductToList }) => {
     setExistingMaterial({ ...existingMaterial, unit: e.target.value });
   };
 
+  const [newMaterialNameError, setNewMaterialNameError] = useState('');
+
+  const validate = () => {
+    let newMaterialNameError = '';
+
+    const lowerCaseNewMaterialName = newMaterial.name.toLowerCase();
+    const lowerCaseMaterialNames = materialNames.map(name => name.toLowerCase());
+
+    if (lowerCaseMaterialNames.includes(lowerCaseNewMaterialName)){
+      newMaterialNameError = 'The material you inputted already exists';
+    }
+    setNewMaterialNameError(newMaterialNameError);
+
+    if (newMaterialNameError) {
+      return false;
+    }
+    return true;
+  }
+
   const handleAddMaterial = () => {
-    const materialObject = { ...newMaterial };
-    setMaterialList([...materialList, materialObject]);
-    setNewMaterial({ name: "", amount: "", unit: "" });
+    const isValid = validate();
+    if (isValid) {
+      const materialObject = { ...newMaterial };
+      setMaterialList([...materialList, materialObject]);
+      setNewMaterial({ name: "", amount: "", unit: "" });
+      setNewMaterialNameError('');
+    }
+    
   };
 
   const [selectedExistingMaterial, setSelectedExistingMaterial] = useState("");
@@ -316,7 +340,9 @@ const AddProductOffer = ({ addProductToList }) => {
                             Name of Material
                           </label>
                           <input
-                            className="w-72 rounded-md appearance-none border border-gray-300 py-2 px-2 bg-white text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent"
+                            className={`w-72 rounded-md appearance-none border border-gray-300 py-2 px-2 bg-white text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent ${
+                              newMaterialNameError && 'border-red-500'
+                            }`}
                             style={{
                               backgroundColor: "#DDE6ED",
                               color: "#27374D",
@@ -325,6 +351,11 @@ const AddProductOffer = ({ addProductToList }) => {
                             onChange={handleMaterialNameChange}
                           />
                         </div>
+                        {newMaterialNameError && (
+                          <p className = "text-red-500 text-sm pl-60 mt-2">
+                            {newMaterialNameError}
+                          </p>
+                        )}
 
                         <div className="flex justify-center space-x-4 mb-4 pl-4">
                           <label className="text-right mt-2 ">Amount</label>
