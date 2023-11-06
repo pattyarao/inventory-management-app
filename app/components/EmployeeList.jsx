@@ -3,16 +3,20 @@
 import { useState, useEffect } from "react";
 import AddEmployee from "./AddEmployee";
 import { GET } from "../api/employees/route";
+import { useRouter } from "next/navigation";
 
 const EmployeeList = () => {
   const [isShowed, setShow] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function getEmployees() {
       try {
-        const response = await GET();
+        const response = await fetch("/api/employees", {
+          cache: "no-store",
+        });
         const { employees, error } = await response.json();
 
         if (error) {
@@ -26,23 +30,6 @@ const EmployeeList = () => {
     }
     getEmployees();
   }, []);
-
-  // const [employees, setEmployees] = useState([
-  //   { name: "Patty Arao", role: "Stock Controller", status: "Active" },
-  //   { name: "Carlo Reyes", role: "Manufacturing Head", status: "Active" },
-  //   { name: "Miguel Perez", role: "Sales Person", status: "Not Active" },
-  //   { name: "Jerrick Santos", role: "Stock Controller", status: "Not Active" },
-  // ]);
-
-  // const handleClick = (employee, index) => {
-  //   const temp = [...employees];
-  //   let newStatus;
-  //   employee.status === true
-  //     ? (newStatus = "Not Active")
-  //     : (newStatus = "Active");
-  //   temp[index].status = newStatus;
-  //   setEmployees(temp);
-  // };
 
   const handleClose = () => {
     setShow(false);
@@ -76,9 +63,9 @@ const EmployeeList = () => {
         {error && <div>{error}</div>}
         {employees.length > 0 && (
           <div className="w-full flex flex-col gap-4">
-            {employees.map((employee) => (
+            {employees.map((employee, index) => (
               <div
-                key={employee.id}
+                key={index}
                 className="w-full p-2 flex gap-10 text-lg bg-[#F1F3F8] rounded-md"
               >
                 <p className="w-[50%]">

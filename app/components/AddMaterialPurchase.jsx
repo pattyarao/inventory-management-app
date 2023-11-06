@@ -1,21 +1,66 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import supabase from "../supabase"
+import { GET } from "../api/purchase/route";
 
-const AddMaterialPurchase = ({ handleSubmit }) => {
+const AddMaterialPurchase = (props) => {
   //stores all products in the database
   const [materialsList, setMaterialsList] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
+    //determines if the modal for adding a product is shown or not
+    const [showModal, setShowModal] = useState(false);
+  
+    useEffect(() => {
+      async function getMaterials() {
+        try {
+          const response = await GET();
+          const { materials, error } = await response.json();
+    
+          if (error) {
+            setError(error);
+            console.log("err0 " + error);
+          } else {
+            
+            // Filter out materials that are already in props.purchaseList
+            const filteredMaterials = materials.filter((material) =>
+              props.purchaseList.every(
+                (purchaseMaterial) => purchaseMaterial.id !== material.id
+              )
+            );
 
-  //determines if the modal for adding a product is shown or not
-  const [showModal, setShowModal] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState([]);
+            setMaterialsList(filteredMaterials);
+            setFilteredProductsList(filteredMaterials);
+            setLoading(false); // Data has been loaded
+          }
+        } catch (error) {
+          setError(error.message);
+        }
+      }
+      getMaterials();
+    }, [showModal]);
+    
+
+
+
+
+
   //closes the modal and removes all previous personalizations
   const handleClose = () => {
     setSearchTerm("");
-    setSortOption("name-asc");
     setFilteredProductsList(materialsList);
-    setSelectedIndex([])
+    setSortOption("name-asc");
+    setShowModal(false);
+  };
+
+  const handleAddtoPurchaseList = () => {
+    // Filter selected products based on the 'checked' property
+    console.log(materialsList)
+    const selectedMaterials = filteredProductsList.filter((mat) => mat.checked);
+
+    // Call the parent component's function to update selected products
+    props.onAddMaterials(selectedMaterials);
+    // Close the modal or perform any other action
     setShowModal(false);
 
     
@@ -23,7 +68,7 @@ const AddMaterialPurchase = ({ handleSubmit }) => {
   };
 
   //Sort and Search Mechanisms
-  const [filteredProductsList, setFilteredProductsList] = useState([]);
+  const [filteredProductsList, setFilteredProductsList] = useState(materialsList);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("name-asc"); // Initialize the default sorting option
 
@@ -72,53 +117,20 @@ const AddMaterialPurchase = ({ handleSubmit }) => {
     }
   };
 
-  // handles selected items in the checkbox
-  const handleSelect = (e) => {
-    const index = parseInt(e.target.value)
-    if (selectedIndex.includes(index)){
-      setSelectedIndex(selectedIndex.filter((i) => i !== index))
-    }
-    else{
-      setSelectedIndex(prev => [...prev, index])
-    }
-  }
+  const handleCheckboxChange = (product) => {
+    const updatedProducts = filteredProductsList.map((item) => {
+      if (item === product) {
+        return {
+          ...item,
+          checked: !item.checked, // Toggle the checked status
+        };
+      }
+      return item;
+    });
+    setMaterialsList(updatedProducts);
+    setFilteredProductsList(updatedProducts);
+  };
 
-  // testing handleSelect function: functional
-  useEffect(() => {
-    console.log(selectedIndex)
-    console.log(materialsList)
-  }, [selectedIndex])
-
-
- // testing database querying materials: functional
-  async function fetchData() {
-    const { data, error } = await supabase
-      .from('MD_RAW_MATERIALS')
-      .select('name, qty_available, variants:MD_MATVARIATION!left( amt, name )')
-      .eq('status', true)
-      .eq('MD_MATVARIATION.status', true)
-
-    // set an object that stores the index of material from data which serves as reference when material list elements is passed to filtered list
-    if (!error) {
-      data.map((x,i) => {
-        x.index = i
-      })
-
-      setMaterialsList(data)
-
-    } else { console.log(error) }
-  }
-  
-  // fetch data on load
-  useEffect(() => {
-    fetchData()
-  },[])
-
-  // load inital set filtered product list
-  useEffect(() => {
-    setFilteredProductsList(materialsList)
-    console.log(materialsList)
-  },[materialsList])
   return (
     <>
       <button
@@ -184,7 +196,7 @@ const AddMaterialPurchase = ({ handleSubmit }) => {
                     </select>
                   </div>
                   <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    {filteredProductsList.length !== 0 ? (
+                    {filteredProductsList.length > 0 ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                           <tr>
@@ -201,7 +213,7 @@ const AddMaterialPurchase = ({ handleSubmit }) => {
                                 className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                               >
                                 <input
-                                  id="vue-checkbox"
+                                  id={`checkbox-${product.id}`} // Use a unique ID for each checkbox
                                   type="checkbox"
                                   value={product.index}
                                   checked={selectedIndex.includes(product.index)}
@@ -212,6 +224,7 @@ const AddMaterialPurchase = ({ handleSubmit }) => {
                               </th>
                             </tr>
                           ))}
+
                         </tbody>
                       </table>
                     ) : (
@@ -236,11 +249,13 @@ const AddMaterialPurchase = ({ handleSubmit }) => {
                         Close
                       </button>
                       <button
-                        className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        style={{ backgroundColor: "#097969" }}
-                        type="button"
-                        onClick={handleAdd}
-                      >
+                          className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                          style={{ backgroundColor: "#097969" }}
+                          type="button"
+                          onClick={() => {
+                            handleAddtoPurchaseList();
+                          }}
+                        >
                         Add Products
                       </button>
                     </div>

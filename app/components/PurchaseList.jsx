@@ -5,59 +5,85 @@ import AddNewVariant from "./AddNewVariant";
 import AddMaterialPurchase from "./AddMaterialPurchase";
 import RecordPurchase from "./RecordPurchase";
 import ClearPurchaseList from "./ClearPurchaseList";
+import { GET } from "../api/purchasevariant/route";
 
 const PurchaseList = () => {
   //stores all ordered products
-  const [purchaseList, setPurchaseList] = useState([
-    {
-      name: "Material A",
-      metric: "0",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
-    },
-    {
-      name: "Material B",
-      metric: "1",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
-    },
-    {
-      name: "Material C",
-      metric: "0",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
-    },
-    {
-      name: "Material D",
-      metric: "1",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
-    },
-    {
-      name: "Material E",
-      metric: "1",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
-    },
-  ]);
+  const [purchaseList, setPurchaseList] = useState([]);
+  const [variantsList, setVariantsList] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [addVariantCondition, setAddVariantCondition] = useState(false);
+  const [materialID, setMaterialID] = useState(null);
+  const [unit, setUnit] = useState(null);
+  const [removedMaterials, setRemovedMaterials] = useState([]);
 
-  console.log(purchaseList);
+
+  useEffect(() => {
+    async function getVariants() {
+      try {
+        const response = await GET();
+        const { variants, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          setVariantsList(variants);
+          setLoading(false); // Data has been loaded
+        }
+      } catch (error) {
+        setError(error.message);
+        
+      }
+    }
+    getVariants();
+  }, [addVariantCondition]);
+
+// Function to update the selected products
+const handleAddMaterials = (materials) => {
+  const productsWithVariants = materials.map((material) => ({
+    ...material,
+    variants: [{ variantName: "", amount: 0, unit: "", quantity: 1 }],
+  }));
+
+  setPurchaseList(purchaseList.concat(productsWithVariants));
+};
+
 
   const [edit, setEdit] = useState(false);
-  const [addVariantCondition, setAddVariantCondition] = useState(false);
+
+
 
   const addVariant = (productIndex) => {
-    const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
+    const newVariant = { variantName: "", amount: 0, unit: "", quantity: 1 };
     const newPurchaseList = [...purchaseList];
     newPurchaseList[productIndex].variants.push(newVariant);
     setPurchaseList(newPurchaseList);
   };
 
-  //handles changes with the input if number is manually typed in
-  const handleVariantNameChange = (productIndex, variantIndex, event) => {
+  
+  const handleVariantNameChange = (unit, materialID, productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
+    console.log(purchaseList)
     if (event.target.value === "Add New Variant") {
-      console.log("OPEN");
       setAddVariantCondition(true);
+      setMaterialID(materialID)
+      setUnit(unit)
       return;
     }
-    newPurchaseList[productIndex].variants[variantIndex].variantName =
-      event.target.value;
+ 
+    if (event.target.value===""){
+      newPurchaseList[productIndex].variants[variantIndex].variantName = event.target.value;
+      newPurchaseList[productIndex].variants[variantIndex].unit = "0";
+      newPurchaseList[productIndex].variants[variantIndex].amount = 0;
+    } else {
+      newPurchaseList[productIndex].variants[variantIndex].variantName = event.target.value;
+      newPurchaseList[productIndex].variants[variantIndex].unit = "0";
+
+      const selectedVariant = variantsList.find((variant) => variant.id === event.target.value);
+      newPurchaseList[productIndex].variants[variantIndex].amount = selectedVariant.amt;
+    }
+
     setPurchaseList(newPurchaseList);
   };
 
@@ -98,11 +124,13 @@ const PurchaseList = () => {
 
   const handleRemove = (productIndex, variantIndex) => {
     const newPurchaseList = [...purchaseList];
+    const removedMaterial = newPurchaseList[productIndex];
     newPurchaseList[productIndex].variants.splice(variantIndex, 1);
 
     // Check if there are no more variants in the product
     if (newPurchaseList[productIndex].variants.length === 0) {
       newPurchaseList.splice(productIndex, 1);
+      setRemovedMaterials(removedMaterials.concat(removedMaterial));
     }
     setPurchaseList(newPurchaseList);
   };
@@ -161,7 +189,7 @@ const PurchaseList = () => {
                         </div>
                       </div>
 
-                      {purchaseList.map((product, index) => (
+                      {purchaseList.map((material, index) => (
                         <div key={index}>
                           <div
                             className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
@@ -182,10 +210,10 @@ const PurchaseList = () => {
                               </button>
 
                               <div className="font-black text-xl ms-3 mt-2">
-                                {product.name}
+                                {material.name}
                               </div>
                             </div>
-                            {product.variants.map((variant, variantIndex) => (
+                           {material.variants.map((variant, variantIndex) => (
                               <>
                                 {variantIndex !== 0 ? (
                                   <div className="col-span-1 me-5 mt-3 " />
@@ -196,6 +224,8 @@ const PurchaseList = () => {
                                       value={variant.variantName}
                                       onChange={(event) =>
                                         handleVariantNameChange(
+                                          material.REF_METRIC.metric_unit,
+                                          material.id,
                                           index,
                                           variantIndex,
                                           event,
@@ -203,12 +233,15 @@ const PurchaseList = () => {
                                       }
                                       id="large"
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                    >
-                                      <option value="0">None</option>
-                                      <option value="1">Variant A</option>
-                                      <option value="2">Variant B</option>
-                                      <option value="3">Variant C</option>
-                                      <option value="4">Variant D</option>
+                                    >     
+                                          <option value="">None</option>
+                                          {variantsList.map((variantItem, variantItemIndex) => (
+                                            <>
+                                          {variantItem.material_id === material.id ? (
+                                          <option value={variantItem.id}>{variantItem.name}</option>
+                                          ): null}
+                                          </>
+                                            ))} 
                                       <option disabled>─────────────</option>
                                       <option>Add New Variant</option>
                                     </select>
@@ -227,6 +260,7 @@ const PurchaseList = () => {
                                         event,
                                       )
                                     }
+                                    disabled={variant.variantName!==""}
                                   />
                                 </div>
 
@@ -234,6 +268,7 @@ const PurchaseList = () => {
                                   <div className="relative">
                                     <select
                                       id="large"
+                                      disabled={variant.variantName!==""}
                                       value={variant.unit}
                                       onChange={(event) =>
                                         handleUnitChange(
@@ -243,10 +278,17 @@ const PurchaseList = () => {
                                         )
                                       }
                                       class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                    >
-                                      <option value="0">g</option>
-                                      <option value="1">mg</option>
-                                      <option value="2">kg</option>
+                                    > 
+                                      {material.REF_METRIC.metric_unit === "g" ? (
+                                        <>
+                                          <option value="0">g</option>
+                                          <option value="1">kg</option>
+                                          <option value="2">mg</option>
+                                        </>
+                                      ): <>
+                                        <option value="0">mL</option>
+                                        <option value="1">L</option>
+                                          </>}
                                     </select>
                                   </div>
                                 </div>
@@ -315,7 +357,7 @@ const PurchaseList = () => {
                                   ) : null}
                                 </div>
                               </>
-                            ))}
+                            ))} 
 
                             <div className="col-span-2" />
                           </div>
@@ -334,13 +376,13 @@ const PurchaseList = () => {
                   )}
                 </div>
                 <div className="flex justify-end">
-                  <AddMaterialPurchase />
+                  <AddMaterialPurchase purchaseList={purchaseList}  onAddMaterials={handleAddMaterials}/>
                   {purchaseList.length !== 0 ? (
                     <>
                       <ClearPurchaseList
                         onConfirmClear={() => setPurchaseList([])}
                       />
-                      <RecordPurchase />
+                      <RecordPurchase  purchaseList={purchaseList}  onConfirmClear={() => setPurchaseList([])} />
                     </>
                   ) : null}
                 </div>
@@ -351,7 +393,7 @@ const PurchaseList = () => {
       </div>
 
       {addVariantCondition ? (
-        <AddNewVariant onClose={() => setAddVariantCondition(false)} />
+        <AddNewVariant material_id={materialID} unit={unit} onClose={() => setAddVariantCondition(false)} />
       ) : null}
     </div>
   );
