@@ -4,10 +4,10 @@ import { useState } from "react";
 import { POST } from "../api/purchasevariant/route";
 
 
+
 const AddNewVariant = (props) => {
 
     //stores all products in the database
-    
     const [error, setError] = useState(null);
     const [newVariant, setNewVariant] = useState({
         material_id: props.material_id,
@@ -82,7 +82,6 @@ const AddNewVariant = (props) => {
     };
     
 
-
      //closes the modal and removes all previous personalizations
      const handleClose= () => {
         props.onClose()
@@ -115,6 +114,7 @@ const AddNewVariant = (props) => {
         props.onClose();
       };
       
+
   
     return (
           <>
@@ -161,15 +161,18 @@ const AddNewVariant = (props) => {
                         onChange={(event) => handleChange(event)} // Pass the event to the function
                       />
 
+
                     </div>
 
                     <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
                         <input
                         type="number"
+
                         name="initialAmt"
                         className="mt-1 p-2 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
                         value={newVariant.initialAmt}
                         onChange={(event) => handleChange(event)} // Pass the event to the function
+
                         /> 
                         <div className="relative">
                         <select
@@ -213,8 +216,8 @@ const AddNewVariant = (props) => {
                       className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#097969"}}
                       type="button"
+
                       onClick={handleSubmit}
-                    >
                       Add Variant
                     </button>
                   </div>

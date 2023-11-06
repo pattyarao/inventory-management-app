@@ -153,6 +153,7 @@ const RecordPurchase = (props) => {
         style={{ backgroundColor: "#097969", color: "white" }}
         type="button"
         onClick={() => handleSubmit()}
+
       >
         Record Purchase
       </button>
@@ -204,6 +205,7 @@ const RecordPurchase = (props) => {
                       type="button"
                       onClick={() => {setShowModal(false);
                         props.onConfirmClear();}}
+
                     >
                       Confirm
                     </button>

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-const ClearManualCount = (props) => {
+const ClearPurchaseList = (props) => {
+
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -13,7 +14,7 @@ const ClearManualCount = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Clear Materials List
+        Clear Purchase List
       </button>
 
       {showModal ? (
@@ -49,7 +50,7 @@ const ClearManualCount = (props) => {
                     />
                   </svg>
                   <div className="flex justify-center p-5 mb-5 text-2xl">
-                    Are you sure you want to clear the Manual Count for this Product?
+                    Are you sure you want to clear the Purchase List?
                   </div>
 
                   <div className="flex justify-center">
@@ -85,4 +86,6 @@ const ClearManualCount = (props) => {
   );
 };
 
-export default ClearManualCount;
+
+export default ClearPurchaseList;
+

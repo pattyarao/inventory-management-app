@@ -62,9 +62,6 @@ const AddMaterialPurchase = (props) => {
     props.onAddMaterials(selectedMaterials);
     // Close the modal or perform any other action
     setShowModal(false);
-
-    
-    
   };
 
   //Sort and Search Mechanisms
@@ -88,11 +85,6 @@ const AddMaterialPurchase = (props) => {
     }
   };
 
-  // submit handler
-  const handleAdd = () => {
-    handleClose()
-    handleSubmit(materialsList.filter(material => selectedIndex.includes(material.index)))
-  }
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);

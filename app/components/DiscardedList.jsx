@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { POST } from "../api/discard/route";
 import AddMaterialPurchase from "./AddMaterialPurchase";
+
 
 const DiscardedList = () => {
   //stores all ordered products
@@ -11,10 +13,6 @@ const DiscardedList = () => {
 
   const [edit, setEdit] = useState(false);
 
-
-  const handleSubmit = (obj) => {
-    setDiscardedList(obj)
-  }
 
   const addVariant = (productIndex) => {
     const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
@@ -82,6 +80,7 @@ const DiscardedList = () => {
   };
   
 
+
   return (
     <div
       className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
@@ -118,7 +117,9 @@ const DiscardedList = () => {
                   {discardedList.length !== 0 ? (
                     <>
                       <div
+
                         className="px-3 w-full grid grid-cols-6 text-xs rounded-lg"
+
                         style={{ backgroundColor: "#526D82", color: "white" }}
                       >
                         <div className="col-span-1 text-sm flex items-center justify-center">
@@ -133,9 +134,11 @@ const DiscardedList = () => {
                         <div className="col-span-1 text-sm ms-5">
                           Unit
                         </div>
+
                         <div className="col-span-1 text-sm ms-5">
                           Reason for Discard
                         </div>
+
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Qty. Discarded
                         </div>
@@ -144,7 +147,9 @@ const DiscardedList = () => {
                       {discardedList.map((product, index) => (
                         <div key={index}>
                           <div
+
                             className="w-full p-3 mb-4 grid grid-cols-6 text-xs rounded-lg"
+
                             style={{
                               backgroundColor: "#9DB2BF",
                               color: "#27374D",
@@ -173,6 +178,7 @@ const DiscardedList = () => {
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
                                     <select
+
                                       value={variant.name}
                                       onChange={(event) =>
                                         handleVariantNameChange(index, variantIndex, event)

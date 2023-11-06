@@ -56,11 +56,11 @@ const handleAddMaterials = (materials) => {
 
   const addVariant = (productIndex) => {
     const newVariant = { variantName: "", amount: 0, unit: "", quantity: 1 };
+
     const newPurchaseList = [...purchaseList];
     newPurchaseList[productIndex].variants.push(newVariant);
     setPurchaseList(newPurchaseList);
   };
-
   
   const handleVariantNameChange = (unit, materialID, productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
@@ -130,7 +130,9 @@ const handleAddMaterials = (materials) => {
     // Check if there are no more variants in the product
     if (newPurchaseList[productIndex].variants.length === 0) {
       newPurchaseList.splice(productIndex, 1);
+
       setRemovedMaterials(removedMaterials.concat(removedMaterial));
+
     }
     setPurchaseList(newPurchaseList);
   };
@@ -190,6 +192,7 @@ const handleAddMaterials = (materials) => {
                       </div>
 
                       {purchaseList.map((material, index) => (
+
                         <div key={index}>
                           <div
                             className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
@@ -210,10 +213,12 @@ const handleAddMaterials = (materials) => {
                               </button>
 
                               <div className="font-black text-xl ms-3 mt-2">
+
                                 {material.name}
                               </div>
                             </div>
                            {material.variants.map((variant, variantIndex) => (
+
                               <>
                                 {variantIndex !== 0 ? (
                                   <div className="col-span-1 me-5 mt-3 " />
@@ -226,6 +231,7 @@ const handleAddMaterials = (materials) => {
                                         handleVariantNameChange(
                                           material.REF_METRIC.metric_unit,
                                           material.id,
+
                                           index,
                                           variantIndex,
                                           event,
@@ -359,6 +365,7 @@ const handleAddMaterials = (materials) => {
                               </>
                             ))} 
 
+
                             <div className="col-span-2" />
                           </div>
                         </div>
@@ -377,6 +384,7 @@ const handleAddMaterials = (materials) => {
                 </div>
                 <div className="flex justify-end">
                   <AddMaterialPurchase purchaseList={purchaseList}  onAddMaterials={handleAddMaterials}/>
+
                   {purchaseList.length !== 0 ? (
                     <>
                       <ClearPurchaseList
@@ -394,6 +402,7 @@ const handleAddMaterials = (materials) => {
 
       {addVariantCondition ? (
         <AddNewVariant material_id={materialID} unit={unit} onClose={() => setAddVariantCondition(false)} />
+
       ) : null}
     </div>
   );
