@@ -59,7 +59,7 @@ const RecordManualCount = (props) => {
                     className="flex justify-center text-white font-bold uppercase text-sm px-6 py-3 mb-5"
                     style={{ fontSize: "30px", color: "black" }}
                   >
-                    ManualCount
+                    Manual Count
                    Recorded Successfully
                   </div>
 
