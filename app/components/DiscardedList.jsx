@@ -3,12 +3,10 @@
 import { useState, useEffect } from "react";
 import { POST, GetReasons } from "../api/discard/route";
 import AddMaterialPurchase from "./AddMaterialPurchase";
-import { GET } from "../api/purchasevariant/route";
 
 const DiscardedList = () => {
   //stores all ordered products
   const [discardedList, setDiscardedList] = useState([]);
-  const [variantsList, setVariantsList] = useState([]);
   const [reasonList, setReasonList] = useState([]);
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState(null);
@@ -17,29 +15,27 @@ const DiscardedList = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await GET();
-        const { variants, error } = await response.json();
-        const response2 = await GetReasons()
-        const {reason, error2} = await response.json()
+        const response = await GetReasons()
+        const {reason, error} = await response.json()
 
-        if (error || error2) {
-          error & error2 ? setError(error + error2) : (error ? setError(error) : setError(error2))
+        if (error ) {
+          setError(error)
         } else {
-          setVariantsList(variants);
+          setReasonList(reason)
           setLoading(false);
         }
       } catch (error) {
-        setError(error.message);
-        
+        setError(error);
       }
     }
 
     fetchData();
   }, []);
 
+
   useEffect(() => {
-    console.log('Variants List: ', variantsList)
-  }, [variantsList])
+    console.log('Reasons List: ', reasonList)
+  }, [reasonList])
 
   const handleAddMaterials = (materials) => {
     const discardWithVariants = materials.map((material) => ({
@@ -258,8 +254,9 @@ const DiscardedList = () => {
                                       }
                                       class="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
                                     >
-                                      <option>Not Determined</option>
-                                      <option value="0">Expired</option>
+                                      {reasonList.map((reason, index) => (
+                                        <option key={index}>{reason.reason}</option>
+                                      ))}
                                       <option>Add New Reason</option>
                                       <option disabled>─────────────</option>
                                     </select>
