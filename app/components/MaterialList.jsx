@@ -4,35 +4,56 @@ import { useState, useEffect } from "react";
 import { FaUserAlt } from "react-icons/fa";
 import { BsFillGrid3X2GapFill } from "react-icons/bs";
 import { BsViewList } from "react-icons/bs";
+import { GET } from '../api/materialmaster/route';
 
 const MaterialList = ({ searchTerm, view }) => {
   // Your materials data
-  const materials = [
-    {
-      materials_name: "Material A",
-      level_status: 1,
-    },
-    {
-      materials_name: "Material B",
-      level_status: 2,
-    },
-    {
-      materials_name: "Material C",
-      level_status: 3,
-    },
-    {
-      materials_name: "Material D",
-      level_status: 2,
-    },
-    {
-      materials_name: "Material E",
-      level_status: 1,
-    },
-  ];
+  // const materials = [
+  //   {
+  //     materials_name: "Material A",
+  //     level_status: 1,
+  //   },
+  //   {
+  //     materials_name: "Material B",
+  //     level_status: 2,
+  //   },
+  //   {
+  //     materials_name: "Material C",
+  //     level_status: 3,
+  //   },
+  //   {
+  //     materials_name: "Material D",
+  //     level_status: 2,
+  //   },
+  //   {
+  //     materials_name: "Material E",
+  //     level_status: 1,
+  //   },
+  // ];
+  const [materials, setMaterials] = useState([])
+
+  useEffect(() => {
+    async function getMaterials() {
+      const response = await GET();
+            
+              if (response.status === 200) {
+                // Request was successful, log the data
+                const data = await response.json();
+                setMaterials(data.materials); // Store the data in the state variable
+                console.log("API Response:", data.materials);
+              } else {
+                // Request failed, log the error
+                console.error("API Error:", response);
+              }
+    }
+  
+    getMaterials();
+  }, []); 
+
 
   // Filter materials based on the search term
   const filteredMaterials = materials.filter((material) =>
-    material.materials_name.toLowerCase().includes(searchTerm.toLowerCase())
+    material.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort materials based on level_status
@@ -67,7 +88,7 @@ const MaterialList = ({ searchTerm, view }) => {
                 <div className="flex gap-2 items-center">
                   <div>
                     <p className="pl-6 font-semibold">
-                      {material.materials_name}
+                      {material.name}
                     </p>
                   </div>
                 </div>
