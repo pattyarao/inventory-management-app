@@ -31,7 +31,7 @@ const MaterialList = ({ searchTerm, view }) => {
   //   },
   // ];
   const [materials, setMaterials] = useState([])
-
+  
   useEffect(() => {
     async function getMaterials() {
       const response = await GET();
@@ -90,6 +90,9 @@ const MaterialList = ({ searchTerm, view }) => {
                     <p className="pl-6 font-semibold">
                       {material.name}
                     </p>
+                    {/* <p className="pl-6 font-semibold">
+                      {material.REF_METRIC.metric_unit}
+                    </p> */}
                   </div>
                 </div>
                 
