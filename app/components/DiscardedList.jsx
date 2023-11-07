@@ -1,18 +1,54 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { POST } from "../api/discard/route";
+import { POST, GetReasons } from "../api/discard/route";
 import AddMaterialPurchase from "./AddMaterialPurchase";
-
+import { GET } from "../api/purchasevariant/route";
 
 const DiscardedList = () => {
   //stores all ordered products
   const [discardedList, setDiscardedList] = useState([]);
-
-  console.log(discardedList)
-
+  const [variantsList, setVariantsList] = useState([]);
+  const [reasonList, setReasonList] = useState([]);
   const [edit, setEdit] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await GET();
+        const { variants, error } = await response.json();
+        const response2 = await GetReasons()
+        const {reason, error2} = await response.json()
+
+        if (error || error2) {
+          error & error2 ? setError(error + error2) : (error ? setError(error) : setError(error2))
+        } else {
+          setVariantsList(variants);
+          setLoading(false);
+        }
+      } catch (error) {
+        setError(error.message);
+        
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log('Variants List: ', variantsList)
+  }, [variantsList])
+
+  const handleAddMaterials = (materials) => {
+    const discardWithVariants = materials.map((material) => ({
+      ...material,
+      variants: [{ variantName: "", amount: 0, unit: "", quantity: 1 }],
+    }));
+  
+    setDiscardedList(discardedList.concat(discardWithVariants));
+  };
 
   const addVariant = (productIndex) => {
     const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
@@ -126,7 +162,7 @@ const DiscardedList = () => {
                           Material Name
                         </div>
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
-                          Variant
+                          
                         </div>
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Amount
@@ -134,7 +170,6 @@ const DiscardedList = () => {
                         <div className="col-span-1 text-sm ms-5">
                           Unit
                         </div>
-
                         <div className="col-span-1 text-sm ms-5">
                           Reason for Discard
                         </div>
@@ -156,20 +191,13 @@ const DiscardedList = () => {
                             }}
                           >
                             <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
-                              <button
-                                onClick={()=>addVariant(index)}
-                                className="h-7 w-6 rounded-lg cursor-pointer flex items-center justify-center mt-2"
-                                style={{ backgroundColor: "#097969" }}
-                              >
-                                <span className="text-xl font-bold text-white">
-                                  +
-                                </span>
-                              </button>
-
+                            {/** removed add variant button */}
                               <div className="font-black text-xl ms-3 mt-2">
                                 {product.name}
                               </div>
                             </div>
+
+                            {/** TODO: remove variant mapping as the list is now a mix of material and variant */}
                             {product.variants.map((variant, variantIndex) => (
                               <>
                                 {variantIndex !== 0 ? (
@@ -177,7 +205,7 @@ const DiscardedList = () => {
                                 ) : null}
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
-                                    <select
+                                    {/* <select
 
                                       value={variant.name}
                                       onChange={(event) =>
@@ -186,20 +214,22 @@ const DiscardedList = () => {
                                       id="large"
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     > 
-                                      {/** replace with data */}
+                                      TODO: remove variants column 
                                       <option value={variantIndex}>{variant.name}</option>
-                                    </select>
+                                    </select> */}
                                   </div>
                                 </div>
 
+                                {/** change to disable amount if the item is a variant since it is already predetermined */}
                                 <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent ">
                                   <input
                                     type="number"
                                     className="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
-                                    value={variant.amt}
+                                    value={product.amt}
                                     onChange={(event) =>
                                       handleAmtChange(index, variantIndex, event)
                                     }
+                                    disabled={product.material_id ? true : false}
                                   />
                                 </div>
 
@@ -234,19 +264,25 @@ const DiscardedList = () => {
                                       <option disabled>─────────────</option>
                                     </select>
                                 </div>
-
+                                
+                                {/** disabled rendering of +/- for materials as the only value needed is the amt provided by the textbox */}
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
-                                  <button
-                                    onClick={() =>
-                                      handleDecrement(index, variantIndex)
-                                    }
-                                    className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none"
-                                    style={{ backgroundColor: "#A12323" }}
-                                  >
-                                    <span className="m-auto text-2xl font-bold text-white">
-                                      −
-                                    </span>
-                                  </button>
+                                  
+                                  {product.material_id ? 
+                                    (<button
+                                      onClick={() =>
+                                        handleDecrement(index, variantIndex)
+                                      }
+                                      className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none"
+                                      style={{ backgroundColor: "#A12323" }}
+                                    >
+                                      <span className="m-auto text-2xl font-bold text-white">
+                                        −
+                                      </span>
+                                    </button>) : (
+                                      ""
+                                    )
+                                  }
                                   <input
                                     type="number"
                                     className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
@@ -254,8 +290,11 @@ const DiscardedList = () => {
                                     onChange={(event) =>
                                       handleQtyChange(index, variantIndex,event)
                                     }
+                                    disabled={product.material_id ? true : false}
                                   />
-                                  <button
+                                  
+                                {product.material_id ? 
+                                  (<button
                                     onClick={() =>
                                       handleIncrement(index, variantIndex)
                                     }
@@ -265,7 +304,11 @@ const DiscardedList = () => {
                                     <span className="m-auto text-2xl font-bold text-white">
                                       +
                                     </span>
-                                  </button>
+                                  </button>) : (
+                                    ""
+                                  )
+                                }
+
                                   {edit ? (
                                     <button
                                       className="ms-3 col-span-1 p-2 flex items-center justify-center rounded-lg cursor-pointer"
@@ -309,7 +352,7 @@ const DiscardedList = () => {
                                 Your <b>Expired Material List</b> is <b>Empty</b>
                             </div>
                             <div className="text-black text-xl mt-6">
-                                <AddMaterialPurchase handleSubmit={handleSubmit} />
+                                <AddMaterialPurchase purchaseList={discardedList}  onAddMaterials={handleAddMaterials}/>
                             </div>
                         </div>
                         </div>
@@ -317,7 +360,7 @@ const DiscardedList = () => {
                   )}
                 </div>
                 <div className="flex justify-end">
-                  {discardedList.length !== 0 ? <AddMaterialPurchase /> : null}
+                  {discardedList.length !== 0 ? <AddMaterialPurchase purchaseList={discardedList}  onAddMaterials={handleAddMaterials}/> : null}
                 </div>
               </div>
             </div>
