@@ -9,12 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.38.1",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18",
-    "tw-elements-react": "^1.0.0-alpha1"
+    "react-icons": "^4.11.0",
+    "supabase": "^1.106.1"
   },
   "devDependencies": {
+    "@types/react": "18.2.31",
     "autoprefixer": "^10",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",
