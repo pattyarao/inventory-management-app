@@ -7,30 +7,44 @@ import { BsViewList } from "react-icons/bs";
 import { GET } from '../api/materialmaster/route';
 
 const MaterialList = ({ searchTerm, view }) => {
-  // Your materials data
-  // const materials = [
-  //   {
-  //     materials_name: "Material A",
-  //     level_status: 1,
-  //   },
-  //   {
-  //     materials_name: "Material B",
-  //     level_status: 2,
-  //   },
-  //   {
-  //     materials_name: "Material C",
-  //     level_status: 3,
-  //   },
-  //   {
-  //     materials_name: "Material D",
-  //     level_status: 2,
-  //   },
-  //   {
-  //     materials_name: "Material E",
-  //     level_status: 1,
-  //   },
-  // ];
-  const [materials, setMaterials] = useState([])
+   const materials = [
+     {
+       name: "Material A",
+       amount: 50,
+       metric_unit: "mL",
+       suggested_amt: 300,
+       level_status: 1,
+     },
+     {
+       name: "Material B",
+       amount: 100,
+       metric_unit: "g",
+       suggested_amt: 200,
+       level_status: 2,
+     },
+     {
+       name: "Material C",
+       amount: 50,
+       metric_unit: "mL",
+       suggested_amt: 500,
+       level_status: 3,
+     },
+     {
+       name: "Material D",
+       amount: 200,
+       metric_unit: "kg",
+       suggested_amt: 300,
+       level_status: 2,
+     },
+     {
+       name: "Material E",
+       amount: 2,
+       metric_unit: "L",
+       suggested_amt: 10,
+       level_status: 1,
+     },
+   ];
+  // const [materials, setMaterials] = useState([])
   
   useEffect(() => {
     async function getMaterials() {
@@ -85,15 +99,16 @@ const MaterialList = ({ searchTerm, view }) => {
                     : "w-full bg-[#F1F3F8] flex justify-between items-center rounded-lg"
                 }`}
               >
-                <div className="flex gap-2 items-center">
-                  <div>
+                <div className="flex items-center justify-between w-full ">
                     <p className="pl-6 font-semibold">
-                      {material.name}
+                      {material.name} 
                     </p>
-                    {/* <p className="pl-6 font-semibold">
-                      {material.REF_METRIC.metric_unit}
-                    </p> */}
-                  </div>
+                  <p className="pl-2 pr-10 text-right font-semibold">
+                      {material.amount}{material.metric_unit}
+                  </p> 
+                  <p className="pl-2 pr-10 text-right font-semibold">
+                      {material.suggested_amt}{material.metric_unit}
+                  </p>  
                 </div>
                 
                 <div className="ml-auto">
