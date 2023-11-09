@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AddEmployee from "./AddEmployee";
 import { GET } from "../api/employees/route";
 import { useRouter } from "next/navigation";
@@ -11,12 +11,19 @@ import { BsFillGrid3X2GapFill } from "react-icons/bs";
 import { BsViewList } from "react-icons/bs";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 
+//toast
+import { toast } from "react-toastify";
+
+import useUpdateStatus from "../../hooks/useUpdateStatus";
+
 const EmployeeList = () => {
+  const { updateStatus } = useUpdateStatus();
   const [isAddModalShowed, setShowAddModal] = useState(false);
   const [selectedEmpIndex, setIndex] = useState(null);
   const [view, setView] = useState("");
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
+  const [isEmployeeListChanged, setEmployeeListChanged] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,7 +44,7 @@ const EmployeeList = () => {
       }
     }
     getEmployees();
-  }, []);
+  }, [isEmployeeListChanged]);
 
   const handleClose = () => {
     setShowAddModal(false);
@@ -48,29 +55,9 @@ const EmployeeList = () => {
   };
 
   const handleDeactivateUser = async (id) => {
-    try {
-      const response = await fetch(`/api/changestatus/${id}`, {
-        method: "PATCH",
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log(data);
-
-      const updatedEmployees = employees.map((employee) =>
-        employee.id === id
-          ? { ...employee, status: !employee.status }
-          : employee
-      );
-      setEmployees(updatedEmployees);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-
-    router.refresh();
+    //function
+    await updateStatus(id, setEmployees, employees);
+    setEmployeeListChanged((old) => !old);
   };
 
   return (
@@ -80,6 +67,7 @@ const EmployeeList = () => {
           handleClose={handleClose}
           employees={employees}
           setEmployees={setEmployees}
+          setEmployeeListChanged={setEmployeeListChanged}
         />
       )}
       <div className="w-[90%] h-fit mb-8 bg-[#D6E0F0] p-4 flex flex-col gap-4 rounded-md">
@@ -190,7 +178,9 @@ const EmployeeList = () => {
                             className="transition ease-in duration-50 hover:bg-slate-300 cursor-pointer px-6 py-2"
                             onClick={() => handleDeactivateUser(employee.id)}
                           >
-                            Deactivate User
+                            {employee.status === true
+                              ? "Deactivate"
+                              : "Activate"}
                           </li>
                           <li
                             className="transition ease-in duration-50 hover:bg-slate-300 cursor-pointer px-6 py-2"

@@ -5,7 +5,12 @@ import useSignup from "../../hooks/useSignup";
 import { New_Tegomin } from "next/font/google";
 import { useRouter } from "next/navigation";
 
-const AddEmployee = ({ handleClose, employees, setEmployees }) => {
+const AddEmployee = ({
+  handleClose,
+  employees,
+  setEmployees,
+  setEmployeeListChanged,
+}) => {
   const { signup } = useSignup();
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
@@ -68,6 +73,7 @@ const AddEmployee = ({ handleClose, employees, setEmployees }) => {
         },
       ]);
     }
+    setEmployeeListChanged((old) => !old);
     handleClose();
     console.log(selectedRole);
   };
