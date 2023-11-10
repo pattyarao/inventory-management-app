@@ -380,6 +380,7 @@ const AddProductOffer = ({ addProductToList }) => {
                             value={newMaterial.unit}
                             onChange={handleMaterialUnitChange}
                           >
+                            <option value="">Select</option>
                             <option value="mg">mg</option>
                             <option value="g">g</option>
                             <option value="mL">mL</option>
