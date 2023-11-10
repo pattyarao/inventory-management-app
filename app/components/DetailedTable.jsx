@@ -101,7 +101,8 @@ const DetailedTable = ({ reportData, reportType, choice }) => {
       // Render detailed content for reportType 2
       console.log("DETAILED MATERIALS", groupedData)
       return (
-        <div>
+                <div>
+        <h1>Table with "No Variation"</h1>
           {Object.keys(groupedData).map((materialName) => (
             <div key={materialName}>
               <h2>{materialName}</h2>
@@ -118,21 +119,59 @@ const DetailedTable = ({ reportData, reportType, choice }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {groupedData[materialName].map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.date}</td>
-                      <td>{item.material_name}</td>
-                      <td>{item.qty}</td>
-                      <td>{item.transac_type}</td>
-                      <td>{item.user}</td>
-                      <td>{item.variation}</td>
-                      <td>{item.amount}</td>
-                    </tr>
-                  ))}
+                  {groupedData[materialName]
+                    .filter((item) => item.variation === "No Variation")
+                    .map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.date}</td>
+                        <td>{item.material_name}</td>
+                        <td>{item.qty}</td>
+                        <td>{item.transac_type}</td>
+                        <td>{item.user}</td>
+                        <td>{item.variation}</td>
+                        <td>{item.amount}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
           ))}
+
+          <h1>Table with "Variation"</h1>
+          {Object.keys(groupedData).map((materialName) => (
+            <div key={materialName}>
+              <h2>{materialName}</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Material Name</th>
+                    <th>Quantity</th>
+                    <th>Transaction Type</th>
+                    <th>User</th>
+                    <th>Variation</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedData[materialName]
+                    .filter((item) => item.variation !== "No Variation")
+                    .map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.date}</td>
+                        <td>{item.material_name}</td>
+                        <td>{item.qty}</td>
+                        <td>{item.transac_type}</td>
+                        <td>{item.user}</td>
+                        <td>{item.variation}</td>
+                        <td>{item.amount}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+
           <h1>*** END OF REPORT ***</h1>
         </div>
       );

@@ -8,7 +8,7 @@ import { GET as getSummaryProducts} from '../api/summaryproducts/route';
 
 const ReportSettings = (props) => {
   const router = useRouter();
-
+  
   // State to control the expand/collapse of product selection
   const [isProductSelectionOpen, setProductSelectionOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -80,6 +80,16 @@ const ReportSettings = (props) => {
       }
     });
   };
+
+    const handleSelectAll = () => {
+      if (selectedOptions.length === options.length) {
+        // If all options are selected, deselect all
+        setSelectedOptions([]);
+      } else {
+        // If not all options are selected, select all
+        setSelectedOptions(options);
+      }
+    };
 
     // Function to handle start date change
     const handleStartDateChange = (e) => {
@@ -163,6 +173,7 @@ const ReportSettings = (props) => {
 
 
 
+
       } catch (error) {
         console.error("Error:", error);
       }
@@ -220,25 +231,31 @@ const ReportSettings = (props) => {
             </button>
           </div>
           {isProductSelectionOpen && (
-            <div>
-              <label className="text-sm font-semibold">Select Products:</label>
               <div>
-                {/* Replace ["product1", "product2", "product3"] with GET from all product in master data */}
-                {options.map((product) => (
-                  <label
-                    key={product}
-                    className="inline-flex items-center mb-2"
-                  >
-                    <input
-                      type="checkbox"
-                      className="form-checkbox mr-2"
-                      value={product}
-                      checked={selectedOptions.includes(product)}
-                      onChange={handleProductChange}
-                    />
-                    {product}
-                  </label>
-                ))}
+                    <label className="text-sm font-semibold">Select Products:</label>
+                      <div>
+                  {options.map((product) => (
+                <label key={product} className="inline-flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox mr-2"
+                    value={product}
+                    checked={selectedOptions.includes(product) || (selectedOptions.length === options.length)}
+                    onChange={handleProductChange}
+                  />
+                  {product}
+                </label>
+              ))}
+              <label className="inline-flex items-center mb-2">
+                <input
+                  type="checkbox"
+                  className="form-checkbox mr-2"
+                  value="Select All"
+                  checked={selectedOptions.length === options.length}
+                  onChange={handleSelectAll}
+                />
+                Select All
+              </label>
                 {/* Add more product options as needed */}
               </div>
             </div>
