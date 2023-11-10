@@ -3,10 +3,60 @@ import { useState, useEffect } from "react";
 import RecordManualCount from "./RecordManualCount";
 import ClearManualCount
  from "./ClearManualCount";
-
+import { GET as getAllVariants} from "../api/purchasevariant/route";
+import { GET as getAllMaterials} from "../api/purchase/route";
 
 const ManualCount
  = () => {
+  const [materialList, setMaterialList] = useState([]);
+  const [variantsList, setVariantsList] = useState([]);
+
+  useEffect(() => {
+    async function getVariants() {
+      try {
+        const response = await getAllVariants();
+        const { variants, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          
+          setVariantsList(variants);
+          console.log('Variants Data:', variants);
+        }
+      } catch (error) {
+        console.error(error)
+        
+      }
+    }
+
+    getVariants();
+  }, []);
+
+
+  useEffect(() => {
+
+    async function getMaterials() {
+      try {
+        const response = await getAllMaterials();
+        const { materials, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          setMaterialList(materials);
+          console.log('Material Data:', materials);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getMaterials();
+  }, []);
+
+
+
+
   //stores all ordered products
   const [ManualCount
     , setManualCount
@@ -39,8 +89,8 @@ const ManualCount
   ]);
 
 
-  console.log(ManualCount
-    );
+  console.log(materialList)
+  console.log(variantsList)
 
 
 
@@ -97,7 +147,8 @@ const ManualCount
     }
   };
 
-
+  console.log(materialList)
+  console.log(variantsList)
   return (
     <div
       className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
@@ -140,7 +191,7 @@ const ManualCount
                       </div>
 
 
-                      {ManualCount
+                      {materialList
                       .map((product, index) => (
                         <div key={index}>
                           <div
