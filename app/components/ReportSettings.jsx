@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+// import { useRouter } from "next/router";
 import DetailedTable from "../components/DetailedTable"
 import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
 import { GET as getDetailedProducts} from '../api/detailedproducts/route';
