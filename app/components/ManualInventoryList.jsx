@@ -192,7 +192,7 @@ const ManualCount
 
 
                       {materialList
-                      .map((product, index) => (
+                      .map((material, index) => (
                         <div key={index}>
                           <div
                             className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
@@ -206,13 +206,15 @@ const ManualCount
 
 
                               <div className="font-black text-xl ms-3 mt-2">
-                                {product.name}
+                                {material.name}
                               </div>
                             </div>
 
 
-                            {product.variants.map((variant, variantIndex) => (
+                            {variantsList.map((variant, variantIndex) => (
+                              
                               <>
+                                {/* add another if statement here check if material_id under variant matches with actual material id*/}
                                 {variantIndex !== 0 ? (
                                   <div className="col-span-1 me-5 mt-3 " />
                                 ) : null}
@@ -220,7 +222,7 @@ const ManualCount
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
                                     <li
-                                      value={variant.variantName}
+                                      value={variant.name}
                                       onChange={(event) =>
                                         handleVariantNameChange(
                                           index,
@@ -231,7 +233,7 @@ const ManualCount
                                       id="large"
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-                                      {variant.variantName}
+                                      {variant.name}
                                     </li>
                                     
                                   </div>
