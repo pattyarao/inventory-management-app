@@ -12,7 +12,7 @@ const MaterialStockLevel = () => {
   };
 
   return (
-    <div className="p-10" style={{ backgroundColor: "#F1F3F8", color: "black" }}>
+    <div className="p-8" style={{ backgroundColor: "#F1F3F8", color: "black" }}>
       {/* Header */}
       <div
         className="flex items-center justify-center w-full h-16 px-10 bg-blue-400 rounded-md"
@@ -25,7 +25,7 @@ const MaterialStockLevel = () => {
 
       {/* Search bar */}
       <div className="w-full mt-8">
-        <div className="flex space-x-4">
+        <div className=" p-6">
           <input
             type="text"
             placeholder="Search Material"
