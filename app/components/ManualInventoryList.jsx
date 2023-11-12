@@ -7,36 +7,52 @@ import ClearManualCount
 
 const ManualCount
  = () => {
-  //stores all ordered products
+  //stores all products
+  
   const [ManualCount
     , setManualCount
   ] = useState([
+    
     {
       name: "Material A",
       metric: "0",
-      variants: [{ variantName: "MA-V1", amount: 0, unit: "0", quantity: 1 }, { variantName: "MA-V2", amount: 0, unit: "0", quantity: 1 }],
+      variants: [
+        { variantName: "MA-V1", amount: 0, unit: "0", quantity: 1 }, 
+       // { variantName: "MA-V2", amount: 0, unit: "0", quantity: 0 },
+      ],
     },
     {
       name: "Material B",
       metric: "1",
-      variants: [{ variantName: "MB-V2", amount: 0, unit: "0", quantity: 1 }],
+      variants: [
+        { variantName: "MB-V1", amount: 0, unit: "0", quantity: 0 },
+       // { variantName: "MB-V2", amount: 0, unit: "0", quantity: 0 },
+      ],
     },
     {
       name: "Material C",
       metric: "0",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
+      variants: [
+        { variantName: "MC-V1", amount: 0, unit: "0", quantity: 0 },
+    ],
     },
     {
       name: "Material D",
       metric: "1",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
+      variants: [
+        { variantName: "MD-V1", amount: 0, unit: "0", quantity: 0 },
+      ],
     },
     {
       name: "Material E",
       metric: "1",
-      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
+      variants: [
+        { variantName: "ME-V1", amount: 0, unit: "0", quantity: 0 },
+      ],
     },
   ]);
+
+  
 
 
   console.log(ManualCount
@@ -138,17 +154,19 @@ const ManualCount
                           Partial Amount
                         </div>
                       </div>
+                      
 
 
                       {ManualCount
                       .map((product, index) => (
                         <div key={index}>
                           <div
-                            className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
+                            className="w-full p-3 mb-1 grid grid-cols-5 text-xs rounded-lg"
                             style={{
                               backgroundColor: "#D6E0F0",
                               color: "#27374D",
                             }}
+      
                           >
                             <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
        
@@ -273,6 +291,8 @@ const ManualCount
 
     </div>
   );
+
+
 };
 
 
