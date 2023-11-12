@@ -8,52 +8,85 @@ import { GET as getAllMaterials} from "../api/purchase/route";
 
 const ManualCount
  = () => {
-  //stores all products
-  
+  const [materialList, setMaterialList] = useState([]);
+  const [variantsList, setVariantsList] = useState([]);
+
+  useEffect(() => {
+    async function getVariants() {
+      try {
+        const response = await getAllVariants();
+        const { variants, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          
+          setVariantsList(variants);
+          console.log('Variants Data:', variants);
+        }
+      } catch (error) {
+        console.error(error)
+        
+      }
+    }
+
+    getVariants();
+  }, []);
+
+
+  useEffect(() => {
+
+    async function getMaterials() {
+      try {
+        const response = await getAllMaterials();
+        const { materials, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          setMaterialList(materials);
+          console.log('Material Data:', materials);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getMaterials();
+  }, []);
+
+
+
+
+  //stores all ordered products
   const [ManualCount
     , setManualCount
   ] = useState([
-    
     {
       name: "Material A",
       metric: "0",
-      variants: [
-        { variantName: "MA-V1", amount: 0, unit: "0", quantity: 1 }, 
-       // { variantName: "MA-V2", amount: 0, unit: "0", quantity: 0 },
-      ],
+      variants: [{ variantName: "MA-V1", amount: 0, unit: "0", quantity: 1 }, { variantName: "MA-V2", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material B",
       metric: "1",
-      variants: [
-        { variantName: "MB-V1", amount: 0, unit: "0", quantity: 0 },
-       // { variantName: "MB-V2", amount: 0, unit: "0", quantity: 0 },
-      ],
+      variants: [{ variantName: "MB-V2", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material C",
       metric: "0",
-      variants: [
-        { variantName: "MC-V1", amount: 0, unit: "0", quantity: 0 },
-    ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material D",
       metric: "1",
-      variants: [
-        { variantName: "MD-V1", amount: 0, unit: "0", quantity: 0 },
-      ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
     {
       name: "Material E",
       metric: "1",
-      variants: [
-        { variantName: "ME-V1", amount: 0, unit: "0", quantity: 0 },
-      ],
+      variants: [{ variantName: "0", amount: 0, unit: "0", quantity: 1 }],
     },
   ]);
-
-  
 
 
   console.log(materialList)
@@ -156,19 +189,17 @@ const ManualCount
                           Partial Amount
                         </div>
                       </div>
-                      
 
 
                       {materialList
                       .map((material, index) => (
                         <div key={index}>
                           <div
-                            className="w-full p-3 mb-1 grid grid-cols-5 text-xs rounded-lg"
+                            className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
                             style={{
                               backgroundColor: "#D6E0F0",
                               color: "#27374D",
                             }}
-      
                           >
                             <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
        
@@ -183,7 +214,8 @@ const ManualCount
                             {variantsList.map((variant, variantIndex) => (
                               
                               <>
-                                {/* add another if statement here check if material_id under variant matches with actual material id*/}
+                                {variant.material_id === material.id ? (<>
+                                
                                 {variantIndex !== 0 ? (
                                   <div className="col-span-1 me-5 mt-3 " />
                                 ) : null}
@@ -261,6 +293,7 @@ const ManualCount
                                     }
                                   />
                                 </div>
+                                </>) : null}
                               </>
                              
                             ))}
@@ -295,8 +328,6 @@ const ManualCount
 
     </div>
   );
-
-
 };
 
 
