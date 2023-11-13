@@ -8,7 +8,7 @@ import { GET } from '../api/materialmaster/route';
 
 const MaterialList = ({ searchTerm, view }) => {
   const [materials, setMaterials] = useState([]);
-  const [sortOption, setSortOption] = useState('highPriority'); // Default sort option
+  const [sortOption, setSortOption] = useState('nameAscending'); // Default sort option
 
   useEffect(() => {
     async function getMaterials() {
@@ -48,17 +48,17 @@ const MaterialList = ({ searchTerm, view }) => {
   }, []);
 
   // calculate the priority of restock
-  const calculatePriority = (current, suggested) => {
-    const disparityPercentage = (current / suggested) * 100;
+  // const calculatePriority = (current, suggested) => {
+  //   const disparityPercentage = (current / suggested) * 100;
 
-    if (disparityPercentage < 50) {
-      return 1; // High priority
-    } else if (disparityPercentage === 50) {
-      return 2; // Medium priority
-    } else {
-      return 3; // Low priority
-    }
-  };
+  //   if (disparityPercentage < 50) {
+  //     return 1; // High priority
+  //   } else if (disparityPercentage === 50) {
+  //     return 2; // Medium priority
+  //   } else {
+  //     return 3; // Low priority
+  //   }
+  // };
 
   // Filter materials based on the search term
   const filteredMaterials = materials.filter((material) =>
@@ -68,10 +68,10 @@ const MaterialList = ({ searchTerm, view }) => {
   // Sort materials based on selected option
   const sortedMaterials = filteredMaterials.slice().sort((a, b) => {
     switch (sortOption) {
-      case 'highPriority':
-        return calculatePriority(a.qty_available, a.suggested_amt) - calculatePriority(b.qty_available, b.suggested_amt);
-      case 'lowPriority':
-        return calculatePriority(b.qty_available, b.suggested_amt) - calculatePriority(a.qty_available, a.suggested_amt);
+      // case 'highPriority':
+      //   return calculatePriority(a.qty_available, a.suggested_amt) - calculatePriority(b.qty_available, b.suggested_amt);
+      // case 'lowPriority':
+      //   return calculatePriority(b.qty_available, b.suggested_amt) - calculatePriority(a.qty_available, a.suggested_amt);
       case 'nameAscending':
         return a.name.localeCompare(b.name);
       case 'nameDescending':
@@ -109,8 +109,8 @@ const MaterialList = ({ searchTerm, view }) => {
           value={sortOption}
           onChange={handleSortChange}
         >
-          <option value="highPriority">High Priority</option>
-          <option value="lowPriority">Low Priority</option>
+          {/* <option value="highPriority">High Priority</option>
+          <option value="lowPriority">Low Priority</option> */}
           <option value="nameAscending">Sort by Name (A-Z)</option>
           <option value="nameDescending">Sort by Name (Z-A)</option>
         </select>
@@ -126,7 +126,7 @@ const MaterialList = ({ searchTerm, view }) => {
                   view === 'grid'
                     ? 'grid grid-cols-4 gap-4 items-center'
                     : 'flex justify-between items-center'
-                } bg-[#F1F3F8] rounded-lg`}
+                } p-2 bg-[#F1F3F8] rounded-lg`}
               >
                 <p className="pl-10 font-semibold">{material.name}</p>
                 <p className="p-2 text-right font-semibold">
@@ -137,7 +137,7 @@ const MaterialList = ({ searchTerm, view }) => {
                   {material.suggested_amt}
                   {material.REF_METRIC.metric_unit}
                 </p>
-                <p
+                {/* <p
                   className={`w-fit px-8 py-8 rounded-md rounded-tl-none rounded-bl-none ${
                     calculatePriority(material.qty_available, material.suggested_amt) === 1
                       ? 'bg-red-300'
@@ -146,6 +146,11 @@ const MaterialList = ({ searchTerm, view }) => {
                       : calculatePriority(material.qty_available, material.suggested_amt) === 3
                       ? 'bg-lime-200'
                       : 'bg-neutral-200'
+                  }`}
+                ></p> */}
+                <p
+                  className={`w-fit p-4 rounded-md rounded-tl-none rounded-bl-none ${
+                    'bg-[#F1F3F8]'
                   }`}
                 ></p>
               </div>
