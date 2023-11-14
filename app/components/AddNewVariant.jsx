@@ -89,7 +89,7 @@ const AddNewVariant = (props) => {
 
       const handleSubmit = async () => {
           const convertedAmt = convertAmount(newVariant.amt, newVariant.unit); // Implement convertToDefaultUnit function
-          console.log
+          console.log(newVariant)
           setNewVariant({
             ...newVariant,
             amt: convertedAmt,
@@ -218,6 +218,7 @@ const AddNewVariant = (props) => {
                       type="button"
 
                       onClick={handleSubmit}
+                      >
                       Add Variant
                     </button>
                   </div>
