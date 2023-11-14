@@ -17,20 +17,12 @@ useEffect(() => {
   // Fetch products from your Supabase API
   async function fetchProducts() {
     try {
-      const response = await GET(); // Make an API request to get products
+      const response = await GET();
       const data = await response.json();
 
       if (response.status === 200) {
-        // If the request is successful, update the productList state
-        const productsWithStatus = data.products.map((product) => ({
-          ...product,
-          status: "Active", // Set the initial status as "Active"
-        }));
-
-        console.log("Products with materials:", productsWithStatus);
-        setProductList(productsWithStatus);
+        setProductList(data.products);
       } else {
-        // Handle any error here
         console.error("Error fetching products:", data.error);
       }
     } catch (error) {
@@ -55,10 +47,11 @@ const toggleProductStatus = (productToToggle) => {
   const updatedProductList = productList.map((product) => {
     if (product.name === productToToggle.name) {
       // Toggle the status for the selected product
-      return {
+      const updatedProduct = {
         ...product,
-        status: product.status === "Active" ? "Inactive" : "Active",
+        status: !product.status,
       };
+      return updatedProduct;
     }
     return product;
   });
@@ -121,13 +114,13 @@ const toggleProductStatus = (productToToggle) => {
                             
                           <button
                               className={`${
-                                product.status === "Active"
+                                product.status
                                   ? "bg-green-500"
                                   : "bg-red-500"
                               } text-white text-lg font-bold w-1/2 mx-auto rounded-lg`}
                               disabled
                             >
-                            {product.status}
+                            {product.status ? "Active" : "Inactive"}
                             </button>
                           </div>
                         </div>

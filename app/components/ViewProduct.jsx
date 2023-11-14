@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { PATCH } from "../api/productstatus/route";
 
 
 const ViewProduct = ({ product, onClose, toggleProductStatus }) => {
@@ -9,15 +10,34 @@ const ViewProduct = ({ product, onClose, toggleProductStatus }) => {
     const [showModal, setShowModal] = useState(true);
     const [showOverlay, setShowOverlay] = useState(true);
     const [buttonLabel, setButtonLabel] = useState(
-      product.status === "Active" ? "Deactivate" : "Reactivate"
+      product.status ? "Deactivate" : "Reactivate"
     );
 
-    const handleStatusToggle = () => {
-      toggleProductStatus(product); // Call the function to toggle the product's status
-      // Update the button label
-      setButtonLabel((prevLabel) =>
-        prevLabel === "Deactivate" ? "Reactivate" : "Deactivate"
-      );
+    useEffect(() => {
+      setButtonLabel(product.status ? "Deactivate" : "Reactivate");
+    }, [product.status]);
+
+    const handleStatusToggle = async () => {
+      try {
+        console.log("Before update: ", product);
+    
+        // Update the status in Supabase
+        await PATCH(product.id, !product.status);
+    
+        // Update the local product status
+        const updatedProduct = { ...product, status: !product.status };
+        console.log("After update: ", updatedProduct);
+    
+        // Call the function to toggle the product's status locally
+        toggleProductStatus(updatedProduct);
+    
+        // Update the button label
+        setButtonLabel((prevLabel) =>
+          prevLabel === "Deactivate" ? "Reactivate" : "Deactivate"
+        );
+      } catch (error) {
+        console.error("Error updating product status:", error);
+      }
     };
 
     //closes the modal and removes all previous personalizations
