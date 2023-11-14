@@ -250,7 +250,7 @@ const AddMaterialPurchase = (props) => {
                             handleAddtoPurchaseList();
                           }}
                         >
-                        Add Products
+                        Add Materials
                       </button>
                     </div>
                   </div>

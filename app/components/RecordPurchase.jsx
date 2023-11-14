@@ -38,17 +38,13 @@ const RecordPurchase = (props) => {
         material.variants.forEach((variant) => {
           if (variant.variantName === "") {
             // Add to directPurchases
-            let amt = variant.amount; // Default to variant.amount
-            if (variant.unit === "1") {
-              amt = variant.amount * 1000;
-            } else if (variant.unit === "2") {
-              amt = variant.amount / 1000;
-            }
+            let ratio = parseFloat(variant.unit)
+            let amount = variant.amount * ratio
             
             const newDirectPurchase = {
               material_id: material.id,
               qty_purchased: variant.quantity,
-              amt: variant.amount,
+              amt: amount,
             };
             updatedDirectPurchases.push(newDirectPurchase);
           } else {
@@ -78,12 +74,8 @@ const RecordPurchase = (props) => {
         material.variants.forEach((variant) => {
           if (variant.variantName === "") {
             // Calculate the new quantity for direct purchases based on the variant's unit
-            let amt = variant.amount; // Default to variant.amount
-            if (variant.unit === "1") {
-              amt = variant.amount * 1000;
-            } else if (variant.unit === "2") {
-              amt = variant.amount / 1000;
-            }
+            let ratio = parseFloat(variant.unit)
+            let amt = variant.amount * ratio
     
             // Update the material's quantity available with the direct purchase quantity
             updatedMaterial.qty_available += amt * variant.quantity;

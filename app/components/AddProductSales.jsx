@@ -1,22 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
+import { GET } from "../api/order/route";
 
-
-const AddProductSales = () => {
+const AddProductSales = (props) => {
 
     //stores all products in the database
-    const [productsList, setProductsList] = useState([
-        "Apple",
-        "Baboy",
-        "Cat Food",
-        "Dog Food"
-    ]);
+    const [productsList, setProductsList] = useState([]);
+    const [filteredProductsList, setFilteredProductsList] = useState([]);
+    const [error, setError] = useState(null);
 
     
     
     //determines if the modal for adding a product is shown or not
     const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+      async function getProducts() {
+        try {
+          const response = await GET();
+          const { products, error } = await response.json();
+    
+          if (error) {
+            setError(error);
+            console.log("err0 " + error);
+          } else {
+            // Filter out products  that are already in props.orderList
+
+            const filteredProducts = products.filter((product) =>
+            props.orderList.every(
+                 (orderProduct) => orderProduct.id !== product.id
+               )
+             );
+
+            setProductsList(filteredProducts);
+            setFilteredProductsList(filteredProducts);
+            setLoading(false); // Data has been loaded
+          }
+        } catch (error) {
+          setError(error.message);
+        }
+      }
+      getProducts();
+    }, [showModal]);
+
+    
+    
+    
 
     //closes the modal and removes all previous personalizations
     const handleClose= () => {
@@ -27,48 +57,73 @@ const AddProductSales = () => {
       };
 
     //Sort and Search Mechanisms
-    const [filteredProductsList, setFilteredProductsList] = useState(productsList);
+    
     const [searchTerm, setSearchTerm] = useState('');
     const [sortOption, setSortOption] = useState('name-asc'); // Initialize the default sorting option
+
+    const handleAddtoOrderList = () => {
+      // Filter selected products based on the 'checked' property
+      const selectedProducts = filteredProductsList.filter((mat) => mat.checked);
+  
+      // Call the parent component's function to update selected products
+      props.onAddProducts(selectedProducts);
+      // Close the modal or perform any other action
+      setShowModal(false);
+    };
+  
   
     const handleSearchChange = (e) => {
-        const searchValue = e.target.value;
-        setSearchTerm(searchValue);
-    
-        if (searchValue === '') {
-          // Show all products when the search input is empty
-          setFilteredProductsList(productsList);
-        } else {
-          // Filter products based on the search term
-          const filteredProducts = productsList.filter((product) =>
-            product.toLowerCase().includes(searchValue.toLowerCase())
-          );
-          setFilteredProductsList(filteredProducts);
-        }
+      const searchValue = e.target.value;
+      setSearchTerm(searchValue);
+  
+      if (searchValue === "") {
+        // Show all products when the search input is empty
+        setFilteredProductsList(productsList);
+      } else {
+        // Filter products based on the search term
+        const filteredProducts = productsList.filter((product) =>
+          product.name.toLowerCase().includes(searchValue.toLowerCase()),
+        );
+        setFilteredProductsList(filteredProducts);
+      }
     };
   
     const handleSortChange = (e) => {
       setSortOption(e.target.value);
-
+  
       if (sortOption === "name-desc") {
         filteredProductsList.sort((a, b) => {
           // Compare two items for sorting in descending order (Z-A)
-          const nameA = a; 
-          const nameB = b; 
-    
+          const nameA = a.name;
+          const nameB = b.name;
+  
           // Use localeCompare to perform a case-insensitive comparison
           return nameA.localeCompare(nameB);
         });
-    } else if (sortOption === "name-asc") {
+      } else if (sortOption === "name-asc") {
         filteredProductsList.sort((a, b) => {
           // Compare two items for sorting in ascending order (A-Z)
-          const nameA = a; 
-          const nameB = b; 
-    
+          const nameA = a.name;
+          const nameB = b.name;
+  
           // Use localeCompare to perform a case-insensitive comparison
           return nameB.localeCompare(nameA);
         });
       }
+    };
+
+    const handleCheckboxChange = (product) => {
+      const updatedProducts = filteredProductsList.map((item) => {
+        if (item === product) {
+          return {
+            ...item,
+            checked: !item.checked, // Toggle the checked status
+          };
+        }
+        return item;
+      });
+      setProductsList(updatedProducts);
+      setFilteredProductsList(updatedProducts);
     };
   
    
@@ -141,15 +196,24 @@ const AddProductSales = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredProductsList.map((product, index) => (
-                                <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                                    <th scope="row" className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    <input id="vue-checkbox" type="checkbox" value="" className="me-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                                        {product}
-                                    </th>
-                                
-                                </tr>
-                                ))}
+                            {filteredProductsList.map((product, index) => (
+                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={product.id}>
+                              <th
+                                scope="row"
+                                className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                              >
+                                <input
+                                  id={`checkbox-${product.id}`} // Use a unique ID for each checkbox
+                                  type="checkbox"
+                                  value=""
+                                  checked={product.checked} // Bind the checked status to the 'checked' property
+                                  onChange={() => handleCheckboxChange(product)} // Handle checkbox change
+                                  className="me-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                />
+                                {product.name}
+                              </th>
+                            </tr>
+                          ))}
                             </tbody>
                         </table>
                         ):(
@@ -174,7 +238,7 @@ const AddProductSales = () => {
                       className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#097969"}}
                       type="button"
-                      onClick={handleClose}
+                      onClick={handleAddtoOrderList}
                     >
                       Add Products
                     </button>

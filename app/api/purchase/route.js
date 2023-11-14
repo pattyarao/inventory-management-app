@@ -6,6 +6,8 @@ export async function GET() {
     .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
     .eq("status", "TRUE") 
 
+    console.log(materials)
+
   if (error) {
     return new Response(JSON.stringify({ error }), {
       status: 500,

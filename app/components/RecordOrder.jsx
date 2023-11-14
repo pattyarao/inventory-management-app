@@ -1,21 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { PATCH, POST } from "../api/order/route";
 
 const RecordOrder = (props) => {
 
-
-    const [shortageList, setShortageList] = useState([
-        { name: "Material A", quantity: 5, unit: "g" },
-        { name: "Material B", quantity: 10, unit: "g" },
-        { name: "Material C", quantity: 2, unit: "ml" },
-        { name: "Material D", quantity: 3, unit: "ml" }
-      ]);
-      
-
+  const [userID, setUserID] = useState("b3a1e7a7-2932-435b-b07b-9a0d64cf4637");
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(true);
   
+  const [orders, setOrders] = useState([
+    {order_id: "",
+    product_id: "",
+    qty_ordered: 0}
+  ]);
+
+  const [newQuantities, setNewQuantities] = useState([
+    {material_id: "",
+    newAmount: 0}
+  ]);
+
+  useEffect(() => {
+    async function summarizeOrders() {
+      const updatedOrders = [];
+      
+      props.orderList.forEach((product) => {
+     
+            
+            const newOrder = {
+              product_id: product.id,
+              qty_ordered: product.quantity,
+            };
+            updatedOrders.push(newOrder);
+ 
+      });
+  
+      // Update state with the summarized purchases
+      setOrders(updatedOrders);
+    }
+
+    
+    summarizeOrders();
+  }, [props]);
+
+  console.log(props.orderList)
+
+ 
+
+  const handleSubmit = async () => {
+   
+
+    try {
+      // Assuming you have the 'variants' data available
+      const postResult = await POST(orders, userID);
+      setShowModal(true)
+      if (postResult.error) {
+        setError(postResult.error);
+        console.log(postResult.error);
+      } else {
+   
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+   
+  };
 
   return (
     <>
@@ -23,7 +73,7 @@ const RecordOrder = (props) => {
         className="text-sm px-6 py-3 ms-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
         style={{ backgroundColor: "#097969", color: "white" }}
         type="button"
-        onClick={() => setShowModal(true)}
+        onClick={() => handleSubmit()}
       >
         Record Order
       </button>

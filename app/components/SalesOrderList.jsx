@@ -7,16 +7,7 @@ import RecordOrder from "./RecordOrder";
 
 const SalesOrderList = () => {
   //stores all ordered products
-  const [orderList, setOrderList] = useState([
-    "Apple",
-    "Baboy",
-    "Cat Food",
-    "Dog Food",
-    "Elephante",
-    "Footlong",
-    "Hatdog ni Boss",
-    "Random"
-]);
+  const [orderList, setOrderList] = useState([]);
 
   const [edit, setEdit] = useState(false);
 
@@ -33,29 +24,27 @@ const SalesOrderList = () => {
     });
   }, [orderList]);
 
-  //handles changes with the input if number is manually typed in
   const handleQtyChange = (index, event) => {
-    const newQtyValues = [...qtyValues];
-    newQtyValues[index] = parseInt(event.target.value, 10);
-    setQtyValues(newQtyValues);
+    const newOrderList = [...orderList];
+    newOrderList[index].quantity =
+      event.target.valueAsNumber;
+    setOrderList(newOrderList);
   };
 
-  //increments the value in the number input field
   const handleIncrement = (index) => {
-    const newQtyValues = [...qtyValues];
-    newQtyValues[index]++;
-    setQtyValues(newQtyValues);
+    const newOrderList = [...orderList];
+    newOrderList[index].quantity ++;
+    setOrderList(newOrderList);
   };
 
-  //decrements the value in the number input field
   const handleDecrement = (index) => {
-    const newQtyValues = [...qtyValues];
-    if (newQtyValues[index] > 0) {
-      newQtyValues[index]--;
-      setQtyValues(newQtyValues);
+    const newOrderList = [...orderList];
+    if (newOrderList[index].quantity > 1) {
+      newOrderList[index].quantity--;
+      setOrderList(newOrderList);
     }
   };
-
+  
   const handleClear = () => {
     setQtyValues([]); // Clear qtyValues
     setOrderList([]); // Clear orderList
@@ -70,6 +59,17 @@ const SalesOrderList = () => {
     const newOrderList = orderList.slice(0, index).concat(orderList.slice(index + 1));
     setOrderList(newOrderList);
   };
+
+  const handleAddProducts = (products) => {
+    const productsWithQty = products.map((product) => ({
+      ...product,
+      quantity: 1
+    }));
+  
+    setOrderList(orderList.concat(productsWithQty));
+  };
+
+  
   
   
 
@@ -119,7 +119,7 @@ const SalesOrderList = () => {
                           }}
                         >
                           <div className="col-span-3 md:col-span-4  font-black text-xl ms-5 mt-2">
-                            {product}
+                            {product.name}
                           </div>
 
                           <div className="col-span-2 md:col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
@@ -134,7 +134,7 @@ const SalesOrderList = () => {
                             <input
                               type="number"
                               className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
-                              value={qtyValues[index]}
+                              value={orderList[index].quantity}
                               onChange={(event) =>
                                 handleQtyChange(index, event)
                               }
@@ -192,11 +192,11 @@ const SalesOrderList = () => {
                 )}
               </div>
               <div className="flex justify-end">
-                <AddProductSales />
+                <AddProductSales orderList={orderList} onAddProducts={handleAddProducts} />
                 {orderList.length !== 0 ? (
                     <>
                     <ClearOrderList onConfirmClear={() => handleClear()}/>
-                    <RecordOrder/>
+                    <RecordOrder orderList={orderList} />
                   </>
                 ) : null}
               </div>
