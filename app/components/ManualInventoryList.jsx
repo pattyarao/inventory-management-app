@@ -188,6 +188,10 @@ const ManualCount
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Partial Amount
                         </div>
+                        {/* <div className="col-span-1 me-5 text-sm flex items-center justify-center">
+                          Unit
+                        </div> */}
+                        <div className="col-span-1 text-sm ms-5">Unit</div>
                       </div>
 
 
@@ -263,7 +267,10 @@ const ManualCount
                                         variantIndex,
                                         event,
                                       )
+                                      
                                     }
+                                    
+                                    
                                   />
                                   <button
                                     onClick={() =>
@@ -291,8 +298,13 @@ const ManualCount
                                         event,
                                       )
                                     }
+                                    
                                   />
                                 </div>
+                                <div className="ml-5 col-span-1 flex flex-row h-11 w-full rounded-lg relative bg-transparent">
+                                  
+                                  <button>Hi</button>
+                                  </div>
                                 </>) : null}
                               </>
                              
