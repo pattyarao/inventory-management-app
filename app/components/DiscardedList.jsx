@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { POST, GetReasons } from "../api/discard/route";
+import { POST } from "../api/discard/route";
 import AddMaterialPurchase from "./AddMaterialPurchase";
+import { GETMETRIC, GETREASON } from "../api/helper/route";
+import RecordDiscard from "./RecordDiscard";
 
 const DiscardedList = () => {
   //stores all ordered products
@@ -11,18 +13,21 @@ const DiscardedList = () => {
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [metricList, setMetricList] = useState([])
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await GetReasons()
+        const response = await GETREASON()
         const {reason, error} = await response.json()
-
-        if (error ) {
+        const response2 = await GETMETRIC()
+        const {metric, error2} = await response2.json()
+        if (error || error2 ) {
           setError(error)
         } else {
           setReasonList(reason)
           setLoading(false);
+          setMetricList(metric)
         }
       } catch (error) {
         setError(error);
@@ -37,65 +42,88 @@ const DiscardedList = () => {
     console.log('Reasons List: ', reasonList)
   }, [reasonList])
 
+  useEffect(() => {
+    console.log('Discard List: ', discardedList)
+  }, [discardedList])
+
+  useEffect(() => {
+    console.log('Metric: ', metricList)
+  }, [metricList])
+
   const handleAddMaterials = (materials) => {
     const discardWithVariants = materials.map((material) => ({
       ...material,
+      quantity: 1,
       variants: [{ variantName: "", amount: 0, unit: "", quantity: 1 }],
     }));
-  
     setDiscardedList(discardedList.concat(discardWithVariants));
   };
 
-  const addVariant = (productIndex) => {
-    const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
-    const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants.push(newVariant);
-    setDiscardedList(newDiscardedList);
-  };
+  // const addVariant = (productIndex) => {
+  //   const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
+  //   const newDiscardedList = [...discardedList];
+  //   newDiscardedList[productIndex].variants.push(newVariant);
+  //   setDiscardedList(newDiscardedList);
+  // };
   
   //handles changes with the input if number is manually typed in
-  const handleVariantNameChange = (productIndex, variantIndex, event) => {
-    const newDiscardedList = [...discardedList];
-    if (event.target.value === "Add New Variant") {
+  // const handleVariantNameChange = (productIndex, variantIndex, event) => {
+  //   const newDiscardedList = [...discardedList];
+  //   if (event.target.value === "Add New Variant") {
       
-      return;
-    }
-    newDiscardedList[productIndex].variants[variantIndex].variantName =
-      event.target.value;
-    setDiscardedList(newDiscardedList);
-  };
+  //     return;
+  //   }
+  //   newDiscardedList[productIndex].variants[variantIndex].variantName =
+  //     event.target.value;
+  //   setDiscardedList(newDiscardedList);
+  // };
 
-  const handleUnitChange = (productIndex, variantIndex, event) => {
+  const handleUnitChange = (productIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].unit =
-      event.target.value;
+    newDiscardedList[productIndex].unit = event.target.value;
     setDiscardedList(newDiscardedList);
   };
   
   const handleQtyChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].quantity =
-      event.target.valueAsNumber;
+    // newDiscardedList[productIndex].variants[variantIndex].quantity =
+    //   event.target.valueAsNumber;
+
+    // test
+    newDiscardedList[productIndex].quantity = event.target.valueAsNumber;
+
+    console.log('reached')
+    //console.log("item", newDiscardedList[productIndex].quantity)
     setDiscardedList(newDiscardedList);
   };
   
   const handleAmtChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].amount =
-      event.target.valueAsNumber;
+    // newDiscardedList[productIndex].variants[variantIndex].amount =
+    //   event.target.valueAsNumber;
+
+    // test
+    newDiscardedList[productIndex].amount = event.target.valueAsNumber;
+    
     setDiscardedList(newDiscardedList);
   };
   
   const handleIncrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].quantity++;
+
+    if (!newDiscardedList[productIndex].quantity) {
+      newDiscardedList[productIndex].quantity = 1;
+    }
+
+    newDiscardedList[productIndex].quantity++;
     setDiscardedList(newDiscardedList);
   };
   
   const handleDecrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
-    if (newDiscardedList[productIndex].variants[variantIndex].quantity > 1) {
-      newDiscardedList[productIndex].variants[variantIndex].quantity--;
+    
+    if (newDiscardedList[productIndex].quantity > 1 && newDiscardedList[productIndex].quantity) {
+      newDiscardedList[productIndex].quantity--;
       setDiscardedList(newDiscardedList);
     }
   };
@@ -111,7 +139,11 @@ const DiscardedList = () => {
     setDiscardedList(newDiscardedList);
   };
   
-
+  const handleReasonChange = (productIndex, event) => {
+    const newDiscardedList = [...discardedList];
+    newDiscardedList[productIndex].reason = event.target.value;
+    setDiscardedList(newDiscardedList);
+  }
 
   return (
     <div
@@ -233,15 +265,17 @@ const DiscardedList = () => {
                                   <div className="relative">
                                     <select
                                       id="large"
-                                      value={variant.unit}
+                                      value={product.unit}
                                       onChange={(event) =>
-                                        handleUnitChange(index, variantIndex, event)
+                                        handleUnitChange(index, event)
                                       }
                                       class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-                                      <option value="0">g</option>
-                                      <option value="1">mg</option>
-                                      <option value="2">kg</option>
+                                      {metricList.map((metric, index) => (
+                                        <option key={index} value={metric.id}>
+                                          {metric.metric_unit}
+                                        </option>
+                                      ))}
                                     </select>
                                   </div>
                                 </div>
@@ -250,12 +284,13 @@ const DiscardedList = () => {
                                     <select
                                       id="large"
                                       onChange={(event) =>
-                                        handleUnitChange(index, variantIndex, event)
+                                        handleReasonChange(index, event)
                                       }
                                       class="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
                                     >
+                                      <option>Select</option>
                                       {reasonList.map((reason, index) => (
-                                        <option key={index}>{reason.reason}</option>
+                                        <option key={index} value={reason.id}>{reason.reason}</option>
                                       ))}
                                       <option>Add New Reason</option>
                                       <option disabled>─────────────</option>
@@ -283,11 +318,11 @@ const DiscardedList = () => {
                                   <input
                                     type="number"
                                     className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
-                                    value={variant.quantity}
+                                    value={product.quantity}
                                     onChange={(event) =>
                                       handleQtyChange(index, variantIndex,event)
                                     }
-                                    disabled={product.material_id ? true : false}
+                                    disabled={product.material_id ? false : true}
                                   />
                                   
                                 {product.material_id ? 
@@ -357,7 +392,15 @@ const DiscardedList = () => {
                   )}
                 </div>
                 <div className="flex justify-end">
-                  {discardedList.length !== 0 ? <AddMaterialPurchase purchaseList={discardedList}  onAddMaterials={handleAddMaterials}/> : null}
+                  {discardedList.length !== 0 ? (
+                    <>
+                      <AddMaterialPurchase purchaseList={discardedList}  onAddMaterials={handleAddMaterials}/>
+                      <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() => setDiscardedList([])} />
+                    
+                    </>
+                      ) 
+                      : null}
+                  
                 </div>
               </div>
             </div>
