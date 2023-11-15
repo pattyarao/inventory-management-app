@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GET } from "../api/purchase/route";
+import { GET as GETVAR } from "../api/purchasevariant/route";
+import { GET as GETMAT } from "../api/purchase/route";
 
 const AddMaterialPurchase = (props) => {
   //stores all products in the database
   const [materialsList, setMaterialsList] = useState([]);
+  const [variantsList, setVariantsList] = useState([]);
+  const [selectionList, setSelectionList] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Add loading state
     //determines if the modal for adding a product is shown or not
@@ -14,7 +17,7 @@ const AddMaterialPurchase = (props) => {
     useEffect(() => {
       async function getMaterials() {
         try {
-          const response = await GET();
+          const response = await GETMAT();
           const { materials, error } = await response.json();
     
           if (error) {
@@ -37,9 +40,74 @@ const AddMaterialPurchase = (props) => {
           setError(error.message);
         }
       }
+      async function getVariants() {
+        try {
+          const response = await GETVAR();
+          const { variants, error } = await response.json();
+  
+          if (error) {
+            setError(error);
+          } else {
+            setVariantsList(variants);
+            setLoading(false); // Data has been loaded
+          }
+        } catch (error) {
+          setError(error.message);
+          
+        }
+      }
       getMaterials();
+      getVariants();
     }, [showModal]);
+
+    useEffect(() => {
+      async function getMaterials() {
+        try {
+          const response = await GETMAT();
+          const { materials, error } = await response.json();
     
+          if (error) {
+            setError(error);
+            console.log("err0 " + error);
+          } else {
+            
+            // Filter out materials that are already in props.purchaseList
+            const filteredMaterials = materials.filter((material) =>
+              props.purchaseList.every(
+                (purchaseMaterial) => purchaseMaterial.id !== material.id
+              )
+            );
+
+            setMaterialsList(filteredMaterials);
+            setFilteredProductsList(filteredMaterials);
+            setLoading(false); // Data has been loaded
+          }
+        } catch (error) {
+          setError(error.message);
+        }
+      }
+      async function getVariants() {
+        try {
+          const response = await GETVAR();
+          const { variants, error } = await response.json();
+  
+          if (error) {
+            setError(error);
+          } else {
+            setVariantsList(variants);
+            setLoading(false); // Data has been loaded
+          }
+        } catch (error) {
+          setError(error.message);
+          
+        }
+      }
+      getMaterials();
+      getVariants();
+    }, [showModal]);
+
+    console.log(variantsList)
+    console.log(materialsList)
 
 
 

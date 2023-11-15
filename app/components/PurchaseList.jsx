@@ -260,7 +260,7 @@ const handleAddMaterials = (materials) => {
                                       value={variant.variantName}
                                       onChange={(event) =>
                                         handleVariantNameChange(
-                                          material.REF_METRIC.metric_unit,
+                                          material.REF_METRIC.id,
                                           material.id,
 
                                           index,
