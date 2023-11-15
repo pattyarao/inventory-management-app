@@ -12,6 +12,24 @@ const ProductOfferList = () => {
 const [productList, setProductList] = useState([]);
 const [selectedProduct, setSelectedProduct] = useState(null);
 const [showProductDetailsModal, setShowProductDetailsModal] = useState(false);
+const [sortOption, setSortOption] = useState("Sort A-Z");
+
+const sortedProductList = () => {
+  switch (sortOption) {
+    case "Sort A-Z":
+      return [...productList].sort((a, b) => a.name.localeCompare(b.name));
+    case "Sort Z-A":
+      return [...productList].sort((a, b) => b.name.localeCompare(a.name));
+    case "Filter by Active Products":
+      return productList.filter((product) => product.status);
+    case "Filter by Inactive Products":
+      return productList.filter((product) => !product.status);
+    default:
+      return productList;
+  }
+};
+
+const displayedProductList = sortedProductList();
 
 useEffect(() => {
   // Fetch products from your Supabase API
@@ -85,10 +103,22 @@ const toggleProductStatus = (productToToggle) => {
               <div className="flex flex-col">
                 {productList.length !== 0 ? (
                   <>
+                    <div className="flex justify-end">
+                      <select className="text-sm px-3 py-2 mb-5 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                          style={{ backgroundColor: "#27374D", color: "white" }}
+                          onChange={(e) => setSortOption(e.target.value)}>
+                        <option value="">Select Filter/Sort</option>
+                        <option value="Filter by Active Products">Filter by Active Products</option>
+                        <option value="Filter by Inactive Products">Filter by Inactive Products</option>
+                        <option value="Sort A-Z">Sort A-Z</option>
+                        <option value="Sort Z-A">Sort Z-A</option>
+                      </select>
+                    </div>
                     <div
                       className="px-3 w-full grid grid-cols-5 text-xs rounded-lg mb-3"
                       style={{ backgroundColor: "#526D82", color: "white" }}
                     >
+                      
                       <div className="col-span-3 md:col-span-4  text-xl font-semibold ms-5 ">
                         Name
                       </div>
@@ -97,7 +127,7 @@ const toggleProductStatus = (productToToggle) => {
                       </div>
                     </div>
 
-                    {productList.map((product, index) => (
+                    {displayedProductList.map((product, index) => (
                       <div key={index}>
                         <div
                           className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
