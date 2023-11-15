@@ -105,6 +105,12 @@ const Navbar = ({ userType, email }) => {
             >
               Perform Manual Count
             </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/materialsmasterlist"
+            >
+              Materials Masterlist
+            </Link>
           </div>
         ) : null}
       </div>
