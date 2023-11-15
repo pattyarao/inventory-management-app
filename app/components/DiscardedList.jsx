@@ -8,7 +8,8 @@ import RecordDiscard from "./RecordDiscard";
 
 const DiscardedList = () => {
   //stores all ordered products
-  const [discardedList, setDiscardedList] = useState([]);
+  const [discardedList, setDiscardedList] = useState([]); // list for rendering
+  const [usedItemList, setUsedItemList] = useState([]); // reference list for adding new items, stores the material/variant id
   const [reasonList, setReasonList] = useState([]);
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState(null);
@@ -50,13 +51,97 @@ const DiscardedList = () => {
     console.log('Metric: ', metricList)
   }, [metricList])
 
-  const handleAddMaterials = (materials) => {
-    const discardWithVariants = materials.map((material) => ({
-      ...material,
-      quantity: 1,
-      variants: [{ variantName: "", amount: 0, unit: "", quantity: 1 }],
-    }));
-    setDiscardedList(discardedList.concat(discardWithVariants));
+  useEffect(() => {
+    console.log('Used Item: ', usedItemList)
+  }, [usedItemList])
+
+  const handleAddMaterials = (discardItem) => {
+
+    
+
+    // store each id into usedItemList
+    let idList = []
+    let updatedDiscardedList = [...discardedList] // remove the asyncronous nature of setDiscardedList
+
+    discardItem.map((item) => {
+
+      // store each id into usedItemList
+      idList.push({id: item.id})
+      console.log(idList)
+      setUsedItemList(usedItemList.concat(idList))
+
+      // determine which case the item belongs to
+
+      // case 1: item is a new material
+      if (!item.material_id) {
+        console.log("CASE 1: item is a new material")
+          const updatedDiscardItem = {
+            name: item.name,
+            id: item.id,
+            qty_available: item.qty_available,
+            variants: [
+              { 
+                name: item.name, 
+                amount: null, 
+                unit: "", 
+                quantity: 1, 
+                id: item.id, 
+                reason_id: "" 
+              }
+            ]
+          }
+          // when checking each variant, if the variant item has the same id as the material id, then it is not a variant but rather a material (stored in the variant list for easy rendering)
+        
+        updatedDiscardedList.push(updatedDiscardItem)
+        console.log('case 1 insert succesfull: ', updatedDiscardItem, updatedDiscardedList)
+      }
+
+      // case 2: item is a variant with its material already in the list
+      if (item.material_id && updatedDiscardedList.some(discarded => discarded.id === item.material_id)) {
+        console.log("CASE 2: item is a variant with its material already in the list")
+
+        updatedDiscardedList.map((discarded) => {
+            if (discarded.id === item.material_id) {
+              discarded.variants.push({ 
+                name: item.name, 
+                amount: item.amt, 
+                unit: "", 
+                quantity: 1, 
+                id: item.id, 
+                reason_id: "" 
+              })
+            }
+        })
+        console.log("case 2 insert successful", updatedDiscardedList);
+      }
+
+      // case 3: item is a variant with its material NOT in the list
+      if (item.material_id && !updatedDiscardedList.some(discarded => discarded.id == item.material_id)) {
+        console.log("CASE 3: item is a variant with its material NOT in the list")
+
+        const updatedDiscardItem = {
+          name: item.MD_RAW_MATERIALS.name,
+          id: item.MD_RAW_MATERIALS.id,
+          qty_available: item.MD_RAW_MATERIALS.qty_available,
+          variants: [
+            {
+              name: item.name, 
+              amount: item.amt, 
+              unit: "", 
+              quantity: 1, 
+              id: item.id, 
+              reason_id: "" 
+            }
+          ]
+        }
+
+        updatedDiscardedList.push(updatedDiscardItem)
+        console.log("case 3 insert successful: ", updatedDiscardItem, updatedDiscardedList);
+      }
+    })
+
+    setDiscardedList(updatedDiscardedList)
+
   };
 
   // const addVariant = (productIndex) => {
@@ -99,31 +184,28 @@ const DiscardedList = () => {
   
   const handleAmtChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    // newDiscardedList[productIndex].variants[variantIndex].amount =
-    //   event.target.valueAsNumber;
+    newDiscardedList[productIndex].variants[variantIndex].amount =
+      event.target.valueAsNumber;
 
-    // test
-    newDiscardedList[productIndex].amount = event.target.valueAsNumber;
-    
     setDiscardedList(newDiscardedList);
   };
   
   const handleIncrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
 
-    if (!newDiscardedList[productIndex].quantity) {
-      newDiscardedList[productIndex].quantity = 1;
+    if (!newDiscardedList[productIndex].variants[variantIndex].quantity) {
+      newDiscardedList[productIndex].variants[variantIndex].quantity = 1;
     }
 
-    newDiscardedList[productIndex].quantity++;
+    newDiscardedList[productIndex].variants[variantIndex].quantity++;
     setDiscardedList(newDiscardedList);
   };
   
   const handleDecrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
     
-    if (newDiscardedList[productIndex].quantity > 1 && newDiscardedList[productIndex].quantity) {
-      newDiscardedList[productIndex].quantity--;
+    if (newDiscardedList[productIndex].variants[variantIndex].quantity > 1 && newDiscardedList[productIndex].variants[variantIndex].quantity) {
+      newDiscardedList[productIndex].variants[variantIndex].quantity--;
       setDiscardedList(newDiscardedList);
     }
   };
@@ -139,9 +221,9 @@ const DiscardedList = () => {
     setDiscardedList(newDiscardedList);
   };
   
-  const handleReasonChange = (productIndex, event) => {
+  const handleReasonChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].reason = event.target.value;
+    newDiscardedList[productIndex].variants[variantIndex].reason_id = event.target.value;
     setDiscardedList(newDiscardedList);
   }
 
@@ -190,7 +272,7 @@ const DiscardedList = () => {
                           Material Name
                         </div>
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
-                          
+                          Variant Name
                         </div>
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Amount
@@ -233,18 +315,20 @@ const DiscardedList = () => {
                                 ) : null}
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
-                                    {/* <select
+                                    
+                                    {/** render input and name if it is a variant */}
+                                    {!(variant.name === product.name) ? (
+                                      
+                                        <input
+                                          key={variantIndex}
+                                          value={variant.name}
+                                          id="large"
+                                          className="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                        />
+                                      
+                                    ) : null}
 
-                                      value={variant.name}
-                                      onChange={(event) =>
-                                        handleVariantNameChange(index, variantIndex, event)
-                                      }
-                                      id="large"
-                                      class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                    > 
-                                      TODO: remove variants column 
-                                      <option value={variantIndex}>{variant.name}</option>
-                                    </select> */}
+
                                   </div>
                                 </div>
 
@@ -253,11 +337,11 @@ const DiscardedList = () => {
                                   <input
                                     type="number"
                                     className="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
-                                    value={product.amt}
+                                    value={variant.amount}
                                     onChange={(event) =>
                                       handleAmtChange(index, variantIndex, event)
                                     }
-                                    disabled={product.material_id ? true : false}
+                                    disabled={variant.id != product.id ? true : false}
                                   />
                                 </div>
 
@@ -284,7 +368,7 @@ const DiscardedList = () => {
                                     <select
                                       id="large"
                                       onChange={(event) =>
-                                        handleReasonChange(index, event)
+                                        handleReasonChange(index, variantIndex, event)
                                       }
                                       class="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
                                     >
@@ -297,10 +381,10 @@ const DiscardedList = () => {
                                     </select>
                                 </div>
                                 
-                                {/** disabled rendering of +/- for materials as the only value needed is the amt provided by the textbox */}
+                                {/** disabled rendering of +/- for discardItem as the only value needed is the amt provided by the textbox */}
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
                                   
-                                  {product.material_id ? 
+                                  {product.id != variant.id ? 
                                     (<button
                                       onClick={() =>
                                         handleDecrement(index, variantIndex)
@@ -318,14 +402,14 @@ const DiscardedList = () => {
                                   <input
                                     type="number"
                                     className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
-                                    value={product.quantity}
+                                    value={variant.quantity}
                                     onChange={(event) =>
                                       handleQtyChange(index, variantIndex,event)
                                     }
-                                    disabled={product.material_id ? false : true}
+                                    disabled={product.id != variant.id ? false : true}
                                   />
                                   
-                                {product.material_id ? 
+                                {product.id != variant.id ? 
                                   (<button
                                     onClick={() =>
                                       handleIncrement(index, variantIndex)
@@ -384,7 +468,7 @@ const DiscardedList = () => {
                                 Your <b>Expired Material List</b> is <b>Empty</b>
                             </div>
                             <div className="text-black text-xl mt-6">
-                                <AddMaterialPurchase purchaseList={discardedList}  onAddMaterials={handleAddMaterials}/>
+                                <AddMaterialPurchase purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
                             </div>
                         </div>
                         </div>
@@ -394,7 +478,7 @@ const DiscardedList = () => {
                 <div className="flex justify-end">
                   {discardedList.length !== 0 ? (
                     <>
-                      <AddMaterialPurchase purchaseList={discardedList}  onAddMaterials={handleAddMaterials}/>
+                      <AddMaterialPurchase purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
                       <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() => setDiscardedList([])} />
                     
                     </>

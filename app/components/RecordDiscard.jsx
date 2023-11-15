@@ -12,10 +12,10 @@ const RecordDiscard = (props) => {
       const postData = async () => {
         
         const postResponse = await POST(props.discardedList, "4601007f-506d-4e36-acbc-dd8ff126de78", props.metricList);
-        if (postResponse.error) {
-          console.error("Error posting discarded items:", postResponse.error.message);
-          return;
-        }
+        // if (postResponse.error) {
+        //   console.error("Error posting discarded items:", postResponse.error.message);
+        //   return;
+        // }
       }
       postData();
       setShowModal(true);
