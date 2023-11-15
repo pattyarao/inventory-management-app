@@ -1,9 +1,47 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import DetailedSalesModal from "./DetailedSalesModal"
+import DetailedMaterialsModal from "./DetailedMaterialsModal"
 
-const DetailedTable = ({ reportData, reportType, choice }) => {
+const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) => {
   const [groupedData, setGroupedData] = useState({});
+  const [showDetailedSalesModal, setDetailedSalesShowModal]= useState(false)
+  const [salesDrillDown, setSalesDrillDown] = useState()
+  const [showDetailedMaterialsModal, setDetailedMaterialsShowModal]= useState(false)
+  const [materialDrillDown, setMaterialDrillDown] = useState()
+  
 
+      // Function to close the modal
+      const closeDetailedSalesModal = () => {
+        setDetailedSalesShowModal(false)
+      };
+
+      const openDetailedSalesModal = () => {
+        setDetailedSalesShowModal(true)
+      };
+
+      const closeDetailedMaterials = () => {
+        setDetailedMaterialsShowModal(false)
+      };
+
+      const openDetailedMaterials = () => {
+        setDetailedMaterialsShowModal(true)
+      };
+
+      const handleMaterialDrillDown = (material_name) => {
+        setMaterialDrillDown(material_name);
+        console.log(materialDrillDown)
+        openDetailedMaterials()
+      };
+
+      const handlesSalesDrillDown = (product_name) => {
+        setSalesDrillDown(product_name);
+        // console.log(materialDrillDown)
+        openDetailedSalesModal()
+      };
+  
+
+  const currentDate = new Date().toLocaleDateString('en-GB');
   useEffect(() => {
     const grouped = {};
 
@@ -41,136 +79,155 @@ const DetailedTable = ({ reportData, reportType, choice }) => {
     
 
       return (
-        <div>
-          {Object.keys(groupedData).map((productName) => (
-            <div key={productName}>
-              <h2>{productName}</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Product Name</th>
-                    <th>Product Status</th>
-                    <th>User</th>
-                    <th>Quantity Ordered</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {groupedData[productName].map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.date}</td>
-                      <td>{item.product_name}</td>
-                      <td>{item.product_status}</td>
-                      <td>{item.user}</td>
-                      <td>{item.qty_ordered}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
-          <h1>*** END OF REPORT ***</h1>
-        </div>
+<div>
+  <h2 className="text-2xl font-bold mb-4">Detailed Sales Report</h2>
+  <p className="text-lg font-semibold mb-2">Created at: {currentDate}</p>
+  {Object.keys(groupedData).map((productName) => (
+    <div key={productName} className="mb-8">
+
+      <h3 className="text-2xl font-bold mb-4">{productName}</h3>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr>
+              <th className="border-b px-4 py-2">Date</th>
+              <th className="border-b px-4 py-2">Product Name</th>
+              <th className="border-b px-4 py-2">Product Status</th>
+              <th className="border-b px-4 py-2">User</th>
+              <th className="border-b px-4 py-2">Quantity Ordered</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groupedData[productName].map((item, index) => (
+              <tr key={index}>
+                <td className="border-b px-4 py-2">
+                {new Date(item.date).toLocaleDateString("en-GB")}
+                </td>
+                <td className="border-b px-4 py-2">{item.product_name}</td>
+                <td className="border-b px-4 py-2">{item.product_status}</td>
+                <td className="border-b px-4 py-2">{item.user}</td>
+                <td className="border-b px-4 py-2">{item.qty_ordered}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ))}
+  <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+</div>
+
+
       );
     } else if (reportType === "summary" && choice === 1) {
       // Render summary content for reportType 1
       return (
-        <div>
-            <div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Product Name</th>
-                    <th>Total Sales</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportData.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.product_name}</td>
-                      <td>{item.total_sales}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <h1>*** END OF REPORT ***</h1>
+      <div>
+          <h2 className="text-2xl font-bold mb-4">Summarized Sales Report</h2>
+          <p className="text-lg font-semibold mb-2">Created at: {currentDate}</p>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Product Name</th>
+                <th className="border-b px-4 py-2">Total Sales</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData.map((item, index) => (
+                <tr key={index}>
+                  <td className="border-b px-4 py-2" onClick={() => handlesSalesDrillDown(item.product_name)}>{item.product_name}</td>
+                  <td className="border-b px-4 py-2">{item.total_sales}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+        <DetailedSalesModal isVisible={showDetailedSalesModal} startDate={startDate} endDate={endDate} choice={salesDrillDown} onClose={closeDetailedSalesModal}/>
+      </div>
+
       );
     } else if (reportType === "detailed" && choice === 2) {
       // Render detailed content for reportType 2
-      console.log("DETAILED MATERIALS", groupedData)
-      return (
-                <div>
-        <h1>Table with "No Variation"</h1>
-          {Object.keys(groupedData).map((materialName) => (
-            <div key={materialName}>
-              <h2>{materialName}</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Material Name</th>
-                    <th>Quantity</th>
-                    <th>Transaction Type</th>
-                    <th>User</th>
-                    <th>Variation</th>
-                    <th>Amount</th>
+          console.log("DETAILED MATERIALS", groupedData)
+          return (
+            <div>
+            <h2 className="text-2xl font-bold mb-4">Detailed Material Report</h2>
+            <p className="text-lg font-semibold mb-2">Created at: {currentDate}</p>
+            <h3 className="text-2xl font-bold mb-4">No Variations</h3>    
+            {Object.keys(groupedData).map((materialName) => (
+      <div key={materialName} className="mb-8">
+        <h3 className="text-2xl font-bold mb-4">{materialName}</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Date</th>
+                <th className="border-b px-4 py-2">Material Name</th>
+                <th className="border-b px-4 py-2">Quantity</th>
+                <th className="border-b px-4 py-2">Transaction Type</th>
+                <th className="border-b px-4 py-2">User</th>
+                <th className="border-b px-4 py-2">Variation</th>
+                <th className="border-b px-4 py-2">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groupedData[materialName]
+                .filter((item) => item.variation === "No Variation")
+                .map((item, index) => (
+                  <tr key={index}>
+                    <td className="border-b px-4 py-2">{new Date(item.date).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2">{item.material_name}</td>
+                    <td className="border-b px-4 py-2">{item.qty}</td>
+                    <td className="border-b px-4 py-2">{item.transac_type}</td>
+                    <td className="border-b px-4 py-2">{item.user}</td>
+                    <td className="border-b px-4 py-2">{item.variation}</td>
+                    <td className="border-b px-4 py-2">{item.amount}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {groupedData[materialName]
-                    .filter((item) => item.variation === "No Variation")
-                    .map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.date}</td>
-                        <td>{item.material_name}</td>
-                        <td>{item.qty}</td>
-                        <td>{item.transac_type}</td>
-                        <td>{item.user}</td>
-                        <td>{item.variation}</td>
-                        <td>{item.amount}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    ))}
 
-          <h1>Table with "Variation"</h1>
-          {Object.keys(groupedData).map((materialName) => (
-            <div key={materialName}>
-              <h2>{materialName}</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Material Name</th>
-                    <th>Quantity</th>
-                    <th>Transaction Type</th>
-                    <th>User</th>
-                    <th>Variation</th>
-                    <th>Amount</th>
+      <h3 className="text-2xl font-bold mb-4">With Variations</h3>            
+      {Object.keys(groupedData).map((materialName) => (
+      <div key={materialName} className="mb-8">
+        <h3 className="text-2xl font-bold mb-4">{materialName}</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Date</th>
+                <th className="border-b px-4 py-2">Material Name</th>
+                <th className="border-b px-4 py-2">Quantity</th>
+                <th className="border-b px-4 py-2">Transaction Type</th>
+                <th className="border-b px-4 py-2">User</th>
+                <th className="border-b px-4 py-2">Variation</th>
+                <th className="border-b px-4 py-2">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groupedData[materialName]
+                .filter((item) => item.variation !== "No Variation")
+                .map((item, index) => (
+                  <tr key={index}>
+                    <td className="border-b px-4 py-2">{new Date(item.date).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2">{item.material_name}</td>
+                    <td className="border-b px-4 py-2">{item.qty}</td>
+                    <td className="border-b px-4 py-2">{item.transac_type}</td>
+                    <td className="border-b px-4 py-2">{item.user}</td>
+                    <td className="border-b px-4 py-2">{item.variation}</td>
+                    <td className="border-b px-4 py-2">{item.amount}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {groupedData[materialName]
-                    .filter((item) => item.variation !== "No Variation")
-                    .map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.date}</td>
-                        <td>{item.material_name}</td>
-                        <td>{item.qty}</td>
-                        <td>{item.transac_type}</td>
-                        <td>{item.user}</td>
-                        <td>{item.variation}</td>
-                        <td>{item.amount}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    ))}
 
           <h1>*** END OF REPORT ***</h1>
         </div>
@@ -180,31 +237,35 @@ const DetailedTable = ({ reportData, reportType, choice }) => {
       console.log("SUMMARY MATERIAL", groupedData)
       return (
         <div>
-          {Object.keys(groupedData).map((materialName) => (
-            <div key={materialName}>
-              <h2>{materialName}</h2>
-              <table>
+        {Object.keys(groupedData).map((materialName) => (
+          <div key={materialName} className="mb-8">
+            <h2 className="text-2xl font-bold mb-4" onClick={() => handleMaterialDrillDown(materialName)}>{materialName}</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                   <tr>
-                    <th>Transaction Type</th>
-                    <th>Material Name</th>
-                    <th>Amount</th>
+                    <th className="border-b px-4 py-2">Transaction Type</th>
+                    <th className="border-b px-4 py-2">Material Name</th>
+                    <th className="border-b px-4 py-2">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {groupedData[materialName].map((item, index) => (
                     <tr key={index}>
-                      <td>{item.grouped_transac_type}</td>
-                      <td>{item.material_name}</td>
-                      <td>{item.total_amt}</td>
+                      <td className="border-b px-4 py-2">{item.grouped_transac_type}</td>
+                      <td className="border-b px-4 py-2" >{item.material_name}</td>
+                      <td className="border-b px-4 py-2">{item.total_amt}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              <DetailedMaterialsModal isVisible={showDetailedMaterialsModal} startDate={startDate} endDate={endDate} choice={materialDrillDown} onClose={closeDetailedMaterials}/>
             </div>
-          ))}
-          <h1>*** END OF REPORT ***</h1>
-        </div>
+          </div>
+        ))}
+        <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+      </div>
+      
         
       );
     }

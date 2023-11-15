@@ -6,7 +6,7 @@ import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
 import { GET as getDetailedProducts} from '../api/detailedproducts/route';
 import { GET as getSummaryMaterials} from '../api/summarymaterials/route';
 import { GET as getSummaryProducts} from '../api/summaryproducts/route';
-
+import TableModal from "../components/TableModal"; 
 const ReportSettings = (props) => {
   const router = useRouter();
   
@@ -18,7 +18,7 @@ const ReportSettings = (props) => {
   const [reportType, setReportType] = useState("detailed"); // Initialize to "detailed"
   const [reportData, setReportData] = useState([]); // State variable to store report data
   const [options, setOptions]= useState([])
-
+  const [showModal, setShowModal]= useState(false)
 
   useEffect(() => {
     async function getOptions() {
@@ -29,7 +29,7 @@ const ReportSettings = (props) => {
         } else if (props.choice === 2) { // Change this to 2 if it's a different choice
           endpoint = "/api/allmaterials";
         }
-  
+        
         if (endpoint) {
           const response = await fetch(endpoint, {
             cache: "no-store",
@@ -59,6 +59,10 @@ const ReportSettings = (props) => {
     getOptions();
   }, [props.choice]); // Add props.choice as a dependency
   
+    // Function to close the modal
+    const closeModal = () => {
+      setShowModal(false)
+    };
 
   // Function to toggle the selected report type
   const handleReportTypeChange = (e) => {
@@ -122,6 +126,7 @@ const ReportSettings = (props) => {
               const data = await response.json();
               setReportData(data.detailedReport); // Store the data in the state variable
               console.log("API Response:", data.detailedReport);
+              setShowModal(true)
             } else {
               // Request failed, log the error
               console.error("API Error:", response);
@@ -136,6 +141,7 @@ const ReportSettings = (props) => {
               const data = await response.json();
               setReportData(data.data); // Store the data in the state variable
               console.log("API Response:", data.data);
+              setShowModal(true)
             } else {
               // Request failed, log the error
               console.error("API Error:", response);
@@ -152,6 +158,7 @@ const ReportSettings = (props) => {
                 const data = await response.json();
                 setReportData(data.detailedReport); // Store the data in the state variable
                 console.log("API Response:", data.detailedReport);
+                setShowModal(true)
               } else {
                 // Request failed, log the error
                 console.error("API Error:", response);
@@ -165,6 +172,7 @@ const ReportSettings = (props) => {
                 const data = await response.json();
                 setReportData(data.data); // Store the data in the state variable
                 console.log("API Response:", data.data);
+                setShowModal(true)
               } else {
                 // Request failed, log the error
                 console.error("API Error:", response);
@@ -174,7 +182,7 @@ const ReportSettings = (props) => {
 
 
 
-
+        
       } catch (error) {
         console.error("Error:", error);
       }
@@ -293,9 +301,8 @@ const ReportSettings = (props) => {
             Generate Report
           </button>
         </div>
-
-        <DetailedTable reportData={reportData} reportType={reportType} choice={props.choice}/>
-
+        <TableModal isVisible={showModal} reportData={reportData} reportType={reportType} choice={props.choice} onClose={closeModal} startDate={startDate} endDate={endDate} />
+              
     </>
   );
 };
