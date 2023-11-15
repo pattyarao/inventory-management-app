@@ -179,7 +179,6 @@ const ManualCount
 
   console.log(materialList)
   console.log(variantsList)
-  
   return (
     <div
       className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
@@ -334,6 +333,30 @@ const ManualCount
                                     }
                                   />
                                 </div>
+                                <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                  <div className="relative">
+                                    <select
+                                      id="large"
+                                      value={variant.unit}
+                                      onChange={(event) =>
+                                        handleUnitChange(
+                                          index,
+                                          variantIndex,
+                                          event,
+                                        )
+                                      }
+                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                    >
+                                      <option value="0">g</option>
+                                      <option value="1">mg</option>
+                                      <option value="2">kg</option>
+                                      <option value="3">ml</option>
+                                      <option value="4">l</option>
+                                      <option value="5">oz</option>
+                                    </select>
+                                  </div>
+                                </div>
+
                                 </>) : null}
                                 
                               </>
