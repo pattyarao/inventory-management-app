@@ -8,7 +8,7 @@ export async function GET() {
 
   const { data: variants, error2 } = await supabase
   .from("MD_MATVARIATION")
-  .select("*")
+  .select("*, MD_RAW_MATERIALS(*)")
   .eq("status", "TRUE")
 
   // new code that returns a complete list of material and variants
@@ -17,10 +17,12 @@ export async function GET() {
       ...materials,
       ...variants
     ]
-    
+
     const json = {
       materials: mergedlist
     };
+
+    console.log('material list: ', mergedlist)
     return new Response(JSON.stringify(json), {
       status: 200,
       headers: { "Content-Type": "application/json" },
