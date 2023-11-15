@@ -95,13 +95,13 @@ const MaterialList = ({ searchTerm, view }) => {
             : 'flex justify-between items-center'
         } bg-[#D6E0F0] rounded-lg p-4 `}
       >
-        <h1 className="font-black text-2xl text-gray-500" style={{ color: 'black' }}>
+        <h1 className="pl-10 w-1/5 font-black text-2xl text-gray-500" style={{ color: 'black' }}>
           Material
         </h1>
-        <h1 className="font-black text-2xl text-gray-500" style={{ color: 'black' }}>
+        <h1 className="pl-10 w-1/5 whitespace-normal font-black text-2xl text-gray-500" style={{ color: 'black' }}>
           Current Stock
         </h1>
-        <h1 className="font-black text-2xl text-gray-500" style={{ color: 'black' }}>
+        <h1 className="pl-10 w-1/5 whitespace-normal text-center font-black text-2xl text-gray-500" style={{ color: 'black' }}>
           Suggested Restock Amount
         </h1>
         <select
@@ -128,12 +128,13 @@ const MaterialList = ({ searchTerm, view }) => {
                     : 'flex justify-between items-center'
                 } p-2 bg-[#F1F3F8] rounded-lg`}
               >
-                <p className="pl-10 font-semibold">{material.name}</p>
-                <p className="p-2 text-right font-semibold">
+                <p className="pl-10 font-semibold w-1/5 whitespace-normal">
+                  {material.name}</p>
+                <p className="p-2 text-right font-semibold w-2/5 whitespace-normal">
                   {material.qty_available}
                   {material.REF_METRIC.metric_unit}
                 </p>
-                <p className="p-2 text-right font-semibold">
+                <p className="p-2 text-right font-semibold w-2/5 whitespace-normal">
                   {material.suggested_amt}
                   {material.REF_METRIC.metric_unit}
                 </p>
@@ -149,9 +150,9 @@ const MaterialList = ({ searchTerm, view }) => {
                   }`}
                 ></p> */}
                 <p
-                  className={`w-fit p-4 rounded-md rounded-tl-none rounded-bl-none ${
+                  className={`w-fit p-2 text-right font-semibold w-2/5 whitespace-normal rounded-md rounded-tl-none rounded-bl-none ${
                     'bg-[#F1F3F8]'
-                  }`}
+                  }`} 
                 ></p>
               </div>
             </div>
