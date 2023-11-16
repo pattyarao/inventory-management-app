@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { POST } from "../api/discard/route";
-import AddMaterialPurchase from "./AddMaterialPurchase";
 import { GETMETRIC, GETREASON } from "../api/helper/route";
 import RecordDiscard from "./RecordDiscard";
+import AddMaterialDiscard from "./AddMaterialDiscard"
 
 const DiscardedList = () => {
   //stores all ordered products
@@ -376,8 +375,9 @@ const DiscardedList = () => {
                                       {reasonList.map((reason, index) => (
                                         <option key={index} value={reason.id}>{reason.reason}</option>
                                       ))}
-                                      <option>Add New Reason</option>
                                       <option disabled>─────────────</option>
+                                      <option>Add New Reason</option> {/** TODO: add new reason modal */}
+                                      
                                     </select>
                                 </div>
                                 
@@ -468,7 +468,7 @@ const DiscardedList = () => {
                                 Your <b>Expired Material List</b> is <b>Empty</b>
                             </div>
                             <div className="text-black text-xl mt-6">
-                                <AddMaterialPurchase purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
+                                <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
                             </div>
                         </div>
                         </div>
@@ -478,7 +478,7 @@ const DiscardedList = () => {
                 <div className="flex justify-end">
                   {discardedList.length !== 0 ? (
                     <>
-                      <AddMaterialPurchase purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
+                      <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
                       <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() => setDiscardedList([])} />
                     
                     </>
