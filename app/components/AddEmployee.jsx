@@ -69,7 +69,7 @@ const AddEmployee = ({
           first_name: firstName,
           last_name: lastName,
           user_type: newRole,
-          status: false,
+          status: true,
         },
       ]);
     }
