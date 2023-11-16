@@ -1,31 +1,22 @@
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 
-const useSignup = () => {
+const useUpdateStatus = () => {
   const [isLoading, setIsLoading] = useState(null);
   const [isError, setIsError] = useState(null);
   const toastID = useRef();
-  const router = useRouter();
-
-  const signup = async (firstName, lastName, email, password, selectedRole) => {
+  const updateStatus = async (id, setEmployees, employees) => {
     toastID.current = toast.loading("Loading...");
     setIsLoading(true);
     setIsError(null);
+
     try {
-      const response = await fetch("http://localhost:3000/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-          selectedRole,
-        }),
+      const response = await fetch(`/api/changestatus/${id}`, {
+        method: "PATCH",
       });
 
-      const json = await response.json();
+      const data = await response.json();
+      console.log(data);
 
       if (!response.ok) {
         setIsLoading(false);
@@ -50,9 +41,13 @@ const useSignup = () => {
         isLoading: false,
       });
 
-      //   router.push("/assignroles");
-    } catch (e) {
-      console.log(e);
+      const updatedEmployees = employees.map((employee) =>
+        employee.id === id
+          ? { ...employee, status: !employee.status }
+          : employee
+      );
+      setEmployees(updatedEmployees);
+    } catch (error) {
       toast.update(toastID.current ?? "", {
         render: "Something went wrong",
         autoClose: 3000,
@@ -61,9 +56,11 @@ const useSignup = () => {
         type: "error",
         isLoading: false,
       });
+      console.error("Error:", error);
     }
   };
-  return { signup, isLoading, isError };
+
+  return { updateStatus };
 };
 
-export default useSignup;
+export default useUpdateStatus;

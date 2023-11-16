@@ -1,7 +1,7 @@
 const OwnerHome = () => {
   return (
-    <main>
-      <h1>This is the Owner Dashboard.</h1>
+    <main className="w-full flex items-center justify-center p-4">
+      {/* <h1>This is the Owner Dashboard.</h1> */}
     </main>
   );
 };
