@@ -1,19 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import AddNewUnit from "./AddNewUnit";
 import AddNewVariant from "./AddNewVariant";
 import AddMaterialPurchase from "./AddMaterialPurchase";
 import RecordPurchase from "./RecordPurchase";
 import ClearPurchaseList from "./ClearPurchaseList";
-import { GET } from "../api/purchasevariant/route";
+import { GET as GETVAR } from "../api/purchasevariant/route";
+import { GET as GETUNIT } from "../api/submetric/route";
 
 const PurchaseList = () => {
   //stores all ordered products
   const [purchaseList, setPurchaseList] = useState([]);
   const [variantsList, setVariantsList] = useState([]);
+  const [unitsList, setUnitsList] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Add loading state
   const [addVariantCondition, setAddVariantCondition] = useState(false);
+  const [addUnitCondition, setAddUnitCondition] = useState(false);
   const [materialID, setMaterialID] = useState(null);
   const [unit, setUnit] = useState(null);
   const [removedMaterials, setRemovedMaterials] = useState([]);
@@ -22,7 +26,7 @@ const PurchaseList = () => {
   useEffect(() => {
     async function getVariants() {
       try {
-        const response = await GET();
+        const response = await GETVAR();
         const { variants, error } = await response.json();
 
         if (error) {
@@ -36,14 +40,34 @@ const PurchaseList = () => {
         
       }
     }
+
+    async function getUnits() {
+      try {
+        const response = await GETUNIT();
+        const { metrics, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          setUnitsList(metrics);
+        }
+      } catch (error) {
+        setError(error.message);
+        
+      }
+    }
+    getUnits();
     getVariants();
-  }, [addVariantCondition]);
+  }, [addVariantCondition, addUnitCondition]);
+
+  console.log(unitsList)
+  console.log(purchaseList)
 
 // Function to update the selected products
 const handleAddMaterials = (materials) => {
   const productsWithVariants = materials.map((material) => ({
     ...material,
-    variants: [{ variantName: "", amount: 0, unit: "", quantity: 1 }],
+    variants: [{ variantName: "", amount: 0, unit: "", quantity: 1}],
   }));
 
   setPurchaseList(purchaseList.concat(productsWithVariants));
@@ -55,7 +79,7 @@ const handleAddMaterials = (materials) => {
 
 
   const addVariant = (productIndex) => {
-    const newVariant = { variantName: "", amount: 0, unit: "", quantity: 1 };
+    const newVariant = { variantName: "", amount: 0, unit: "", quantity: 1};
 
     const newPurchaseList = [...purchaseList];
     newPurchaseList[productIndex].variants.push(newVariant);
@@ -64,7 +88,6 @@ const handleAddMaterials = (materials) => {
   
   const handleVariantNameChange = (unit, materialID, productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
-    console.log(purchaseList)
     if (event.target.value === "Add New Variant") {
       setAddVariantCondition(true);
       setMaterialID(materialID)
@@ -89,6 +112,14 @@ const handleAddMaterials = (materials) => {
 
   const handleUnitChange = (productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
+
+    if (event.target.value === "Add New Unit") {
+      setAddUnitCondition(true);
+      setMaterialID(materialID)
+      setUnit(unit)
+      return;
+    }
+
     newPurchaseList[productIndex].variants[variantIndex].unit =
       event.target.value;
     setPurchaseList(newPurchaseList);
@@ -229,7 +260,7 @@ const handleAddMaterials = (materials) => {
                                       value={variant.variantName}
                                       onChange={(event) =>
                                         handleVariantNameChange(
-                                          material.REF_METRIC.metric_unit,
+                                          material.REF_METRIC.id,
                                           material.id,
 
                                           index,
@@ -273,29 +304,29 @@ const handleAddMaterials = (materials) => {
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
                                   <div className="relative">
                                     <select
-                                      id="large"
-                                      disabled={variant.variantName!==""}
-                                      value={variant.unit}
-                                      onChange={(event) =>
-                                        handleUnitChange(
-                                          index,
-                                          variantIndex,
-                                          event,
-                                        )
-                                      }
-                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                    > 
-                                      {material.REF_METRIC.metric_unit === "g" ? (
-                                        <>
-                                          <option value="0">g</option>
-                                          <option value="1">kg</option>
-                                          <option value="2">mg</option>
-                                        </>
-                                      ): <>
-                                        <option value="0">mL</option>
-                                        <option value="1">L</option>
-                                          </>}
+                                        id="large"
+                                        disabled={variant.variantName !== ""}
+                                        value={variant.unit}
+                                        onChange={(event) =>
+                                            handleUnitChange(
+                                                index,
+                                                variantIndex,
+                                                event
+                                            )
+                                        }
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                    >
+                                        {unitsList
+                                            .filter((unit) => unit.metric_id === material.REF_METRIC.id)
+                                            .map((unit) => (
+                                                <option key={unit.id} value={unit.ratio}>
+                                                    {unit.abbreviation}
+                                                </option>
+                                            ))}
+                                        <option disabled>─────────────</option>
+                                        <option>Add New Unit</option>
                                     </select>
+
                                   </div>
                                 </div>
 
@@ -402,7 +433,10 @@ const handleAddMaterials = (materials) => {
 
       {addVariantCondition ? (
         <AddNewVariant material_id={materialID} unit={unit} onClose={() => setAddVariantCondition(false)} />
+      ) : null}
 
+      {addUnitCondition ? (
+        <AddNewUnit material_id={materialID} unit={unit} onClose={() => setAddUnitCondition(false)} />
       ) : null}
     </div>
   );
