@@ -1,11 +1,9 @@
 import supabase from "../../supabase";
 
 export async function GET() {
-  const { data: employees, error } = await supabase
-    .from("MD_PROFILES")
-    .select("*")
-    .order("status", { ascending: false })
-    .order("user_type", { ascending: true });
+  const { data: materials, error } = await supabase
+    .from("MD_RAW_MATERIALS")
+    .select("id, metric_id, qty_available, status, name, REF_METRIC(metric_unit)");
 
   if (error) {
     return new Response(JSON.stringify({ error }), {
@@ -15,7 +13,7 @@ export async function GET() {
   }
 
   const json = {
-    employees: employees,
+    materials: materials,
   };
 
   return new Response(JSON.stringify(json), {
