@@ -134,7 +134,7 @@ export async function GET() {
       });
     }
     
-    // old code that returns only materials
+    
     if (error) {
       console.log(error)
       return new Response(JSON.stringify({ error }), {

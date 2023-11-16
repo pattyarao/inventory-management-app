@@ -263,7 +263,7 @@ const DiscardedList = () => {
                     <>
                       <div
 
-                        className="px-3 w-full grid grid-cols-6 text-xs rounded-lg"
+                        className="px-3 w-full grid grid-cols-8 text-xs rounded-lg"
 
                         style={{ backgroundColor: "#526D82", color: "white" }}
                       >
@@ -275,6 +275,12 @@ const DiscardedList = () => {
                         </div>
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Amount
+                        </div>
+                        <div className="col-span-1 text-sm ms-5">
+                          Unit
+                        </div>
+                        <div className="col-span-1 text-sm ms-5">
+                          Partial Amount
                         </div>
                         <div className="col-span-1 text-sm ms-5">
                           Unit
@@ -292,7 +298,7 @@ const DiscardedList = () => {
                         <div key={index}>
                           <div
 
-                            className="w-full p-3 mb-4 grid grid-cols-6 text-xs rounded-lg"
+                            className="w-full p-3 mb-4 grid grid-cols-8 text-xs rounded-lg"
 
                             style={{
                               backgroundColor: "#9DB2BF",
@@ -362,6 +368,45 @@ const DiscardedList = () => {
                                     </select>
                                   </div>
                                 </div>
+
+                                {/** PARTIAL AMOUNT */}
+                                {product.id != variant.id ? (
+                                  <div className="mt-3 col-span-2 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                      <input
+                                      type="number"
+                                      className="outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
+                                      value={variant.partialamount}
+                                      onChange={(event) =>
+                                        handleAmtChange(index, variantIndex, event)
+                                      }
+                                    />
+                                    </div>
+                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                        <div className="relative">
+                                          <select
+                                            id="large"
+                                            value={product.unit}
+                                            onChange={(event) =>
+                                              handleUnitChange(index, event)
+                                            }
+                                            class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                          >
+                                            {metricList.map((metric, index) => (
+                                              <option key={index} value={metric.id}>
+                                                {metric.metric_unit}
+                                              </option>
+                                            ))}
+                                          </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="mt-3 col-span-2 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent"/>
+                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent"/>
+                                  </div>
+                                )}
 
                                 <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent ">
                                     <select
