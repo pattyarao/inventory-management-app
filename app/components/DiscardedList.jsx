@@ -85,7 +85,8 @@ const DiscardedList = () => {
                 unit: "", 
                 quantity: 1, 
                 id: item.id, 
-                reason_id: "" 
+                reason_id: null,
+                partialamount: 0,
               }
             ]
           }
@@ -107,7 +108,8 @@ const DiscardedList = () => {
                 unit: "", 
                 quantity: 1, 
                 id: item.id, 
-                reason_id: "" 
+                reason_id: null,
+                partialamount: 0,
               })
             }
         })
@@ -129,7 +131,8 @@ const DiscardedList = () => {
               unit: "", 
               quantity: 1, 
               id: item.id, 
-              reason_id: "" 
+              reason_id: null,
+              partialamount: 0,
             }
           ]
         }
@@ -167,6 +170,12 @@ const DiscardedList = () => {
     newDiscardedList[productIndex].unit = event.target.value;
     setDiscardedList(newDiscardedList);
   };
+
+  const handlePartialUnitChange = (productIndex, event) => {
+    const newDiscardedList = [...discardedList];
+    newDiscardedList[productIndex].partialunit = event.target.value;
+    setDiscardedList(newDiscardedList);
+  };
   
   const handleQtyChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
@@ -184,6 +193,14 @@ const DiscardedList = () => {
   const handleAmtChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
     newDiscardedList[productIndex].variants[variantIndex].amount =
+      event.target.valueAsNumber;
+
+    setDiscardedList(newDiscardedList);
+  };
+
+  const handlePartialAmountChange = (productIndex, variantIndex, event) => {
+    const newDiscardedList = [...discardedList];
+    newDiscardedList[productIndex].variants[variantIndex].partialamount =
       event.target.valueAsNumber;
 
     setDiscardedList(newDiscardedList);
@@ -324,12 +341,12 @@ const DiscardedList = () => {
                                     {/** render input and name if it is a variant */}
                                     {!(variant.name === product.name) ? (
                                       
-                                        <input
-                                          key={variantIndex}
-                                          value={variant.name}
-                                          id="large"
-                                          className="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                        />
+                                      <input
+                                        key={variantIndex}
+                                        value={variant.name}
+                                        id="large"
+                                        className="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      />
                                       
                                     ) : null}
 
@@ -371,36 +388,35 @@ const DiscardedList = () => {
 
                                 {/** PARTIAL AMOUNT */}
                                 {product.id != variant.id ? (
-                                  <div className="mt-3 col-span-2 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
-                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
-                                      <input
+                                  <div className="mt-4 col-span-2 grid grid-cols-2 gap-4">
+                                  <div className="flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                    <input
                                       type="number"
                                       className="outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
-                                      value={variant.partialamount}
                                       onChange={(event) =>
-                                        handleAmtChange(index, variantIndex, event)
+                                        handlePartialAmountChange(index, variantIndex, event)
                                       }
                                     />
-                                    </div>
-                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
-                                        <div className="relative">
-                                          <select
-                                            id="large"
-                                            value={product.unit}
-                                            onChange={(event) =>
-                                              handleUnitChange(index, event)
-                                            }
-                                            class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                          >
-                                            {metricList.map((metric, index) => (
-                                              <option key={index} value={metric.id}>
-                                                {metric.metric_unit}
-                                              </option>
-                                            ))}
-                                          </select>
-                                      </div>
+                                  </div>
+                                  <div className="flex flex-row h-8 w-full rounded-lg relative bg-transparent">
+                                    <div className="relative">
+                                      <select
+                                        id="large"
+                                        value={product.partialunit}
+                                        onChange={(event) =>
+                                          handlePartialUnitChange(index, event)
+                                        }
+                                        class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      >
+                                        {metricList.map((metric, index) => (
+                                          <option key={index} value={metric.id}>
+                                            {metric.metric_unit}
+                                          </option>
+                                        ))}
+                                      </select>
                                     </div>
                                   </div>
+                                </div>
                                 ) : (
                                   <div className="mt-3 col-span-2 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
                                     <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent"/>

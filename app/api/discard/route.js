@@ -18,9 +18,9 @@ function createPostData(discardedList, user_id) {
 
         // create audit trail data
         discarded.variants.forEach((variant) => {
-            totalMaterialAmount += variant.quantity * variant.amount; // TODO: normalize unit into g or mL
+            totalMaterialAmount += (variant.quantity * variant.amount) + variant.partialamount; // TODO: normalize unit into g or mL
 
-            console.log("variant", variant)
+            console.log("variant total material amount composition", variant.quantity, variant.amount, variant.partialamount)
 
 
             // determine if item is a variant or material
