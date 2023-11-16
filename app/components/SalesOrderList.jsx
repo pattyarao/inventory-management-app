@@ -71,7 +71,7 @@ const SalesOrderList = () => {
 
   
   
-  
+  console.log(orderList)
 
   return (
     <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: '#526D82', color: 'white' }}>
@@ -196,7 +196,7 @@ const SalesOrderList = () => {
                 {orderList.length !== 0 ? (
                     <>
                     <ClearOrderList onConfirmClear={() => handleClear()}/>
-                    <RecordOrder orderList={orderList} />
+                    <RecordOrder orderList={orderList} onConfirmClear={() => setOrderList([])} />
                   </>
                 ) : null}
               </div>
