@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import RecordManualCount from "./RecordManualCount";
 import ClearManualCount
  from "./ClearManualCount";
+ import Navbar from "./Navbar";
 import { GET as getAllVariants} from "../api/purchasevariant/route";
 import { GET as getAllMaterials} from "../api/purchase/route";
+
 
 const ManualCount
  = () => {
@@ -180,7 +182,8 @@ const ManualCount
   console.log(materialList)
   console.log(variantsList)
   return (
-    <div
+    
+    <div  
       className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
       style={{ backgroundColor: "#D6E0F0", color: "black" }}
     >
@@ -352,7 +355,7 @@ const ManualCount
                                       <option value="2">kg</option>
                                       <option value="3">ml</option>
                                       <option value="4">l</option>
-                                      <option value="5">oz</option>
+                                      <option value="5"></option>
                                     </select>
                                   </div>
                                 </div>
