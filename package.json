@@ -14,9 +14,11 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^4.11.0",
+    "react-modal": "^3.16.1",
     "supabase": "^1.106.1"
   },
   "devDependencies": {
+    "@types/node": "20.8.7",
     "@types/react": "18.2.31",
     "autoprefixer": "^10",
     "eslint": "^8",
