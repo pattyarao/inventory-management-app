@@ -61,7 +61,7 @@ const AddMaterialPurchase = (props) => {
     }, [showModal]);
 
     useEffect(() => {
-      async function getMaterials() {
+      async function getSelectionList() {
         try {
           const response = await GETMAT();
           const { materials, error } = await response.json();
@@ -86,24 +86,7 @@ const AddMaterialPurchase = (props) => {
           setError(error.message);
         }
       }
-      async function getVariants() {
-        try {
-          const response = await GETVAR();
-          const { variants, error } = await response.json();
-  
-          if (error) {
-            setError(error);
-          } else {
-            setVariantsList(variants);
-            setLoading(false); // Data has been loaded
-          }
-        } catch (error) {
-          setError(error.message);
-          
-        }
-      }
-      getMaterials();
-      getVariants();
+      getSelectionList();
     }, [showModal]);
 
     console.log(variantsList)
@@ -201,7 +184,7 @@ const AddMaterialPurchase = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Add Products to Order List
+        Add Materials to Purchase List
       </button>
 
       {showModal ? (
@@ -222,7 +205,7 @@ const AddMaterialPurchase = (props) => {
                   style={{ backgroundColor: "#27374D" }}
                 >
                   <h3 className="text-3xl font-semibold">
-                    Select Products to Add
+                    Select Materials to Add
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
