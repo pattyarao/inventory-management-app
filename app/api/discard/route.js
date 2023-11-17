@@ -15,16 +15,17 @@ function createPostData(discardedList, user_id) {
 
     discardedList.forEach((discarded) => {
         var totalMaterialAmount = 0; // total amount to discard from the masterlist
+        var totalPartialAmount = 0; // total amount of partial discards from variants
 
         // create audit trail data
         discarded.variants.forEach((variant) => {
             totalMaterialAmount += (variant.quantity * variant.amount) + variant.partialamount; // TODO: normalize unit into g or mL
-
+            totalPartialAmount += variant.partialamount
             console.log("variant total material amount composition", variant.quantity, variant.amount, variant.partialamount)
 
 
             // determine if item is a variant or material
-            if ( variant.id === discarded.id ) { // the item is a material
+            if ( variant.id === discarded.id ) { 
                 materialsAuditTrailData.push({
                     created_at: timestamp,
                     material_id: variant.id,
@@ -44,6 +45,19 @@ function createPostData(discardedList, user_id) {
             }
 
         })
+
+        // record partial amount from variant discard for each material
+        if (totalPartialAmount > 0) {
+            materialsAuditTrailData.push({
+                created_at: timestamp,
+                material_id: discarded.id,
+                expired_qty: totalPartialAmount, 
+                user_id: user_id,
+                reason_id: "780d38a5-93ee-479b-90a8-8799d05c66f0",
+            })
+        }
+
+        console.log("total partial discard amount", totalPartialAmount)
 
         console.log("total material amount", totalMaterialAmount)
 

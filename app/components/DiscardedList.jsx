@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { GETMETRIC, GETREASON } from "../api/helper/route";
 import RecordDiscard from "./RecordDiscard";
 import AddMaterialDiscard from "./AddMaterialDiscard"
+import { FaInbox } from "react-icons/fa";
 
 const DiscardedList = () => {
   //stores all ordered products
@@ -523,7 +524,7 @@ const DiscardedList = () => {
                   ) : (
                     <>
                         <div className="h-[300px] px-10 py-4 rounded-lg flex flex-row items-center justify-center gap-6 bg-[#9DB2BF]">
-                        <div className="text-xl">**insert icon here**</div>
+                        <FaInbox style={{ fontSize: '20em'}} />
                         <div className="flex flex-col">
                             <div className="text-3xl justify-center text-grey ">
                                 Your <b>Expired Material List</b> is <b>Empty</b>
