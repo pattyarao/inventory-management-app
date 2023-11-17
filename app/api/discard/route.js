@@ -121,14 +121,14 @@ export async function POST(discardedList, user_id, metricList) {
 
 export async function GET() {
     const { data: materials, error } = await supabase
-    .from("MD_RAW_MATERIALS")
-    .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
-    .eq("status", "TRUE")  
+        .from("MD_RAW_MATERIALS")
+        .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
+        .eq("status", "TRUE")  
   
     const { data: variants, error2 } = await supabase
-    .from("MD_MATVARIATION")
-    .select("*, MD_RAW_MATERIALS(*)")
-    .eq("status", "TRUE")
+        .from("MD_MATVARIATION")
+        .select("*, MD_RAW_MATERIALS(*)")
+        .eq("status", "TRUE")
   
     // new code that returns a complete list of material and variants
     if (!error && !error2) {

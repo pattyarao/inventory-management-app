@@ -281,14 +281,14 @@ const DiscardedList = () => {
                     <>
                       <div
 
-                        className="px-3 w-full grid grid-cols-8 text-xs rounded-lg"
+                        className="px-3 w-full grid grid-cols-9 text-xs rounded-lg"
 
                         style={{ backgroundColor: "#526D82", color: "white" }}
                       >
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Material Name
                         </div>
-                        <div className="col-span-1 me-5 text-sm flex items-center justify-center">
+                        <div className="col-span-2 me-5 text-sm flex items-center justify-center">
                           Variant Name
                         </div>
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
@@ -306,7 +306,6 @@ const DiscardedList = () => {
                         <div className="col-span-1 text-sm ms-5">
                           Reason for Discard
                         </div>
-
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Qty. Discarded
                         </div>
@@ -316,7 +315,7 @@ const DiscardedList = () => {
                         <div key={index}>
                           <div
 
-                            className="w-full p-3 mb-4 grid grid-cols-8 text-xs rounded-lg"
+                            className="w-full p-3 mb-4 grid grid-cols-9 text-xs rounded-lg"
 
                             style={{
                               backgroundColor: "#9DB2BF",
@@ -334,9 +333,11 @@ const DiscardedList = () => {
                             {product.variants.map((variant, variantIndex) => (
                               <>
                                 {variantIndex !== 0 ? (
-                                  <div className="col-span-1 me-5 mt-3 " />
-                                ) : null}
-                                <div className="col-span-1 me-5">
+                                    <div className="col-span-1 me-5 mt-3 " />
+                                  ) : null
+                                }
+
+                                <div className="col-span-2 me-5 mt-3">
                                   <div className="relative">
                                     
                                     {/** render input and name if it is a variant */}
@@ -346,12 +347,12 @@ const DiscardedList = () => {
                                         key={variantIndex}
                                         value={variant.name}
                                         id="large"
-                                        className="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                        disabled
                                       />
                                       
-                                    ) : null}
-
-
+                                      ) : null
+                                    }
                                   </div>
                                 </div>
 
