@@ -15,16 +15,17 @@ function createPostData(discardedList, user_id) {
 
     discardedList.forEach((discarded) => {
         var totalMaterialAmount = 0; // total amount to discard from the masterlist
+        var totalPartialAmount = 0; // total amount of partial discards from variants
 
         // create audit trail data
         discarded.variants.forEach((variant) => {
             totalMaterialAmount += (variant.quantity * variant.amount) + variant.partialamount; // TODO: normalize unit into g or mL
-
+            totalPartialAmount += variant.partialamount
             console.log("variant total material amount composition", variant.quantity, variant.amount, variant.partialamount)
 
 
             // determine if item is a variant or material
-            if ( variant.id === discarded.id ) { // the item is a material
+            if ( variant.id === discarded.id ) { 
                 materialsAuditTrailData.push({
                     created_at: timestamp,
                     material_id: variant.id,
@@ -44,6 +45,19 @@ function createPostData(discardedList, user_id) {
             }
 
         })
+
+        // record partial amount from variant discard for each material
+        if (totalPartialAmount > 0) {
+            materialsAuditTrailData.push({
+                created_at: timestamp,
+                material_id: discarded.id,
+                expired_qty: totalPartialAmount, 
+                user_id: user_id,
+                reason_id: "780d38a5-93ee-479b-90a8-8799d05c66f0",
+            })
+        }
+
+        console.log("total partial discard amount", totalPartialAmount)
 
         console.log("total material amount", totalMaterialAmount)
 
@@ -107,14 +121,14 @@ export async function POST(discardedList, user_id, metricList) {
 
 export async function GET() {
     const { data: materials, error } = await supabase
-    .from("MD_RAW_MATERIALS")
-    .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
-    .eq("status", "TRUE")  
+        .from("MD_RAW_MATERIALS")
+        .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
+        .eq("status", "TRUE")  
   
     const { data: variants, error2 } = await supabase
-    .from("MD_MATVARIATION")
-    .select("*, MD_RAW_MATERIALS(*)")
-    .eq("status", "TRUE")
+        .from("MD_MATVARIATION")
+        .select("*, MD_RAW_MATERIALS(*)")
+        .eq("status", "TRUE")
   
     // new code that returns a complete list of material and variants
     if (!error && !error2) {
