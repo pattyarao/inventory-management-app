@@ -17,7 +17,7 @@ const AddNewVariant = (props) => {
         name: "",
         initialAmt: 0,
         amt: 0,
-        unit: ""
+        unit: "1"
     });
     console.log(newVariant)
 
@@ -38,18 +38,6 @@ const AddNewVariant = (props) => {
       }
       getUnits();
     }, [addUnitCondition]);
-
-    const convertAmount = (amount, value) => {
-      
-      if (value==="0"){
-      return amount;
-      } else if (value==="1"){
-        return amount*1000;
-      } else if (value==="2"){
-        return amount/1000;
-      } 
-
-    };
     
 
     const handleChange = (e) => {
@@ -65,6 +53,15 @@ const AddNewVariant = (props) => {
       if (name === "initialAmt") {
         let ratio = parseFloat(newVariant.unit)
         let amount = parseFloat(value) * ratio 
+
+        setNewVariant({
+          ...newVariant,
+          [name]: value,
+          amt: amount,
+        });
+      } else if (name === "unit") {
+        let ratio = parseFloat(value)
+        let amount = parseFloat(newVariant.initialAmt) * ratio 
 
         setNewVariant({
           ...newVariant,
@@ -89,12 +86,6 @@ const AddNewVariant = (props) => {
       };
 
       const handleSubmit = async () => {
-          const convertedAmt = convertAmount(newVariant.amt, newVariant.unit); // Implement convertToDefaultUnit function
-          console.log
-          setNewVariant({
-            ...newVariant,
-            amt: convertedAmt,
-          });
       
         try {
           // Assuming you have the 'variants' data available
