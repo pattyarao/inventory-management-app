@@ -4,7 +4,8 @@ export async function GET() {
   try {
     const { data: materials, materialsError } = await supabase
       .from("MD_RAW_MATERIALS")
-      .select("*");
+      .select("*")
+      .order("name", { ascending: true });
 
     if (materialsError) {
       return new Response(JSON.stringify({ error }), {
@@ -15,7 +16,8 @@ export async function GET() {
 
     const { data: variants, variantsError } = await supabase
       .from("MD_MATVARIATION")
-      .select("*");
+      .select("*")
+      .order("name", {ascending: true});
 
     if (variantsError) {
       return new Response(JSON.stringify({ error }), {

@@ -6,12 +6,16 @@ import Navbar from "../components/Navbar";
 //icons
 import { IoIosArrowForward } from "react-icons/io";
 
+import useUpdateVariantStatus from "../../hooks/useUpdateVariantStatus"
 
 const MaterialMasterlist = () => {
+  const {updateVariantStatus} = useUpdateVariantStatus();
   const [masterlist, setMasterlist] = useState([]);
   const [error, setError] = useState(null);
   const [isMasterlistChanged, setChangeMasterlist] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState("");
+  const [isChanged, setIsChanged] = useState(false);
+
   useEffect(() => {
     async function getMaterialsMasterlist() {
       try {
@@ -32,40 +36,55 @@ const MaterialMasterlist = () => {
     }
     getMaterialsMasterlist();
   }, [isMasterlistChanged]);
+
+  const handleChangeVariantStatus = async (id) => {
+    //function
+    await updateVariantStatus(id, setSelectedMaterial, selectedMaterial);
+    setChangeMasterlist((old) => !old);
+    
+  };
   return (
     <div className="w-full">
       <Navbar userType={"Stock Controller"} />
       <div className="w-full p-4 flex flex-col gap-4">
         <h1 className="top-0 sticky bg-slate-400 p-4 rounded-md text-2xl font-black">Materials Masterlist</h1>
         <div className="w-full flex gap-4">
-          <div className="w-[40%] h-[60vh] bg-slate-200 top-0 sticky flex flex-col gap-2 p-4 rounded-md overflow-y-auto">
+          <div className="w-full h-[60vh] bg-slate-200 top-0 sticky flex flex-col gap-2 p-4 rounded-md overflow-y-auto">
             {masterlist &&
-              masterlist.map((material) => (
+              masterlist?.map((material) => (
                 <div
                   key={material.id}
-                  className="bg-slate-300 p-2 flex justify-between items-center"
+                  className="bg-slate-300 p-2 flex flex-col justify-between items-start"
                   onClick={(e) => setSelectedMaterial(material)}
+                
                 >
                   <p>{material.name}</p>
-                  <IoIosArrowForward />
-
+                  
+                  <div className="w-full flex flex-col">
+                    {material.variants.length > 0 ? material.variants.map((variant) => (
+                      <div key={variant.id} className="bg-slate-300 flex justify-between p-2 rounded-md">
+                        <p>{variant.name}</p>
+                      {variant.status === true ? (<button className="w-[100px] bg-slate-100 p-0.5 rounded-md" onClick={() => handleChangeVariantStatus(variant.id)}>Deactivate</button>) : <button className="w-[100px] bg-slate-100 p-0.5 rounded-md" onClick={() => handleChangeVariantStatus(variant.id)}>Activate</button>}
+                      </div>
+                    )) : <p>There are no variants for {material.name}</p>}
+                  </div>
                 </div>
-              ))}
+              )) }
           </div>
-          <div className="w-full bg-slate-200 rounded-md">
+          {/* <div className="w-full bg-slate-200 rounded-md">
           {selectedMaterial ? (
               <div className="w-full flex flex-col gap-2 p-2">
                 {selectedMaterial.variants.length > 0 ? selectedMaterial.variants.map((variant) => (
                   <div key={variant.id} className="bg-slate-300 flex justify-between p-2 rounded-md">
                     <p>{variant.name}</p>
-                    {variant.status === true ? (<button className="w-[100px] bg-slate-100 p-0.5 rounded-md">Deactivate</button>) : <button className="w-[100px] bg-slate-100 p-0.5 rounded-md">Activate</button>}
+                    {variant.status === true ? (<button className="w-[100px] bg-slate-100 p-0.5 rounded-md" onClick={() => handleChangeVariantStatus(variant.id)}>Deactivate</button>) : <button className="w-[100px] bg-slate-100 p-0.5 rounded-md" onClick={() => handleChangeVariantStatus(variant.id)}>Activate</button>}
                   </div>
                 )): <p>There are no materials for {selectedMaterial.name}</p>}
               </div>
             ) : (
               <p>Select a material</p>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
