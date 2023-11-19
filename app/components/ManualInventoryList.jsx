@@ -184,18 +184,20 @@ const ManualCount
   return (
     
     <div  
-      className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
-      style={{ backgroundColor: "#D6E0F0", color: "black" }}
+      className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg"
+      style={{ backgroundColor: "#D6E0F0", color: "black" }} //style for sorting
     >
-                            <select
+        <select
         className="p-2 rounded-md bg-white"
         value={sortOption}
         onChange={(e) => sortManualCount(e.target.value)}
       >
-        <option value="nameAscending">Sort by Name (A-Z)</option>
-        <option value="nameDescending">Sort by Name (Z-A)</option>      </select>
+          <option value="nameAscending">Sort by Name (A-Z)</option>
+          <option value="nameDescending">Sort by Name (Z-A)</option>      
+        </select>
+        
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
-        <div className="col-span-3 md:col-span-4 text-xl font-bold">
+        <div className="col-span-5 md:col-span-5 text-xl font-bold">
           Materials List
         </div>
       </div>
@@ -206,7 +208,7 @@ const ManualCount
       <div className="w-full flex flex-col items-center gap-4">
         <div className="w-full flex flex-col text-xs">
           <div className="flex flex-col">
-            <div className="w-full flex flex-col items-center gap-4">
+            <div className="w-full flex flex-col items-left gap-4">
               <div className="w-full flex flex-col text-xs">
                 <div className="flex flex-col">
                   {ManualCount
@@ -214,14 +216,14 @@ const ManualCount
                     <>
                       <div
                         className="px-3 w-full grid grid-cols-5 text-xs rounded-lg"
-                        style={{ backgroundColor: "#D6E0F0", color: "black" }}
+                        style={{ backgroundColor: "#D6E0F0", color: "black" }} //style for headers
                       >
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Name
                         </div>
-                        <div className="col-span-1 me-5 text-sm flex items-center justify-center">
+                        {/* <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Variant
-                        </div>
+                        </div> */}
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Qty. Count
                         </div>
@@ -233,7 +235,7 @@ const ManualCount
                         </div>
                       </div>
 
-
+                      <div>
                       {materialList
                       .map((material, index) => (
                         <div key={index}>
@@ -244,11 +246,9 @@ const ManualCount
                               color: "#27374D",
                             }}
                           >
-                            <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
-       
+                            <div className="col-span-5 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
 
-
-                              <div className="font-black text-xl ms-3 mt-2">
+                              <div className="ml-0 font-black text-xl ms-20 mt-1"> 
                                 {material.name}
                               </div>
                             </div>
@@ -260,7 +260,7 @@ const ManualCount
                                 {variant.material_id === material.id ? (<>
                                 
                                 {variantIndex !== 0 ? (
-                                  <div className="col-span-1 me-5 mt-3 " />
+                                  <div className="col-span-5 me-5 mt-3" />
                                 ) : null}
 
                                 <div className="col-span-1 me-5">
@@ -348,7 +348,7 @@ const ManualCount
                                           event,
                                         )
                                       }
-                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="block w-full ml-10 px-5 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
                                       <option value="0">g</option>
                                       <option value="1">mg</option>
@@ -368,11 +368,13 @@ const ManualCount
                             ))}
 
 
-                            <div className="col-span-2" />
+                            <div className="col-span-1" />
                           </div>
                         </div>
                       ))}
+                      </div>
                     </>
+                  
                   ) : (
                     <div
                     >
