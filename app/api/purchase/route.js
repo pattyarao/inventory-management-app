@@ -1,33 +1,13 @@
 import supabase from "../../supabase";
 
 export async function GET() {
-  const { data: materials, error } = await supabase
-  .from("MD_RAW_MATERIALS")
-  .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
-  .eq("status", "TRUE")  
+    const { data: materials, error } = await supabase
+    .from("MD_RAW_MATERIALS")
+    .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
+    .eq("status", "TRUE") 
 
-  const { data: variants, error2 } = await supabase
-  .from("MD_MATVARIATION")
-  .select("*")
-  .eq("status", "TRUE")
+    console.log(materials)
 
-  // new code that returns a complete list of material and variants
-  if (!error && !error2) {
-    const mergedlist = [
-      ...materials,
-      ...variants
-    ]
-    
-    const json = {
-      materials: mergedlist
-    };
-    return new Response(JSON.stringify(json), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-  
-  // old code that returns only materials
   if (error) {
     console.log(error)
     return new Response(JSON.stringify({ error }), {

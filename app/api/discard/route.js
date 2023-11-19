@@ -7,86 +7,139 @@ import { CONVERTMETRIC } from "../helper/route";
 // for materials, clean data and post to db
 // for variants, process into material data and post to db
 
-function updateMaterials(materialList) {
+function createPostData(discardedList, user_id) {
+    const masterlistData = [];
+    const variantsAuditTrailData = [];
+    const materialsAuditTrailData = [];
+    const timestamp = new Date().toISOString();
 
-    // update material quantity in the masterlist
-    materialList.forEach(async (material) => {
-        const { error } = await supabase
-            .from("MD_RAW_MATERIALS")
-            .update({
-                qty_available: material.qty_available - material.amount,
-            })
-            .eq("id", material.id);
+    discardedList.forEach((discarded) => {
+        var totalMaterialAmount = 0; // total amount to discard from the masterlist
 
-        // console.log("update material data: ", material)
+        // create audit trail data
+        discarded.variants.forEach((variant) => {
+            totalMaterialAmount += variant.quantity * variant.amount; // TODO: normalize unit into g or mL
+
+            console.log("variant", variant)
+
+
+            // determine if item is a variant or material
+            if ( variant.id === discarded.id ) { // the item is a material
+                materialsAuditTrailData.push({
+                    created_at: timestamp,
+                    material_id: variant.id,
+                    expired_qty: variant.amount, // depends if there can still be a quantity assigned to a material
+                    user_id: user_id,
+                    reason_id: variant.reason_id,
+                })
+            }
+            else {
+                variantsAuditTrailData.push({
+                    created_at: timestamp,
+                    var_id: variant.id,
+                    qty: variant.quantity,
+                    user_id: user_id,
+                    reason_id: variant.reason_id,
+                })
+            }
+
+        })
+
+        console.log("total material amount", totalMaterialAmount)
+
+        // create masterlist data
+        masterlistData.push({
+            id: discarded.id,
+            amount: totalMaterialAmount,
+            qty_available: discarded.qty_available
+        })
     })
+
+
+    return { masterlistData, materialsAuditTrailData, variantsAuditTrailData }
 }
 
 export async function POST(discardedList, user_id, metricList) {
 
+    console.log("POST PARAM: ", discardedList)
+
+    const { masterlistData, materialsAuditTrailData, variantsAuditTrailData } = createPostData(discardedList, user_id);
+
+    console.log("POST TEST: ", masterlistData, materialsAuditTrailData, variantsAuditTrailData);
+
     try {
+        // post audit trails
+        if (materialsAuditTrailData.length > 0) {
+            const { data: result1, error: error1 } = await supabase
+            .from("TD_DISCARD")
+            .insert(materialsAuditTrailData)
 
-        // filter discard list
-        const materials = discardedList.filter((discarded) => !discarded.material_id);
-        const variants = discardedList.filter((discarded) => discarded.material_id);
-        const timestamp = new Date().toISOString();
-
-        console.log("POST TEST: ", materials, variants, timestamp, user_id);
-
-        // format material
-        const materialsData = materials.map((material) => ({
-            created_at: timestamp,
-            material_id: material.id,
-            expired_qty: material.amount, // TODO: not yet normalized into one unit
-            user_id: user_id,
-            reason_id: material.reason,
-        }));
-    
-        console.log("material post data", materialsData)
-
-        // post material audit trail
-        try {
-            const { discardData, discardError } = await supabase
-                .from("TD_DISCARD")
-                .upsert(materialsData)
-                .select()
-
-            // update material quantity in the masterlist
-            if (!discardError) {
-                updateMaterials(materials)
+            if (error1) {
+                console.error('Supabase operation 1 error:', error1);
+            } else {
+                console.log('Supabase operation 1 result:', result1);
             }
-        } catch (error) {
-            console.log(error);
-            return { error: error.message };
         }
 
-        
+        if (variantsAuditTrailData.length > 0) {
+            const { data: result2, error: error2 } = await supabase
+            .from("TD_DISCARDVAR")
+            .insert(variantsAuditTrailData)
+
+            if (error2) {
+                console.error('Supabase operation 2 error:', error2);
+            } else {
+                console.log('Supabase operation 2 result:', result2);
+            }
+        }
+
+        // update masterlist
+        masterlistData.forEach( async (masterlist) => {
+            const { data, error } = await supabase
+                .from("MD_RAW_MATERIALS")
+                .update({qty_available: masterlist.qty_available - masterlist.amount})
+                .eq("id", masterlist.id)
+        })
     } catch (error) {
         console.log(error);
     }
-
-    
-
-    // format variantExpired
-    // const variantExpiredUpsertData = variantExpired.map((variantExpired) => ({
-    //     user_id: user_id,
-    //     var_id: variantExpired.variation_id,
-    //     qty: variantExpired.qty_expired,
-    //     reason_id: variantExpired.reason_id,
-    // }));
-
-    // post expired
-    
-
-    // post variantExpired
-    // try {
-    //     const { data: variantDiscardData, error: variantDiscardError } = await supabase
-    //         .from("TD_DISCARDVAR")
-    //         .upsert(variantExpiredUpsertData)
-    //         .select();
-    // } catch (error) {
-    //     console.log(error);
-    //     return { error: error.message };
-    // }
 }
 
+export async function GET() {
+    const { data: materials, error } = await supabase
+    .from("MD_RAW_MATERIALS")
+    .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
+    .eq("status", "TRUE")  
+  
+    const { data: variants, error2 } = await supabase
+    .from("MD_MATVARIATION")
+    .select("*, MD_RAW_MATERIALS(*)")
+    .eq("status", "TRUE")
+  
+    // new code that returns a complete list of material and variants
+    if (!error && !error2) {
+      const mergedlist = [
+        ...materials,
+        ...variants
+      ]
+  
+      const json = {
+        materials: mergedlist
+      };
+  
+      console.log('material list: ', mergedlist)
+      return new Response(JSON.stringify(json), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    
+    // old code that returns only materials
+    if (error) {
+      console.log(error)
+      return new Response(JSON.stringify({ error }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+}

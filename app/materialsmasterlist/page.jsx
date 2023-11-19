@@ -55,19 +55,19 @@ const MaterialsMasterlist = async () => {
     <div>
       <Navbar userType={"Stock Controller"} />
       <div className="w-full min-h-screen p-4 flex flex-col items-center gap-4">
-        <h1>Materials Masterlist</h1>
-        <div className="w-[50%] flex flex-col items-center justify-center gap-4">
+        <h1 className="w-full font-black text-3xl">Materials Masterlist</h1>
+        <div className="w-full flex flex-col items-center justify-center gap-4">
           {masterlist.materials.map((material) => (
-            <div className="w-[70%] p-2 flex justify-between items-center bg-slate-300">
-              <p className="w-[40%]">{material.name}</p>
+            <div className="w-full p-2 flex flex-col gap-1.5 justify-center items-start bg-slate-300 rounded-md">
+              <p className="w-[20%] text-xl font-bold">{material.name}</p>
               <div className="w-[60%] flex flex-col gap-2">
-              {material.variants.map((variant) => (
-                <div className="flex items-center justify-between">
+              { material.variants.length > 0 ? material.variants.map((variant) => (
+                <div className="p-1 flex items-center justify-between bg-white rounded-md drop-shadow-md">
                     <p>{variant.name}</p>
-                    {variant.status === true ? <button className="bg-slate-400 p-1 drop-shadow-sm">Deactivate</button> : <button>Activate</button>}
+                    {variant.status === true ? <button className="bg-slate-400 p-1 rounded-md bg-gray-200">Deactivate</button> : <button className="bg-slate-400 p-1 rounded-md bg-gray-200">Activate</button>}
                 </div>
 
-              ))}
+              )) : <p>There are no variants for this material.</p>}
               </div>
             </div>
           ))}

@@ -5,7 +5,12 @@ import supabase from "../supabase";
 import withAuthentication from "../auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+<<<<<<< HEAD
 // Import the required icons, e.g., FaUserAlt and MdLogout
+=======
+// import { FaUserAlt } from "react-icons/fa";
+// import { MdLogout } from "react-icons/md";
+>>>>>>> a01cca76ea9660a9f0447feceb906f5182526aaf
 
 const Navbar = ({ userType }) => {
   const router = useRouter();
@@ -33,6 +38,7 @@ const Navbar = ({ userType }) => {
         </h3>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-4 bg-[#8D93AB] rounded-md py-2 px-6">
+<<<<<<< HEAD
             {/* Render appropriate component here */}
             {userType === "Stock Controller" ? (
               <div className="flex gap-4">
@@ -45,11 +51,31 @@ const Navbar = ({ userType }) => {
 
           <button onClick={logOut} className="flex items-center gap-2 px-4 py-2">
             {/* Render the Logout component or button here */}
+=======
+            <div className="bg-[#D6E0F0] p-2 rounded-full">
+              {/* <FaUserAlt /> */}
+            </div>
+
+            <div className="flex flex-col">
+              <p className="font-bold text-sm text-[#041C32]">{email}</p>
+              <p className="text-xs">{userType}</p>
+
+            </div>
+          </div>
+
+          <button
+            onClick={logOut}
+            className="flex items-center gap-2 px-4 py-2"
+          >
+            {" "}
+            {/* <MdLogout /> */}
+>>>>>>> a01cca76ea9660a9f0447feceb906f5182526aaf
             Logout
           </button>
         </div>
       </div>
 
+<<<<<<< HEAD
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-6">
           <p className="bg-[#8D93AB] p-2 rounded-md">
@@ -58,6 +84,49 @@ const Navbar = ({ userType }) => {
           </p>
           <button onClick={logOut}>Logout</button>
         </div>
+=======
+            <Link
+              href="/generatereport"
+              className="w-1/3 text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+            >
+              Generate Report
+            </Link>
+          </div>
+        ) : userType === "Stock Controller" ? (
+          <div className="w-full flex items-center justify-center gap-4 ">
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/"
+            >
+              Home
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/recordpurchases"
+            >
+              Record Purchases
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/recordexpired"
+            >
+              Record Discarded
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/manualcount"
+            >
+              Perform Manual Count
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/materialsmasterlist"
+            >
+              Materials Masterlist
+            </Link>
+          </div>
+        ) : null}
+>>>>>>> a01cca76ea9660a9f0447feceb906f5182526aaf
       </div>
     </div>
   );

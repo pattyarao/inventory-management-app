@@ -1,14 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GET as GETVAR } from "../api/purchasevariant/route";
-import { GET as GETMAT } from "../api/purchase/route";
+import { GET } from "../api/discard/route";
 
-const AddMaterialPurchase = (props) => {
+const AddMaterialDiscard = (props) => {
   //stores all products in the database
   const [materialsList, setMaterialsList] = useState([]);
-  const [variantsList, setVariantsList] = useState([]);
-  const [selectionList, setSelectionList] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Add loading state
     //determines if the modal for adding a product is shown or not
@@ -17,7 +14,7 @@ const AddMaterialPurchase = (props) => {
     useEffect(() => {
       async function getMaterials() {
         try {
-          const response = await GETMAT();
+          const response = await GET();
           const { materials, error } = await response.json();
     
           if (error) {
@@ -38,59 +35,11 @@ const AddMaterialPurchase = (props) => {
           }
         } catch (error) {
           setError(error.message);
-        }
-      }
-      async function getVariants() {
-        try {
-          const response = await GETVAR();
-          const { variants, error } = await response.json();
-  
-          if (error) {
-            setError(error);
-          } else {
-            setVariantsList(variants);
-            setLoading(false); // Data has been loaded
-          }
-        } catch (error) {
-          setError(error.message);
-          
         }
       }
       getMaterials();
-      getVariants();
     }, [showModal]);
-
-    useEffect(() => {
-      async function getSelectionList() {
-        try {
-          const response = await GETMAT();
-          const { materials, error } = await response.json();
     
-          if (error) {
-            setError(error);
-            console.log("err0 " + error);
-          } else {
-            
-            // Filter out materials that are already in props.purchaseList
-            const filteredMaterials = materials.filter((material) =>
-              props.purchaseList.every(
-                (purchaseMaterial) => purchaseMaterial.id !== material.id
-              )
-            );
-
-            setMaterialsList(filteredMaterials);
-            setFilteredProductsList(filteredMaterials);
-            setLoading(false); // Data has been loaded
-          }
-        } catch (error) {
-          setError(error.message);
-        }
-      }
-      getSelectionList();
-    }, [showModal]);
-
-    console.log(variantsList)
-    console.log(materialsList)
 
 
 
@@ -117,6 +66,7 @@ const AddMaterialPurchase = (props) => {
 
   //Sort and Search Mechanisms
   const [filteredProductsList, setFilteredProductsList] = useState(materialsList);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("name-asc"); // Initialize the default sorting option
 
@@ -145,6 +95,7 @@ const AddMaterialPurchase = (props) => {
         // Compare two items for sorting in descending order (Z-A)
         const nameA = a.name;
         const nameB = b.name;
+
         // Use localeCompare to perform a case-insensitive comparison
         return nameA.localeCompare(nameB);
       });
@@ -182,7 +133,7 @@ const AddMaterialPurchase = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Add Materials to Purchase List
+        Add Products to Order List
       </button>
 
       {showModal ? (
@@ -203,7 +154,7 @@ const AddMaterialPurchase = (props) => {
                   style={{ backgroundColor: "#27374D" }}
                 >
                   <h3 className="text-3xl font-semibold">
-                    Select Materials to Add
+                    Select Products to Add
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -250,7 +201,7 @@ const AddMaterialPurchase = (props) => {
                         </thead>
                         <tbody>
                           {filteredProductsList.map((product, index) => (
-                            <tr key={index} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={product.id}>
                               <th
                                 scope="row"
                                 className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -258,9 +209,9 @@ const AddMaterialPurchase = (props) => {
                                 <input
                                   id={`checkbox-${product.id}`} // Use a unique ID for each checkbox
                                   type="checkbox"
-                                  value={product.index}
-                                  checked={selectedIndex.includes(product.index)}
-                                  onChange={handleSelect}
+                                  value=""
+                                  checked={product.checked} // Bind the checked status to the 'checked' property
+                                  onChange={() => handleCheckboxChange(product)} // Handle checkbox change
                                   className="me-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                 />
                                 {product.name}
@@ -299,7 +250,7 @@ const AddMaterialPurchase = (props) => {
                             handleAddtoPurchaseList();
                           }}
                         >
-                        Add Materials
+                        Add Products
                       </button>
                     </div>
                   </div>
@@ -314,4 +265,4 @@ const AddMaterialPurchase = (props) => {
   );
 };
 
-export default AddMaterialPurchase;
+export default AddMaterialDiscard;
