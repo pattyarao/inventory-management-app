@@ -1,0 +1,49 @@
+import React, { useState } from 'react';
+
+const sortMaterials = () => {
+  const [sortOption, setSortOption] = useState('nameAscending'); // Default sort option
+  const [materialList, setMaterialList] = useState([
+    
+  ]); // Initialize with your data
+
+  const handleSortChange = (event) => {
+    setSortOption(event.target.value);
+  };
+
+  const sortMaterials = (materials, sortOption) => {
+    return materials.slice().sort((a, b) => {
+      switch (sortOption) {
+        case 'nameAscending':
+          return a.name.localeCompare(b.name);
+        case 'nameDescending':
+          return b.name.localeCompare(a.name);
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const sortedMaterials = sortMaterials(materialList, sortOption);
+
+  return (
+    <div>
+      <select
+        className="p-2 rounded-md bg-white"
+        value={sortOption}
+        onChange={handleSortChange}
+      >
+        <option value="nameAscending">Sort by Name (A-Z)</option>
+        <option value="nameDescending">Sort by Name (Z-A)</option>
+      </select>
+
+      {sortedMaterials.map((material, index) => (
+        // Your existing material rendering code here
+        <div key={index}>
+          {/* ... */}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default sortMaterials;
