@@ -90,35 +90,22 @@ const ManualCount
     },
   ]);
 
-  const [sortOption, setSortOption] = useState('nameAscending'); // Default sort option
+  // Sorting function for materials based on name
+  const sortMaterialsByName = () => {
+    const sortedMaterials = [...materialList].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    setMaterialList(sortedMaterials);
+  };
 
-    // Sorting function
-    const sortManualCount = (option) => {
-      const sortedManualCount = [...ManualCount];
-  
-      switch (option) {
-        case 'nameAscending':
-          sortedManualCount.sort((a, b) => a.name.localeCompare(b.name));
-          sortedManualCount.forEach((item) => {
-            item.variants.sort((va, vb) => va.variantName.localeCompare(vb.variantName));
-          });
-          break;
-        case 'nameDescending':
-          sortedManualCount.sort((a, b) => b.name.localeCompare(a.name));
-          sortedManualCount.forEach((item) => {
-            item.variants.sort((va, vb) => vb.variantName.localeCompare(va.variantName));
-          });
-          break;
-        // Add more cases for additional sorting options if needed
-        default:
-          break;
-      }
-  
-      setManualCount(sortedManualCount);
-      setSortOption(option);
-    };
+  // Sorting function for variants based on name
+  const sortVariantsByName = () => {
+    const sortedVariants = [...variantsList].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    setVariantsList(sortedVariants);
+  };
 
-    
   
 
   console.log(materialList)
@@ -183,19 +170,12 @@ const ManualCount
   console.log(variantsList)
   return (
     
-    <div  
-      className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg"
-      style={{ backgroundColor: "#D6E0F0", color: "black" }} //style for sorting
-    >
-        <select
-        className="p-2 rounded-md bg-white"
-        value={sortOption}
-        onChange={(e) => sortManualCount(e.target.value)}
-      >
-          <option value="nameAscending">Sort by Name (A-Z)</option>
-          <option value="nameDescending">Sort by Name (Z-A)</option>      
-        </select>
-        
+    <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
+    {/* Sorting buttons for materials and variants */}
+    <button onClick={sortMaterialsByName}>Sort Materials by Name an </button> 
+    <button onClick={sortVariantsByName}>d Sort Variants by Name</button>
+
+
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
         <div className="col-span-5 md:col-span-5 text-xl font-bold">
           Materials List
