@@ -26,6 +26,7 @@ const Navbar = ({ userType, email }) => {
       await supabase.auth.signOut();
       router.push("/onboarding");
     }
+    console.log(userType)
   };
   return (
     <div className="w-full h-fit flex flex-col">
@@ -60,12 +61,6 @@ const Navbar = ({ userType, email }) => {
         {userType === "Owner" ? (
           <div className="w-[45%] flex items-center justify-center gap-4 ">
             <Link
-              href="/"
-              className="w-1/3 text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
-            >
-              Home
-            </Link>
-            <Link
               href="/assignroles"
               className="w-1/3 text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
             >
@@ -83,9 +78,9 @@ const Navbar = ({ userType, email }) => {
           <div className="w-full flex items-center justify-center gap-4 ">
             <Link
               className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
-              href="/"
+              href="/materialstocklevels"
             >
-              Home
+              View Inventory Status
             </Link>
             <Link
               className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
@@ -109,7 +104,7 @@ const Navbar = ({ userType, email }) => {
               className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
               href="/materialsmasterlist"
             >
-              Materials Masterlist
+              View All Material Variants
             </Link>
           </div>
         ) : null}

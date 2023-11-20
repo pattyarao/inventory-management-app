@@ -19,7 +19,7 @@ const AddNewVariant = (props) => {
         amt: 0,
         unit: "1"
     });
-    console.log(newVariant)
+    console.log(unitsList)
 
     useEffect(() => {
       async function getUnits() {

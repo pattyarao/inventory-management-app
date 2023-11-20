@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import MaterialList from "../components/MaterialList";
+import Navbar from "../components/Navbar";
 
 const MaterialStockLevel = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,6 +13,8 @@ const MaterialStockLevel = () => {
   };
 
   return (
+    <>
+    <Navbar userType={"Stock Controller"}/>
     <div className="p-8" style={{ backgroundColor: "#F1F3F8", color: "black" }}>
       {/* Header */}
       <div
@@ -39,6 +42,7 @@ const MaterialStockLevel = () => {
         <MaterialList searchTerm={searchTerm} />
       </div>
     </div>
+    </>
   );
 };
 

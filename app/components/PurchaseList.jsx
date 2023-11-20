@@ -14,9 +14,6 @@ const PurchaseList = () => {
   const [purchaseList, setPurchaseList] = useState([]);
   const [variantsList, setVariantsList] = useState([]);
   const [unitsList, setUnitsList] = useState([]);
-  const [discardedList, setDiscardedList] = useState([]); // list for rendering
-  const [usedItemList, setUsedItemList] = useState([]); // reference list for adding new items, stores the material/variant id
-  const [reasonList, setReasonList] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Add loading state
   const [addVariantCondition, setAddVariantCondition] = useState(false);
@@ -67,96 +64,13 @@ const PurchaseList = () => {
   console.log(purchaseList)
 
 // Function to update the selected products
-const handleAddMaterials = (discardItem) => {
+const handleAddMaterials = (materials) => {
+  const productsWithVariants = materials.map((material) => ({
+    ...material,
+    variants: [{ variantName: "", amount: 0, unit: "", quantity: 1}],
+  }));
 
-    
-
-  // store each id into usedItemList
-  let idList = []
-  let updatedDiscardedList = [...purchaseList] // remove the asyncronous nature of setDiscardedList
-
-  discardItem.map((item) => {
-
-    // store each id into usedItemList
-    idList.push({id: item.id})
-    console.log(idList)
-    setUsedItemList(usedItemList.concat(idList))
-
-    // determine which case the item belongs to
-
-    // case 1: item is a new material
-    if (!item.material_id) {
-      console.log("CASE 1: item is a new material")
-        const updatedDiscardItem = {
-          name: item.name,
-          id: item.id,
-          qty_available: item.qty_available,
-          variants: [
-            { 
-              name: item.name, 
-              amount: null, 
-              unit: "", 
-              quantity: 1, 
-              id: item.id, 
-              reason_id: null,
-              partialamount: 0,
-            }
-          ]
-        }
-        // when checking each variant, if the variant item has the same id as the material id, then it is not a variant but rather a material (stored in the variant list for easy rendering)
-      
-      updatedDiscardedList.push(updatedDiscardItem)
-      console.log('case 1 insert succesfull: ', updatedDiscardItem, updatedDiscardedList)
-    }
-
-    // case 2: item is a variant with its material already in the list
-    if (item.material_id && updatedDiscardedList.some(discarded => discarded.id === item.material_id)) {
-      console.log("CASE 2: item is a variant with its material already in the list")
-
-      updatedDiscardedList.map((discarded) => {
-          if (discarded.id === item.material_id) {
-            discarded.variants.push({ 
-              name: item.name, 
-              amount: item.amt, 
-              unit: "", 
-              quantity: 1, 
-              id: item.id, 
-              reason_id: null,
-              partialamount: 0,
-            })
-          }
-      })
-      console.log("case 2 insert successful", updatedDiscardedList);
-    }
-
-    // case 3: item is a variant with its material NOT in the list
-    if (item.material_id && !updatedDiscardedList.some(discarded => discarded.id == item.material_id)) {
-      console.log("CASE 3: item is a variant with its material NOT in the list")
-
-      const updatedDiscardItem = {
-        name: item.MD_RAW_MATERIALS.name,
-        id: item.MD_RAW_MATERIALS.id,
-        qty_available: item.MD_RAW_MATERIALS.qty_available,
-        variants: [
-          {
-            name: item.name, 
-            amount: item.amt, 
-            unit: "", 
-            quantity: 1, 
-            id: item.id, 
-            reason_id: null,
-            partialamount: 0,
-          }
-        ]
-      }
-
-      updatedDiscardedList.push(updatedDiscardItem)
-      console.log("case 3 insert successful: ", updatedDiscardItem, updatedDiscardedList);
-    }
-  })
-
-  setPurchaseList(updatedDiscardedList)
-
+  setPurchaseList(purchaseList.concat(productsWithVariants));
 };
 
 
@@ -172,11 +86,12 @@ const handleAddMaterials = (discardItem) => {
     setPurchaseList(newPurchaseList);
   };
   
-  const handleVariantNameChange = (materialID, productIndex, variantIndex, event) => {
+  const handleVariantNameChange = (unit, materialID, productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
     if (event.target.value === "Add New Variant") {
       setAddVariantCondition(true);
       setMaterialID(materialID)
+      setUnit(unit)
       return;
     }
  
@@ -345,7 +260,9 @@ const handleAddMaterials = (discardItem) => {
                                       value={variant.variantName}
                                       onChange={(event) =>
                                         handleVariantNameChange(
+                                          material.REF_METRIC.id,
                                           material.id,
+
                                           index,
                                           variantIndex,
                                           event,
@@ -399,28 +316,13 @@ const handleAddMaterials = (discardItem) => {
                                         }
                                         className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-
-                                      {material.REF_METRIC?.id === undefined ? (
-                                          // Render this if material.REF_METRIC.id is undefined
-                                          unitsList
-                                              .filter((unit) => unit.metric_id === material.REF_METRIC?.id)
-                                              .map((unit) => (
-                                                  <option key={unit.id} value={unit.ratio}>
-                                                      {unit.abbreviation}
-                                                  </option>
-                                              ))
-                                      ) : (
-                                          // Render this if material.REF_METRIC.id is not undefined
-                                          unitsList
-                                              .filter((unit) => unit.metric_id === material.MD_RAW_MATERIALS.metric_id)
-                                              .map((unit) => (
-                                                  <option key={unit.id} value={unit.ratio}>
-                                                      {unit.abbreviation}
-                                                  </option>
-                                              ))
-                                      )}
-
-
+                                        {unitsList
+                                            .filter((unit) => unit.metric_id === material.REF_METRIC.id)
+                                            .map((unit) => (
+                                                <option key={unit.id} value={unit.ratio}>
+                                                    {unit.abbreviation}
+                                                </option>
+                                            ))}
                                         <option disabled>─────────────</option>
                                         <option>Add New Unit</option>
                                     </select>
