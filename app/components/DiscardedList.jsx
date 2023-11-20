@@ -107,7 +107,7 @@ const DiscardedList = () => {
                 name: item.name, 
                 amount: item.amt, 
                 unit: "", 
-                quantity: 1, 
+                quantity: 0, 
                 id: item.id, 
                 reason_id: null,
                 partialamount: 0,
@@ -130,7 +130,7 @@ const DiscardedList = () => {
               name: item.name, 
               amount: item.amt, 
               unit: "", 
-              quantity: 1, 
+              quantity: 0, 
               id: item.id, 
               reason_id: null,
               partialamount: 0,
@@ -242,7 +242,7 @@ const DiscardedList = () => {
   const handleDecrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
     
-    if (newDiscardedList[productIndex].variants[variantIndex].quantity > 1 && newDiscardedList[productIndex].variants[variantIndex].quantity) {
+    if (newDiscardedList[productIndex].variants[variantIndex].quantity > 0 && newDiscardedList[productIndex].variants[variantIndex].quantity) {
       newDiscardedList[productIndex].variants[variantIndex].quantity--;
       setDiscardedList(newDiscardedList);
     }
