@@ -133,7 +133,7 @@ const AddMaterialDiscard = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Add Products to Order List
+        Add Material to Discard List
       </button>
 
       {showModal ? (
@@ -154,7 +154,7 @@ const AddMaterialDiscard = (props) => {
                   style={{ backgroundColor: "#27374D" }}
                 >
                   <h3 className="text-3xl font-semibold">
-                    Select Products to Add
+                    Select Material to Add
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -173,7 +173,7 @@ const AddMaterialDiscard = (props) => {
                   <div className="flex space-x-4 mb-4">
                     <input
                       type="text"
-                      placeholder="Search Products"
+                      placeholder="Search Material"
                       className="flex-grow p-2 rounded"
                       style={{ backgroundColor: "#DDE6ED", color: "#27374D" }}
                       value={searchTerm}
@@ -189,13 +189,13 @@ const AddMaterialDiscard = (props) => {
                       <option value="name-desc">Sort by Name (Z-A)</option>
                     </select>
                   </div>
-                  <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                  <div className="relative overflow-x-auto shadow-md sm:rounded-lg" style={{ maxHeight: "800px", overflowY: "auto" }}>
                     {filteredProductsList.length > 0 ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                           <tr>
                             <th scope="col" className="px-6 py-3">
-                              Product name
+                              Material Name
                             </th>
                           </tr>
                         </thead>
@@ -250,7 +250,7 @@ const AddMaterialDiscard = (props) => {
                             handleAddtoPurchaseList();
                           }}
                         >
-                        Add Products
+                        Add Materials
                       </button>
                     </div>
                   </div>
