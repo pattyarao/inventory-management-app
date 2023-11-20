@@ -51,6 +51,8 @@ useEffect(() => {
   fetchProducts();
 }, []);
 
+console.log(productList)
+
 const handleProductClick = (product) => {
   setSelectedProduct(product);
   setShowProductDetailsModal(true);

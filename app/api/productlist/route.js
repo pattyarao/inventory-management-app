@@ -111,11 +111,6 @@ import supabase from "../../supabase";
           if (existingMaterialData.length > 0) {
             material_id = existingMaterialData[0].id; 
           } else {
-            const { data: newMaterialMetricID } = await supabase
-              .from('REF_METRIC')
-              .select('id')
-              .eq('metric_unit', unit);
-
             const { data: newMaterialData, error: newMaterialError } = await supabase
               .from('MD_RAW_MATERIALS')
               .upsert([
@@ -123,7 +118,7 @@ import supabase from "../../supabase";
                   name: name,
                   qty_available: 0,
                   status: true,
-                  metric_id: newMaterialMetricID[0].id,
+                  metric_id: unit,
                 },
               ])
               .select();

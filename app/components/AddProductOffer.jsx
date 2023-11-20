@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { GET } from "../api/rawmaterials/route";
 import { POST } from "../api/productlist/route";
+import { GET as GETUNIT } from "../api/submetric/route";
 
 const AddProductOffer = ({ addProductToList }) => {
   const [productName, setProductName] = useState("");
@@ -17,30 +18,45 @@ const AddProductOffer = ({ addProductToList }) => {
     name: "",
     amount: "",
     unit: "",
+    finalAmt: 0
   });
   const [existingMaterial, setExistingMaterial] = useState({
-    selected: "",
+    name: "",
     amount: "",
     unit: "",
+    finalAmt: 0
   });
 
   const [materialNames, setMaterialNames] = useState([])
   const [unitMap, setUnitMap] = useState({}); // Initialize unit map
 
+  const [unitsList, setUnitsList] = useState([]);
+
   useEffect(() => {
+    async function getUnits() {
+      try {
+        const response = await GETUNIT();
+        const { metrics, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          setUnitsList(metrics);
+          setNewMaterial({ ...newMaterial, unit: metrics[0].id });
+        }
+      } catch (error) {
+        setError(error.message);
+        
+      }
+    }
+    
     async function getMaterials() {
       try {
         const response = await GET();
         const { materials, error } = await response.json();
   
         if (!error) {
-          const materialNames = materials.map((material) => material.name);
-          setMaterialNames(materialNames);
-          const unitMapping = {};
-          materials.forEach((material) => {
-            unitMapping[material.name] = material.REF_METRIC.metric_unit;
-          });
-          setUnitMap(unitMapping);
+          setMaterialNames(materials);
         } else {
           console.error('Error fetching materials:', error);
         }
@@ -49,8 +65,12 @@ const AddProductOffer = ({ addProductToList }) => {
       }
     }
     getMaterials();
+    getUnits();
   }, []);
 
+  console.log(newMaterial)
+
+  console.log(unitsList)
 
 
   const handleMaterialNameChange = (e) => {
@@ -58,19 +78,82 @@ const AddProductOffer = ({ addProductToList }) => {
   };
 
   const handleMaterialAmountChange = (e) => {
-    setNewMaterial({ ...newMaterial, amount: e.target.value });
-  };
+    setNewMaterial((prevMaterial) => {
+        const updatedMaterial = { ...prevMaterial, amount: e.target.value };
 
-  const handleMaterialUnitChange = (e) => {
-    setNewMaterial({ ...newMaterial, unit: e.target.value });
-  };
+        // Find the unit in unitsList with the same id as selectedUnitId
+        const selectedUnit = unitsList.find((unit) => unit.id === updatedMaterial.unit);
+        
+
+        if (selectedUnit) {
+            const ratio = selectedUnit.ratio;
+            const finalAmt = ratio * e.target.value;
+            // Assign updatedMaterial.unitName to selectedUnit.abbreviation
+            return { ...updatedMaterial, finalAmt: finalAmt, unitName: selectedUnit.abbreviation, mainMetric: selectedUnit.metric_id };
+        } else {
+            // Handle the case where selectedUnit is not found (optional)
+            return updatedMaterial;
+        }
+    });
+};
+
+
+const handleMaterialUnitChange = (e) => {
+  setNewMaterial((prevMaterial) => {
+      const updatedMaterial = { ...prevMaterial, unit: e.target.value };
+
+      // Find the unit in unitsList with the same id as selectedUnitId
+      const selectedUnit = unitsList.find((unit) => unit.id === e.target.value);
+
+      if (selectedUnit) {
+          const ratio = selectedUnit.ratio;
+          const finalAmt = ratio * updatedMaterial.amount;
+          return { ...updatedMaterial, finalAmt: finalAmt, unitName: selectedUnit.abbreviation, mainMetric: selectedUnit.metric_id };
+      } else {
+          // Handle the case where selectedUnit is not found (optional)
+          return updatedMaterial;
+      }
+  });
+};
+
 
   const handleExistMaterialAmountChange = (e) => {
-    setExistingMaterial({ ...existingMaterial, amount: e.target.value });
+    setExistingMaterial((prevMaterial) => {
+      const updatedMaterial = { ...prevMaterial, amount: e.target.value };
+
+      // Find the unit in unitsList with the same id as selectedUnitId
+      const selectedUnit = unitsList.find((unit) => unit.id === updatedMaterial.unit);
+      console.log(updatedMaterial.unit)
+
+      if (selectedUnit) {
+          console.log("TEST DONE")
+          const ratio = selectedUnit.ratio;
+          const finalAmt = ratio * e.target.value;
+          // Assign updatedMaterial.unitName to selectedUnit.abbreviation
+          return { ...updatedMaterial, finalAmt: finalAmt, unitName: selectedUnit.abbreviation, mainMetric: selectedUnit.metric_id };
+      } else {
+          // Handle the case where selectedUnit is not found (optional)
+          return updatedMaterial;
+      }
+  });
   };
 
   const handleExistMaterialUnitChange = (e) => {
-    setExistingMaterial({ ...existingMaterial, unit: e.target.value });
+    setExistingMaterial((prevMaterial) => {
+      const updatedMaterial = { ...prevMaterial, unit: e.target.value };
+
+      // Find the unit in unitsList with the same id as selectedUnitId
+      const selectedUnit = unitsList.find((unit) => unit.id === e.target.value);
+
+      if (selectedUnit) {
+          const ratio = selectedUnit.ratio;
+          const finalAmt = ratio * updatedMaterial.amount;
+          return { ...updatedMaterial, finalAmt: finalAmt, unitName: selectedUnit.abbreviation, mainMetric: selectedUnit.metric_id };
+      } else {
+          // Handle the case where selectedUnit is not found (optional)
+          return updatedMaterial;
+      }
+  });
   };
 
   const [newMaterialNameError, setNewMaterialNameError] = useState('');
@@ -93,58 +176,66 @@ const AddProductOffer = ({ addProductToList }) => {
   }
 
   const handleAddMaterial = () => {
-    const isValid = validate();
-    if (isValid) {
+
+
       const materialObject = { ...newMaterial };
       setMaterialList([...materialList, materialObject]);
-      setNewMaterial({ name: "", amount: "", unit: "" });
+      setNewMaterial({ name: "", amount: "", unit: unitsList[0].id });
       setNewMaterialNameError('');
-    }
+    
     
   };
-
+  console.log(materialList)
   const [selectedExistingMaterial, setSelectedExistingMaterial] = useState("");
 
   const handleExistingMaterialChange = (e) => {
     const selectedMaterialName = e.target.value;
-    const selectedUnit = unitMap[selectedMaterialName]; // Get the corresponding unit
+    const selectedMaterial = materialNames.find((material) => material.name === e.target.value);
+    if(e.target.value !== ""){
+      const selectedUnit = unitsList.find((unit) => unit.metric_id === selectedMaterial.REF_METRIC.id);
 
-    setSelectedExistingMaterial(selectedMaterialName);
-
-    // Update the existingMaterial state with the selected material name and unit
-    setExistingMaterial({
-      selected: selectedMaterialName,
-      amount: existingMaterial.amount,
-      unit: selectedUnit,
+      // Update the existingMaterial state with the selected material name and unit
+      setExistingMaterial({ ...existingMaterial, 
+        name: selectedMaterialName,
+        unit: selectedUnit.id,
+        unitName: selectedUnit.abbreviation, 
+        mainMetric: selectedMaterial.REF_METRIC.id
+      });
+   } else {
+    setExistingMaterial({ ...existingMaterial, 
+      name: selectedMaterialName,
+      metric: "",
+      unitName: "", 
+      mainMetric: "",
+      amount: ""
     });
+   }
+
+
   };
+
+  console.log(existingMaterial)
 
   const handleAddExistingMaterial = () => {
-    if (selectedExistingMaterial && existingMaterial.amount) {
-      // Use the selected existing material's name to fetch the unit from unitMap
-      const unit = unitMap[selectedExistingMaterial];
   
-      if (unit) {
-        const materialObject = {
-          name: selectedExistingMaterial,
-          amount: existingMaterial.amount,
-          unit: unit,
-        };
+        const materialObject = { ...existingMaterial };
         setMaterialList([...materialList, materialObject]);
         setExistingMaterial({ name: "", amount: "", unit: "" });
-      }
-    }
+
+
   };
 
+  console.log(materialList)
   const handleAddProduct = async () => {
     try {
       // Create an array of objects for materials with name, amount, and unit properties
       const materials = materialList.map((material) => ({
         name: material.name,
-        amount: material.amount,
-        unit: material.unit,
+        amount: material.finalAmt,
+        unit: material.mainMetric,
         material_id: material.material_id, // Include material_id in the object
       }));
+      console.log(materials)
   
       // Create the newProduct object with the product name, status, and materials
       const newProduct = {
@@ -278,7 +369,7 @@ const AddProductOffer = ({ addProductToList }) => {
                                 {material.amount}
                               </td>
                               <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
-                                {material.unit}
+                                {material.unitName}
                               </td>
                             </tr>
                           ))}
@@ -380,11 +471,11 @@ const AddProductOffer = ({ addProductToList }) => {
                             value={newMaterial.unit}
                             onChange={handleMaterialUnitChange}
                           >
-                            <option value="">Select</option>
-                            <option value="mg">mg</option>
-                            <option value="g">g</option>
-                            <option value="mL">mL</option>
-                            <option value="L">L</option>
+                            {unitsList.map((unit) => (
+                                    <option key={unit.id} value={unit.id}>
+                                        {unit.name} ({unit.abbreviation})
+                                    </option>
+                                ))}
                           </select>
                         </div>
                         <div className="flex items-center justify-center">
@@ -408,13 +499,13 @@ const AddProductOffer = ({ addProductToList }) => {
                           </label>
                           <select
                             className="w-72 rounded-md appearance-none border border-gray-300 py-2 px-2 bg-white text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent"
-                            value={selectedExistingMaterial}
+                            value={existingMaterial.name}
                             onChange={handleExistingMaterialChange}
                           >
                             <option value="">Select a Material</option>
                             {materialNames.map((materialName, index) => (
-                              <option key={index} value={materialName}>
-                                {materialName}
+                              <option key={index} value={materialName.name}>
+                                {materialName.name}
                               </option>
                             ))}
                           </select>
@@ -442,12 +533,14 @@ const AddProductOffer = ({ addProductToList }) => {
                             }}
                             value={existingMaterial.unit}
                             onChange={handleExistMaterialUnitChange}
-                            disabled
                           >
-                            <option value="mg">mg</option>
-                            <option value="g">g</option>
-                            <option value="mL">mL</option>
-                            <option value="L">L</option>
+                                          {unitsList
+                                              .filter((unit) => existingMaterial.mainMetric === unit.metric_id)
+                                              .map((unit) => (
+                                                  <option key={unit.id} value={unit.id}>
+                                                      {unit.abbreviation}
+                                                  </option>
+                                              ))}
                           </select>
                         </div>
                         <div className="flex items-center justify-center">
