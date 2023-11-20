@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GET } from "../api/discard/route";
+import { GET } from "../api/purchase/route";
 
 const AddMaterialPurchase = (props) => {
   //stores all products in the database
@@ -66,6 +66,7 @@ const AddMaterialPurchase = (props) => {
 
   //Sort and Search Mechanisms
   const [filteredProductsList, setFilteredProductsList] = useState(materialsList);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("name-asc"); // Initialize the default sorting option
 
@@ -94,6 +95,7 @@ const AddMaterialPurchase = (props) => {
         // Compare two items for sorting in descending order (Z-A)
         const nameA = a.name;
         const nameB = b.name;
+
         // Use localeCompare to perform a case-insensitive comparison
         return nameA.localeCompare(nameB);
       });
@@ -123,8 +125,6 @@ const AddMaterialPurchase = (props) => {
     setFilteredProductsList(updatedProducts);
   };
 
-  console.log(materialsList)
-
   return (
     <>
       <button
@@ -133,7 +133,7 @@ const AddMaterialPurchase = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Add Materials to Purchase List
+        Add Products to Order List
       </button>
 
       {showModal ? (
@@ -201,7 +201,7 @@ const AddMaterialPurchase = (props) => {
                         </thead>
                         <tbody>
                           {filteredProductsList.map((product, index) => (
-                            <tr key={index} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={product.id}>
                               <th
                                 scope="row"
                                 className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -209,9 +209,9 @@ const AddMaterialPurchase = (props) => {
                                 <input
                                   id={`checkbox-${product.id}`} // Use a unique ID for each checkbox
                                   type="checkbox"
-                                  value={product.index}
-                                  checked={selectedIndex.includes(product.index)}
-                                  onChange={handleSelect}
+                                  value=""
+                                  checked={product.checked} // Bind the checked status to the 'checked' property
+                                  onChange={() => handleCheckboxChange(product)} // Handle checkbox change
                                   className="me-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                 />
                                 {product.name}

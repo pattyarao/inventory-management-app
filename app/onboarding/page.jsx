@@ -58,7 +58,9 @@ const Onboarding = () => {
       } else {
         // Redirect to the home page after successful login
         console.log("success!");
-        router.push("/"); // Replace '/' with the actual path to your home page
+       
+          router.push("/"); // Replace '/' with the actual path to your home page
+        
       }
     }
   };

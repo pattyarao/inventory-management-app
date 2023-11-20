@@ -7,7 +7,7 @@ const RecordOrder = () => {
  
   return (
     <>
-     <Navbar userType={"Salesperson"}/>
+     <Navbar userType={"Sales Person"}/>
     
     <div className="w-full min-h-screen flex flex-col justify-center items-center gap-2" style={{ backgroundColor: '#27374D', color: 'white' }}>
       

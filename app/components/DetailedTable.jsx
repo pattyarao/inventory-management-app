@@ -152,7 +152,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       // Render detailed content for reportType 2
           console.log("DETAILED MATERIALS", groupedData)
           return (
-            <div>
+            <div className="w-[60%]">
             <h2 className="text-2xl font-bold mb-4">Detailed Material Report</h2>
             <p className="text-lg font-semibold mb-2">Created at: {currentDate}</p>
             <h3 className="text-2xl font-bold mb-4">No Variations</h3>    
