@@ -150,7 +150,7 @@ const MaterialList = ({ searchTerm, view }) => {
                   }`}
                 ></p> */}
                 <p
-                  className={`w-fit p-2 text-right font-semibold w-2/5 whitespace-normal rounded-md rounded-tl-none rounded-bl-none ${
+                  className={`w-flex p-2 text-right font-semibold w-2/5 whitespace-normal rounded-md rounded-tl-none rounded-bl-none ${
                     'bg-[#F1F3F8]'
                   }`} 
                 ></p>

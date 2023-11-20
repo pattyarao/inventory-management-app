@@ -5,10 +5,14 @@ import MaterialList from "../components/MaterialList";
 
 const MaterialStockLevel = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [view, setView] = useState("grid");
+  const [selectedOption, setSelectedOption] = useState(""); // State for the selected option
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
   };
 
   return (
@@ -23,9 +27,9 @@ const MaterialStockLevel = () => {
         </h1>
       </div>
 
-      {/* Search bar */}
+      {/* Search bar and dropdown for options */}
       <div className="w-full mt-8">
-        <div className=" p-6">
+        <div className="p-6 flex items-center">
           <input
             type="text"
             placeholder="Search Material"
@@ -34,19 +38,35 @@ const MaterialStockLevel = () => {
             value={searchTerm}
             onChange={handleSearchChange}
           />
+
+          {/* Dropdown for options */}
+          <select
+            className="ml-4 p-2 rounded"
+            style={{ backgroundColor: "#FFFFFF", color: "#27374D" }}
+            value={selectedOption}
+            onChange={handleOptionChange}
+          >
+            <option value="">Select Algorithm</option>
+            <option value="a">Algorithm A</option>
+            <option value="b">Algorithm B</option>
+            <option value="c">Algorithm C</option>
+            <option value="d">Algorithm D</option>
+            <option value="e">Algorithm E</option>
+          </select>
         </div>
 
-        <MaterialList searchTerm={searchTerm} />
+        {/* Material List component with fixed "list" view */}
+        <MaterialList searchTerm={searchTerm} view="list" />
+
+        {/* You can use the selectedOption state as needed in your application */}
+        {selectedOption && (
+          <div className="mt-4">
+            Selected Option: {selectedOption}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default MaterialStockLevel;
-
-
-
-
-
-
-
