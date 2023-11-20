@@ -73,7 +73,7 @@ const DiscardedList = () => {
       // determine which case the item belongs to
 
       // case 1: item is a new material
-      if (!item.material_id && updatedDiscardedList.some(discarded => discarded.id !== item.id)) {
+      if (!item.material_id && !updatedDiscardedList.some(discarded => discarded.id === item.id)) {
         console.log("CASE 1: item is a new material in the list")
           const updatedDiscardItem = {
             name: item.name,
@@ -118,7 +118,7 @@ const DiscardedList = () => {
       }
 
       // case 3: item is a variant with its material NOT in the list
-      if (item.material_id && !updatedDiscardedList.some(discarded => discarded.id == item.material_id)) {
+      if (item.material_id && !updatedDiscardedList.some(discarded => discarded.id === item.material_id)) {
         console.log("CASE 3: item is a variant with its material NOT in the list")
 
         const updatedDiscardItem = {
