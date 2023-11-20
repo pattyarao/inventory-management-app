@@ -73,8 +73,8 @@ const DiscardedList = () => {
       // determine which case the item belongs to
 
       // case 1: item is a new material
-      if (!item.material_id) {
-        console.log("CASE 1: item is a new material")
+      if (!item.material_id && updatedDiscardedList.some(discarded => discarded.id !== item.id)) {
+        console.log("CASE 1: item is a new material in the list")
           const updatedDiscardItem = {
             name: item.name,
             id: item.id,
@@ -140,6 +140,27 @@ const DiscardedList = () => {
 
         updatedDiscardedList.push(updatedDiscardItem)
         console.log("case 3 insert successful: ", updatedDiscardItem, updatedDiscardedList);
+      }
+
+      // case 4: item is a material and a variant of the item has already been added to the discard list
+      if (!item.material_id && updatedDiscardedList.some(discarded => discarded.id === item.id)) {
+        console.log("CASE 4: item is a material and a variant of the item has already been added to the discard list")
+
+        updatedDiscardedList.map((discarded) => {
+          if (discarded.id === item.id) {
+            discarded.variants.push({ 
+              name: item.name, 
+              amount: null, 
+              unit: "", 
+              quantity: 1, 
+              id: item.id, 
+              reason_id: null,
+              partialamount: 0,
+            })
+
+            console.log("case 4 insert successful", updatedDiscardedList);
+          }
+        })
       }
     })
 
@@ -229,6 +250,17 @@ const DiscardedList = () => {
 
   const handleRemove = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
+    const newUsedItemList = [...usedItemList];
+
+    let idToRemove;
+    // determine if variant or id
+    if (newDiscardedList[productIndex].id === newDiscardedList[productIndex].variants[variantIndex].id) {
+      idToRemove = newDiscardedList[productIndex].id
+    }
+    else {
+      idToRemove = newDiscardedList[productIndex].variants[variantIndex].id
+    }
+
     newDiscardedList[productIndex].variants.splice(variantIndex, 1);
   
     // Check if there are no more variants in the product
@@ -236,6 +268,16 @@ const DiscardedList = () => {
       newDiscardedList.splice(productIndex, 1);
     }
     setDiscardedList(newDiscardedList);
+
+    // remove id from the usedItemList
+    newUsedItemList.map((item, index) => {
+      if (item.id === idToRemove) {
+        newUsedItemList.splice(index, 1)
+      }
+    })
+
+    setUsedItemList(newUsedItemList)
+
   };
   
   const handleReasonChange = (productIndex, variantIndex, event) => {
