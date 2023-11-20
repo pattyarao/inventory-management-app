@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 
-const AddNewVariant = (props) => {
+const AddNewMaterialVariant = (props) => {
 
     //stores all products in the database
     const [newVariant, setNewVariant] = useState([{
@@ -113,4 +113,4 @@ const AddNewVariant = (props) => {
   );
 };
 
-export default AddNewVariant;
+export default AddNewMaterialVariant;
