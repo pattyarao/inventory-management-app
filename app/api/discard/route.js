@@ -19,9 +19,9 @@ function createPostData(discardedList, user_id) {
 
         // create audit trail data
         discarded.variants.forEach((variant) => {
-            totalMaterialAmount += (variant.quantity * variant.amount) + variant.partialamount; // TODO: normalize unit into g or mL
-            totalPartialAmount += variant.partialamount
-            console.log("variant total material amount composition", variant.quantity, variant.amount, variant.partialamount)
+            totalMaterialAmount += (variant.quantity * variant.finalAmount) + variant.finalPartialAmount; // TODO: normalize unit into g or mL
+            totalPartialAmount += variant.finalPartialAmount
+            console.log("variant total material amount composition", variant.quantity, variant.finalAmount, variant.finalPartialAmount)
 
 
             // determine if item is a variant or material
@@ -29,7 +29,7 @@ function createPostData(discardedList, user_id) {
                 materialsAuditTrailData.push({
                     created_at: timestamp,
                     material_id: variant.id,
-                    expired_qty: variant.amount, // depends if there can still be a quantity assigned to a material
+                    expired_qty: variant.finalAmount, // depends if there can still be a quantity assigned to a material
                     user_id: user_id,
                     reason_id: variant.reason_id,
                 })
@@ -73,7 +73,7 @@ function createPostData(discardedList, user_id) {
     return { masterlistData, materialsAuditTrailData, variantsAuditTrailData }
 }
 
-export async function POST(discardedList, user_id, metricList) {
+export async function POST(discardedList, user_id) {
 
     console.log("POST PARAM: ", discardedList)
 

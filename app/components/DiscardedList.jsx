@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { GETMETRIC, GETREASON } from "../api/helper/route";
+import { GET as GETUNIT } from "../api/submetric/route";
 import RecordDiscard from "./RecordDiscard";
 import AddMaterialDiscard from "./AddMaterialDiscard"
 import { FaInbox } from "react-icons/fa";
@@ -15,6 +16,7 @@ const DiscardedList = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [metricList, setMetricList] = useState([])
+  const [unitsList, setUnitsList] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -35,8 +37,26 @@ const DiscardedList = () => {
       }
     }
 
+    async function getUnits() {
+      try {
+        const response = await GETUNIT();
+        const { metrics, error } = await response.json();
+
+        if (error) {
+          setError(error);
+        } else {
+          setUnitsList(metrics);
+        }
+      } catch (error) {
+        setError(error.message);
+        
+      }
+    }
+    getUnits();
     fetchData();
   }, []);
+
+  console.log(metricList)
 
 
   useEffect(() => {
@@ -85,7 +105,7 @@ const DiscardedList = () => {
             discarded.variants.push({ 
               name: item.name, 
               amount: null, 
-              unit: "", 
+              unit: item.REF_METRIC.id, 
               quantity: 1, 
               id: item.id, 
               reason_id: null,
@@ -102,15 +122,18 @@ const DiscardedList = () => {
           name: item.name,
           id: item.id,
           qty_available: item.qty_available,
+          mainMetric: item.REF_METRIC.id,
           variants: [
             { 
               name: item.name, 
-              amount: null, 
-              unit: "", 
+              amount: 0,
+              finalAmount: 0,
+              unit: item.REF_METRIC.id, 
               quantity: 1, 
               id: item.id, 
               reason_id: null,
               partialamount: 0,
+              finalPartialAmount: 0,
             }
           ]
         }
@@ -125,12 +148,15 @@ const DiscardedList = () => {
             if (discarded.id === item.material_id) {
               discarded.variants.push({ 
                 name: item.name, 
-                amount: item.amt, 
-                unit: "", 
+                amount: item.amt,
+                finalAmount: item.amt,
+                unit: item.MD_RAW_MATERIALS.metric_id, 
                 quantity: 0, 
                 id: item.id, 
                 reason_id: null,
                 partialamount: 0,
+                finalPartialAmount: 0,
+                partialunit: item.MD_RAW_MATERIALS.metric_id, 
               })
             }
         })
@@ -143,15 +169,19 @@ const DiscardedList = () => {
           name: item.MD_RAW_MATERIALS.name,
           id: item.MD_RAW_MATERIALS.id,
           qty_available: item.MD_RAW_MATERIALS.qty_available,
+          mainMetric: item.MD_RAW_MATERIALS.metric_id,
           variants: [
             {
               name: item.name, 
               amount: item.amt, 
-              unit: "", 
+              finalAmount: item.amt,
+              unit: item.MD_RAW_MATERIALS.metric_id, 
               quantity: 0, 
               id: item.id, 
               reason_id: null,
               partialamount: 0,
+              finalPartialAmount: 0,
+              partialunit: item.MD_RAW_MATERIALS.metric_id, 
             }
           ]
         }
@@ -164,6 +194,8 @@ const DiscardedList = () => {
     setDiscardedList(updatedDiscardedList)
 
   };
+
+  console.log(discardedList)
 
   // const addVariant = (productIndex) => {
   //   const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
@@ -184,19 +216,31 @@ const DiscardedList = () => {
   //   setDiscardedList(newDiscardedList);
   // };
 
-  const handleUnitChange = (productIndex, event) => {
+  const handleUnitChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].unit = event.target.value;
-    setDiscardedList(newDiscardedList);
+    newDiscardedList[productIndex].variants[variantIndex].unit = event.target.value;
+
+    const selectedUnit = unitsList.find((unit) => unit.id === newDiscardedList[productIndex].variants[variantIndex].unit);
+
+      let ratio = selectedUnit.ratio
+      newDiscardedList[productIndex].variants[variantIndex].finalAmount = ratio * newDiscardedList[productIndex].variants[variantIndex].amount;
+      setDiscardedList(newDiscardedList);
+    
   };
 
-  const handlePartialUnitChange = (productIndex, event) => {
+  const handlePartialUnitChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].partialunit = event.target.value;
-    setDiscardedList(newDiscardedList);
+    newDiscardedList[productIndex].variants[variantIndex].partialunit = event.target.value;
+
+    const selectedUnit = unitsList.find((unit) => unit.id === newDiscardedList[productIndex].variants[variantIndex].partialunit);
+
+      let ratio = selectedUnit.ratio
+      newDiscardedList[productIndex].variants[variantIndex].finalPartialAmount = ratio * newDiscardedList[productIndex].variants[variantIndex].partialamount;
+      setDiscardedList(newDiscardedList);
   };
   
   const handleQtyChange = (productIndex, variantIndex, event) => {
+
     const newDiscardedList = [...discardedList];
     // newDiscardedList[productIndex].variants[variantIndex].quantity =
     //   event.target.valueAsNumber;
@@ -211,18 +255,42 @@ const DiscardedList = () => {
   
   const handleAmtChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].amount =
-      event.target.valueAsNumber;
+    console.log(newDiscardedList[productIndex].variants[variantIndex].unit)
 
-    setDiscardedList(newDiscardedList);
+    if(newDiscardedList[productIndex].variants[variantIndex].unit === newDiscardedList[productIndex].mainMetric){
+      newDiscardedList[productIndex].variants[variantIndex].amount = event.target.valueAsNumber;
+      newDiscardedList[productIndex].variants[variantIndex].finalAmount = event.target.valueAsNumber;
+      setDiscardedList(newDiscardedList);
+    } else {
+      const selectedUnit = unitsList.find((unit) => unit.id === newDiscardedList[productIndex].variants[variantIndex].unit);
+
+      console.log(selectedUnit)
+      let amt = event.target.valueAsNumber
+      let ratio = selectedUnit.ratio
+      newDiscardedList[productIndex].variants[variantIndex].amount = amt;
+      newDiscardedList[productIndex].variants[variantIndex].finalAmount = ratio * amt;
+      setDiscardedList(newDiscardedList);
+    }
+   
   };
 
   const handlePartialAmountChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].partialamount =
-      event.target.valueAsNumber;
 
-    setDiscardedList(newDiscardedList);
+    if(newDiscardedList[productIndex].variants[variantIndex].partialunit === newDiscardedList[productIndex].mainMetric){
+      newDiscardedList[productIndex].variants[variantIndex].partialamount = event.target.valueAsNumber;
+      newDiscardedList[productIndex].variants[variantIndex].finalPartialAmount = event.target.valueAsNumber;
+      setDiscardedList(newDiscardedList);
+    } else {
+      const selectedUnit = unitsList.find((unit) => unit.id === newDiscardedList[productIndex].variants[variantIndex].partialunit);
+
+      console.log(selectedUnit)
+      let amt = event.target.valueAsNumber
+      let ratio = selectedUnit.ratio
+      newDiscardedList[productIndex].variants[variantIndex].partialamount = amt;
+      newDiscardedList[productIndex].variants[variantIndex].finalPartialAmount = ratio * amt;
+      setDiscardedList(newDiscardedList);
+    }
   };
   
   const handleIncrement = (productIndex, variantIndex) => {
@@ -414,15 +482,18 @@ const DiscardedList = () => {
                                       id="large"
                                       value={product.unit}
                                       onChange={(event) =>
-                                        handleUnitChange(index, event)
+                                        handleUnitChange(index, variantIndex, event)
                                       }
+                                      disabled={variant.id != product.id ? true : false}
                                       class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-                                      {metricList.map((metric, index) => (
-                                        <option key={index} value={metric.id}>
-                                          {metric.metric_unit}
-                                        </option>
-                                      ))}
+                                       {unitsList
+                                              .filter((unit) => product.mainMetric === unit.metric_id)
+                                              .map((unit) => (
+                                                  <option key={unit.id} value={unit.id}>
+                                                      {unit.abbreviation}
+                                                  </option>
+                                              ))}
                                     </select>
                                   </div>
                                 </div>
@@ -445,15 +516,17 @@ const DiscardedList = () => {
                                         id="large"
                                         value={product.partialunit}
                                         onChange={(event) =>
-                                          handlePartialUnitChange(index, event)
+                                          handlePartialUnitChange(index, variantIndex, event)
                                         }
                                         class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                       >
-                                        {metricList.map((metric, index) => (
-                                          <option key={index} value={metric.id}>
-                                            {metric.metric_unit}
-                                          </option>
-                                        ))}
+                                          {unitsList
+                                              .filter((unit) => product.mainMetric === unit.metric_id)
+                                              .map((unit) => (
+                                                  <option key={unit.id} value={unit.id}>
+                                                      {unit.abbreviation}
+                                                  </option>
+                                              ))}
                                       </select>
                                     </div>
                                   </div>
