@@ -4,7 +4,8 @@ import supabase from "../../supabase";
 export async function GET() {
   const { data: variants, error } = await supabase
     .from("MD_MATVARIATION")
-    .select("*");
+    .select("*")
+    .eq("status", "TRUE");
 
   if (error) {
     return new Response(JSON.stringify({ error }), {

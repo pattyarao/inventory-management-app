@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { PATCH, POST } from "../api/order/route";
+import { POST as POSTFAIL } from "../api/rejectedorder/route";
 import { GET as GETPROF } from "../api/productprofile/route";
 import { GET as GETMAT } from "../api/purchase/route";
 
@@ -157,11 +158,19 @@ const RecordOrder = (props) => {
 
   const handleSubmit = async () => {
     // Check if there are negative qty_available values in newQuantities
-    
-  
     if (!success) {
-      // If there are negative qty_available values, setSuccess to false
-      setShowModal(true);
+      try {
+        // Assuming you have the 'orders' data available
+        const postResult = await POSTFAIL(orders, userID);
+        setShowModal(true);
+  
+        if (postResult.error) {
+          setError(postResult.error);
+          console.log(postResult.error);
+        }
+      } catch (error) {
+        setError(error.message);
+      }
     } else {
       try {
         // Assuming you have the 'orders' data available
