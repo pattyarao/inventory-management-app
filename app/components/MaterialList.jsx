@@ -4,15 +4,17 @@ import { useState, useEffect } from "react";
 import { FaUserAlt } from "react-icons/fa";
 import { BsFillGrid3X2GapFill } from "react-icons/bs";
 import { BsViewList } from "react-icons/bs";
-import { GET } from '../api/materialmaster/route';
+import { GET as GETMaterialMaster } from '../api/materialmaster/route';
+import { GET as GETForecast  } from '../api/forecast/route';
 
 const MaterialList = ({ searchTerm, view }) => {
   const [materials, setMaterials] = useState([]);
   const [sortOption, setSortOption] = useState('nameAscending'); // Default sort option
+  const [prediction, setPrediction] = useState([]);
 
   useEffect(() => {
     async function getMaterials() {
-      const response = await GET();
+      const response = await GETMaterialMaster();
 
       if (response.status === 200) {
         const data = await response.json();
@@ -35,16 +37,30 @@ const MaterialList = ({ searchTerm, view }) => {
         ];
 
         // Combine API data with dummy data
-        const combinedMaterials = [...apiMaterials, ...dummyData];
+        const combinedMaterials = [...apiMaterials];
 
         setMaterials(combinedMaterials);
-        console.log('Combined Materials:', combinedMaterials);
       } else {
         console.error('API Error:', response);
       }
     }
 
     getMaterials();
+  }, []);
+
+  useEffect(() => {
+    async function getForecast() {
+      const response = await GETForecast();
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setPrediction(data.data);
+      } else {
+        console.error('API Error:', response);
+      }
+    }
+
+    getForecast();
   }, []);
 
   // calculate the priority of restock
@@ -85,6 +101,8 @@ const MaterialList = ({ searchTerm, view }) => {
     setSortOption(e.target.value);
   };
 
+  console.log('PREDIKSYONNN: ', prediction);
+  console.log('MATERYALES: ', materials)
   return (
     <div className="mb-2 bg-[#D6E0F0] p-4 flex flex-col rounded-md">
       {/* Headings and Filter dropdown */}
@@ -120,7 +138,7 @@ const MaterialList = ({ searchTerm, view }) => {
       <div className="m-auto w-full">
         <div className="flex flex-col gap-4">
           {sortedMaterials.map((material, index) => (
-            <div key={index} className="p-4 flex flex-col rounded-md">
+            <div id={material.id} key={index} className="p-4 flex flex-col rounded-md">
               <div
                 className={`${
                   view === 'grid'
@@ -135,9 +153,11 @@ const MaterialList = ({ searchTerm, view }) => {
                   {material.REF_METRIC.metric_unit}
                 </p>
                 <p className="p-2 text-right font-semibold w-2/5 whitespace-normal">
-                  {material.suggested_amt}
-                  {material.REF_METRIC.metric_unit}
+                  {(prediction[material.id] != null) ? prediction[material.id] : "No Data"}
+                  {((prediction[material.id] === "N/A" || prediction[material.id] === "Stock is Sufficient") && prediction[material.id] != null) ? " " : material.REF_METRIC.metric_unit}
+                  
                 </p>
+
                 {/* <p
                   className={`w-fit px-8 py-8 rounded-md rounded-tl-none rounded-bl-none ${
                     calculatePriority(material.qty_available, material.suggested_amt) === 1
