@@ -62,7 +62,7 @@ const DiscardedList = () => {
     // store each id into usedItemList
     let idList = []
     let updatedDiscardedList = [...discardedList] // remove the asyncronous nature of setDiscardedList
-
+    
     discardItem.map((item) => {
 
       // store each id into usedItemList
@@ -71,34 +71,54 @@ const DiscardedList = () => {
       setUsedItemList(usedItemList.concat(idList))
 
       // determine which case the item belongs to
+      const isMaterial = !Boolean(item.material_id)
+      const isInList = isMaterial ? updatedDiscardedList.some(discarded => discarded.id === item.id) : updatedDiscardedList.some(discarded => discarded.id === item.material_id)
 
-      // case 1: item is a new material
-      if (!item.material_id && !updatedDiscardedList.some(discarded => discarded.id === item.id)) {
-        console.log("CASE 1: item is a new material in the list")
-          const updatedDiscardItem = {
-            name: item.name,
-            id: item.id,
-            qty_available: item.qty_available,
-            variants: [
-              { 
-                name: item.name, 
-                amount: null, 
-                unit: "", 
-                quantity: 1, 
-                id: item.id, 
-                reason_id: null,
-                partialamount: 0,
-              }
-            ]
+      console.log('Test Case: ', isMaterial, isInList)
+
+      // new condition checker
+      if (isMaterial && isInList) {
+        console.log("CASE 4: item is a material and a variant of the item has already been added to the discard list")
+
+        updatedDiscardedList.map((discarded) => {
+          if (discarded.id === item.id) {
+            discarded.variants.push({ 
+              name: item.name, 
+              amount: null, 
+              unit: "", 
+              quantity: 1, 
+              id: item.id, 
+              reason_id: null,
+              partialamount: 0,
+            })
+
+            console.log("case 4 insert successful", updatedDiscardedList);
           }
-          // when checking each variant, if the variant item has the same id as the material id, then it is not a variant but rather a material (stored in the variant list for easy rendering)
-        
+        })
+      }
+      else if (isMaterial && !isInList) {
+        console.log("CASE 1: item is a new material in the list")
+        const updatedDiscardItem = {
+          name: item.name,
+          id: item.id,
+          qty_available: item.qty_available,
+          variants: [
+            { 
+              name: item.name, 
+              amount: null, 
+              unit: "", 
+              quantity: 1, 
+              id: item.id, 
+              reason_id: null,
+              partialamount: 0,
+            }
+          ]
+        }
+
         updatedDiscardedList.push(updatedDiscardItem)
         console.log('case 1 insert succesfull: ', updatedDiscardItem, updatedDiscardedList)
       }
-
-      // case 2: item is a variant with its material already in the list
-      if (item.material_id && updatedDiscardedList.some(discarded => discarded.id === item.material_id)) {
+      else if (!isMaterial && isInList) {
         console.log("CASE 2: item is a variant with its material already in the list")
 
         updatedDiscardedList.map((discarded) => {
@@ -116,9 +136,7 @@ const DiscardedList = () => {
         })
         console.log("case 2 insert successful", updatedDiscardedList);
       }
-
-      // case 3: item is a variant with its material NOT in the list
-      if (item.material_id && !updatedDiscardedList.some(discarded => discarded.id === item.material_id)) {
+      else if (!isMaterial && !isInList) {
         console.log("CASE 3: item is a variant with its material NOT in the list")
 
         const updatedDiscardItem = {
@@ -140,27 +158,6 @@ const DiscardedList = () => {
 
         updatedDiscardedList.push(updatedDiscardItem)
         console.log("case 3 insert successful: ", updatedDiscardItem, updatedDiscardedList);
-      }
-
-      // case 4: item is a material and a variant of the item has already been added to the discard list
-      if (!item.material_id && updatedDiscardedList.some(discarded => discarded.id === item.id)) {
-        console.log("CASE 4: item is a material and a variant of the item has already been added to the discard list")
-
-        updatedDiscardedList.map((discarded) => {
-          if (discarded.id === item.id) {
-            discarded.variants.push({ 
-              name: item.name, 
-              amount: null, 
-              unit: "", 
-              quantity: 1, 
-              id: item.id, 
-              reason_id: null,
-              partialamount: 0,
-            })
-
-            console.log("case 4 insert successful", updatedDiscardedList);
-          }
-        })
       }
     })
 
@@ -371,7 +368,7 @@ const DiscardedList = () => {
                               </div>
                             </div>
 
-                            {/** TODO: remove variant mapping as the list is now a mix of material and variant */}
+                            
                             {product.variants.map((variant, variantIndex) => (
                               <>
                                 {variantIndex !== 0 ? (
