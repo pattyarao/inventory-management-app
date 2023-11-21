@@ -73,7 +73,7 @@ const DiscardedList = () => {
       // determine which case the item belongs to
 
       // case 1: item is a new material
-      if (!item.material_id && updatedDiscardedList.some(discarded => discarded.id !== item.id)) {
+      if (!item.material_id && !updatedDiscardedList.some(discarded => discarded.id === item.id)) {
         console.log("CASE 1: item is a new material in the list")
           const updatedDiscardItem = {
             name: item.name,
@@ -107,7 +107,7 @@ const DiscardedList = () => {
                 name: item.name, 
                 amount: item.amt, 
                 unit: "", 
-                quantity: 1, 
+                quantity: 0, 
                 id: item.id, 
                 reason_id: null,
                 partialamount: 0,
@@ -118,7 +118,7 @@ const DiscardedList = () => {
       }
 
       // case 3: item is a variant with its material NOT in the list
-      if (item.material_id && !updatedDiscardedList.some(discarded => discarded.id == item.material_id)) {
+      if (item.material_id && !updatedDiscardedList.some(discarded => discarded.id === item.material_id)) {
         console.log("CASE 3: item is a variant with its material NOT in the list")
 
         const updatedDiscardItem = {
@@ -130,7 +130,7 @@ const DiscardedList = () => {
               name: item.name, 
               amount: item.amt, 
               unit: "", 
-              quantity: 1, 
+              quantity: 0, 
               id: item.id, 
               reason_id: null,
               partialamount: 0,
@@ -242,7 +242,7 @@ const DiscardedList = () => {
   const handleDecrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
     
-    if (newDiscardedList[productIndex].variants[variantIndex].quantity > 1 && newDiscardedList[productIndex].variants[variantIndex].quantity) {
+    if (newDiscardedList[productIndex].variants[variantIndex].quantity > 0 && newDiscardedList[productIndex].variants[variantIndex].quantity) {
       newDiscardedList[productIndex].variants[variantIndex].quantity--;
       setDiscardedList(newDiscardedList);
     }
