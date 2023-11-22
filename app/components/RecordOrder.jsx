@@ -137,19 +137,51 @@ const RecordOrder = (props) => {
           if (material) {
             entry.qty_available = material.qty_available - entry.qty_available;
             entry.name = material.name; // Add the name of the material
+
+            if (entry.qty_available < 0) {
+              // Check if entry already exists in shortageList
+              const existingEntryIndex = shortageList.findIndex(
+                (shortageEntry) => shortageEntry.id === entry.id
+              );
+  
+              if (existingEntryIndex !== -1) {
+                // If entry exists, update the existing value
+                setShortageList((prevShortageList) => {
+                  const updatedShortageList = [...prevShortageList];
+                  updatedShortageList[existingEntryIndex].qty_available = Math.abs(
+                    entry.qty_available
+                  );
+                  return updatedShortageList;
+                });
+              } else {
+                // If entry doesn't exist, add a new entry
+                setShortageList((prevShortageList) => [
+                  ...prevShortageList,
+                  {
+                    id: entry.id,
+                    qty_available: Math.abs(entry.qty_available),
+                  },
+                ]);
+              }
+            }
           }
   
           return entry;
         }
       );
-  
-      setSuccess(!(updatedQuantities.some((entry) => entry.qty_available < 0)));
+
       setNewQuantities(updatedQuantities);
+      setSuccess(!(updatedQuantities.some((entry) => entry.qty_available < 0)));
+      
+      
+      
     }
   
     updateNewQuantities();
   }, [props.orderList, ingredientsList, materialsList]);
+  console.log(shortageList);
   console.log(newQuantities);
+  console.log(orders);
   
 
 
@@ -161,7 +193,7 @@ const RecordOrder = (props) => {
     if (!success) {
       try {
         // Assuming you have the 'orders' data available
-        const postResult = await POSTFAIL(orders, userID);
+        const postResult = await POSTFAIL(shortageList, userID);
         setShowModal(true);
   
         if (postResult.error) {

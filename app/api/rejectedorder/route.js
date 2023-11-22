@@ -25,8 +25,8 @@ export async function POST(orders, user_id) {
     try {
       const ordersData = orders.map((order) => ({
         rejorder_id: orderId,
-        product: order.product_id,
-        qty_ordered: order.qty_ordered,
+        material_id: order.id,
+        insufficient_qty: order.qty_available,
       }));
 
       const { data: orderItemData, error: orderItemError } = await supabase
