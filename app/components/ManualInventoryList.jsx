@@ -7,6 +7,8 @@ import ClearManualCount
 import { GET as getAllVariants} from "../api/purchasevariant/route";
 import { GET as getAllMaterials} from "../api/purchase/route";
 import { createClient } from '@supabase/supabase-js';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSort } from "@fortawesome/free-solid-svg-icons";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
@@ -124,20 +126,25 @@ const ManualCount
     },
   ]);
 
-  // Sorting function for materials based on name
-  const sortMaterialsByName = () => {
+  const [sortOrder, setSortOrder] = useState("ascending");
+  
+  const sortMaterialsAndVariantsByName = () => {
     const sortedMaterials = [...materialList].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    setMaterialList(sortedMaterials);
-  };
-
-  // Sorting function for variants based on name
-  const sortVariantsByName = () => {
     const sortedVariants = [...variantsList].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    setVariantsList(sortedVariants);
+
+    if (sortOrder === "ascending") {
+      setMaterialList(sortedMaterials);
+      setVariantsList(sortedVariants);
+      setSortOrder("descending");
+    } else {
+      setMaterialList(sortedMaterials.reverse());
+      setVariantsList(sortedVariants.reverse());
+      setSortOrder("ascending");
+    }
   };
   
 
@@ -150,54 +157,69 @@ const ManualCount
 
 
   const handleQtyChange = (productIndex, variantIndex, event) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants[variantIndex].quantity =
-      event.target.valueAsNumber;
-    setManualCount
-    (newManualCount
-      );
+    const newManualCount = [...ManualCount];
+  
+    // Check if ManualCount, productIndex, and variants exist before setting the quantity
+    if (
+      newManualCount[productIndex] &&
+      newManualCount[productIndex].variants &&
+      newManualCount[productIndex].variants[variantIndex]
+    ) {
+      newManualCount[productIndex].variants[variantIndex].quantity =
+        event.target.valueAsNumber;
+      setManualCount(newManualCount);
+    }
   };
 
 
   const handleAmtChange = (productIndex, variantIndex, event) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants[variantIndex].amount =
-      event.target.valueAsNumber;
-    setManualCount
-    (newManualCount
-      );
+    const updatedManualCount = [...ManualCount];
+    
+    // Ensure the ManualCount array is not empty and the indices are valid
+    if (
+      updatedManualCount.length > productIndex &&
+      updatedManualCount[productIndex].variants &&
+      updatedManualCount[productIndex].variants.length > variantIndex
+    ) {
+      updatedManualCount[productIndex].variants[variantIndex].amount =
+        event.target.valueAsNumber;
+      setManualCount(updatedManualCount);
+    }
   };
-
 
   const handleIncrement = (productIndex, variantIndex) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants[variantIndex].quantity++;
-    setManualCount
-    (newManualCount
-      );
+    const updatedManualCount = [...ManualCount];
+  
+    // Check if the array indices are valid and the object exists
+    if (
+      updatedManualCount[productIndex]?.variants &&
+      updatedManualCount[productIndex].variants[variantIndex]
+    ) {
+      const currentQuantity =
+        updatedManualCount[productIndex].variants[variantIndex].quantity || 0;
+  
+      if (currentQuantity < 1) {
+        updatedManualCount[productIndex].variants[variantIndex].quantity++;
+        setManualCount(updatedManualCount);
+      }
+    }
   };
-
-
+  
   const handleDecrement = (productIndex, variantIndex) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    if (newManualCount
-      [productIndex].variants[variantIndex].quantity > 1) {
-      newManualCount
-      [productIndex].variants[variantIndex].quantity--;
-      setManualCount
-      (newManualCount
-        );
+    const updatedManualCount = [...ManualCount];
+  
+    // Check if the array indices are valid and the object exists
+    if (
+      updatedManualCount[productIndex]?.variants &&
+      updatedManualCount[productIndex].variants[variantIndex]
+    ) {
+      const currentQuantity =
+        updatedManualCount[productIndex].variants[variantIndex].quantity || 0;
+  
+      if (currentQuantity > 1) {
+        updatedManualCount[productIndex].variants[variantIndex].quantity--;
+        setManualCount(updatedManualCount);
+      }
     }
   };
 
@@ -206,9 +228,20 @@ const ManualCount
   return (
     
     <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
-    {/* Sorting buttons for materials and variants */}
-    <button onClick={sortMaterialsByName}>Sort Materials by Name an </button> 
-    <button onClick={sortVariantsByName}>d Sort Variants by Name</button>
+<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
+  <button
+    onClick={sortMaterialsAndVariantsByName}
+    style={{
+      padding: "5px 10px", // Example padding
+      borderRadius: "5px", // Example border radius
+      display: "flex", // Make button inline with icon
+      alignItems: "center", // Align items vertically
+    }}
+  >
+    Sort{" "}
+    <FontAwesomeIcon icon={faSort} style={{ marginLeft: "5px" }} />
+  </button>
+</div>
 
 
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
