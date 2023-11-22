@@ -19,13 +19,12 @@ const MaterialStockLevel = () => {
   return (
     <>
     <Navbar userType={"Stock Controller"}/>
-    <div className="p-8" style={{ backgroundColor: "#F1F3F8", color: "black" }}>
+    <div className="p-8 bg-[#F1F3F8]">
       {/* Header */}
       <div
-        className="flex items-center justify-center w-full h-16 px-10 bg-blue-400 rounded-md"
-        style={{ backgroundColor: "#8D93AB", color: "white" }}
+        className="flex items-center justify-center w-full h-16 px-10 rounded-md bg-[#8D93AB]"
       >
-        <h1 className="font-black text-xl" style={{ color: "black", fontSize: "28px" }}>
+        <h1 className="font-black text-xl">
           Material Stock Levels
         </h1>
       </div>
@@ -37,15 +36,11 @@ const MaterialStockLevel = () => {
             type="text"
             placeholder="Search Material"
             className="w-1/3 p-2 rounded"
-            style={{ backgroundColor: "#FFFFFF", color: "#27374D" }}
             value={searchTerm}
             onChange={handleSearchChange}
           />
-
-          {/* Dropdown for options */}
           <select
             className="ml-4 p-2 rounded"
-            style={{ backgroundColor: "#FFFFFF", color: "#27374D" }}
             value={selectedOption}
             onChange={handleOptionChange}
           >
