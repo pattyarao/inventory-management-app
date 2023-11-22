@@ -6,6 +6,40 @@ import ClearManualCount
  import Navbar from "./Navbar";
 import { GET as getAllVariants} from "../api/purchasevariant/route";
 import { GET as getAllMaterials} from "../api/purchase/route";
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+
+// // Fetch data from two tables
+// async function fetchMultipleTablesData() {
+//   try {
+//     const { data: MD_RAW_MATERIALS, error: error1 } = await supabase.from(MD_RAW_MATERIALS).select('*');
+//     const { data: MD_MATVARIATION, error: error2 } = await supabase.from(MD_MATVARIATION).select('*');
+
+//     if (error1) {
+//       console.error('Error fetching data from table1:', error1);
+//       return;
+//     }
+
+//     if (error2) {
+//       console.error('Error fetching data from table2:', error2);
+//       return;
+//     }
+
+//     console.log('Fetched data from MD_RAW_MATERIALS:', table1Data);
+//     console.log('Fetched data from MD_RAW_MATERIALS:', table2Data);
+//     // Process the fetched data from both tables here
+//   } catch (error) {
+//     console.error('Error fetching data:', error.message);
+//   }
+// }
+
+// // Call the fetchMultipleTablesData function to initiate the data retrieval
+// fetchMultipleTablesData();
 
 
 const ManualCount
@@ -105,6 +139,7 @@ const ManualCount
     );
     setVariantsList(sortedVariants);
   };
+  
 
   
 
@@ -217,6 +252,14 @@ const ManualCount
 
                       <div>
                       {materialList
+                      //   .sort((a, b) => {
+                      //    // Sort by status first (active employees first)
+                      //   if (a.status === b.status) {
+                      //   // If status is the same, sort by user type
+                      //   return a.user_type - b.user_type;
+                      //   }
+                      //   return a.status ? -1 : 1; // Active employees first
+                      // })
                       .map((material, index) => (
                         <div key={index}>
                           <div
@@ -287,11 +330,16 @@ const ManualCount
                                         event,
                                       )
                                     }
+                                    // disabled={product.id != variant.id ? false : true}
+
+
                                   />
                                   <button
                                     onClick={() =>
                                       handleIncrement(index, variantIndex)
                                     }
+                                    // disabled={product_id != variant_id ? false : true}
+
                                     className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer"
                                     style={{ backgroundColor: "#097969" }}
                                   >
@@ -314,6 +362,7 @@ const ManualCount
                                         event,
                                       )
                                     }
+
                                   />
                                 </div>
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
