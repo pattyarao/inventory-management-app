@@ -1,15 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaUserAlt } from "react-icons/fa";
-import { BsFillGrid3X2GapFill } from "react-icons/bs";
-import { BsViewList } from "react-icons/bs";
 import { GET as GETMaterialMaster } from '../api/materialmaster/route';
-import { GET as GETForecast  } from '../api/forecast/route';
+import { GET as GETForecast } from '../api/forecast/route';
 
-const MaterialList = ({ searchTerm, view }) => {
+const MaterialList = ({ searchTerm, view, sortOption }) => {
   const [materials, setMaterials] = useState([]);
-  const [sortOption, setSortOption] = useState('nameAscending'); // Default sort option
+  const [filterOption, setFilterOption] = useState('predictedValue'); // Default filter option
   const [prediction, setPrediction] = useState([]);
 
   useEffect(() => {
@@ -63,46 +60,55 @@ const MaterialList = ({ searchTerm, view }) => {
     getForecast();
   }, []);
 
-  // calculate the priority of restock
-  // const calculatePriority = (current, suggested) => {
-  //   const disparityPercentage = (current / suggested) * 100;
+  // Filter materials based on the search term and filter option
+  const filteredMaterials = materials.filter((material) => {
+    const matchesSearchTerm = material.name.toLowerCase().includes(searchTerm.toLowerCase());
 
-  //   if (disparityPercentage < 50) {
-  //     return 1; // High priority
-  //   } else if (disparityPercentage === 50) {
-  //     return 2; // Medium priority
-  //   } else {
-  //     return 3; // Low priority
-  //   }
-  // };
-
-  // Filter materials based on the search term
-  const filteredMaterials = materials.filter((material) =>
-    material.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    switch (filterOption) {
+      case 'N/A':
+        return matchesSearchTerm && prediction[material.id] === 'N/A';
+      case 'stockIsSufficient':
+        return matchesSearchTerm && prediction[material.id] === 'Stock is Sufficient';
+      case 'predictedValue':
+        return matchesSearchTerm && prediction[material.id] !== 'N/A' && prediction[material.id] !== 'Stock is Sufficient';
+      default:
+        return matchesSearchTerm;
+    }
+  });
 
   // Sort materials based on selected option
   const sortedMaterials = filteredMaterials.slice().sort((a, b) => {
     switch (sortOption) {
-      // case 'highPriority':
-      //   return calculatePriority(a.qty_available, a.suggested_amt) - calculatePriority(b.qty_available, b.suggested_amt);
-      // case 'lowPriority':
-      //   return calculatePriority(b.qty_available, b.suggested_amt) - calculatePriority(a.qty_available, a.suggested_amt);
       case 'nameAscending':
         return a.name.localeCompare(b.name);
       case 'nameDescending':
         return b.name.localeCompare(a.name);
+      case 'predictionValue':
+        // Custom sorting logic for predictions
+        const order = { "N/A": 1, "Stock is Sufficient": 2 };
+
+        const predictionA = order[prediction[a.id]] || 0;
+        const predictionB = order[prediction[b.id]] || 0;
+
+        // Compare based on the numerical values assigned to predictions
+        if (predictionA !== predictionB) {
+          return predictionA - predictionB;
+        }
+
+        // If predictions are the same, fallback to alphabetical sorting by name
+        return a.name.localeCompare(b.name);
       default:
         return 0;
     }
   });
 
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
+  const handleFilterChange = (e) => {
+    setFilterOption(e.target.value);
   };
 
   console.log('PREDIKSYONNN: ', prediction);
-  console.log('MATERYALES: ', materials)
+  console.log('MATERYALES: ', materials);
+
   return (
     <div className="mb-2 bg-[#D6E0F0] p-4 flex flex-col rounded-md">
       {/* Headings and Filter dropdown */}
@@ -123,17 +129,16 @@ const MaterialList = ({ searchTerm, view }) => {
           Suggested Restock Amount
         </h1>
         <select
-          className="p-2 rounded-md bg-white"
-          value={sortOption}
-          onChange={handleSortChange}
+          className="p-3 ml-2 rounded-md bg-white"
+          value={filterOption}
+          onChange={handleFilterChange}
         >
-          {/* <option value="highPriority">High Priority</option>
-          <option value="lowPriority">Low Priority</option> */}
-          <option value="nameAscending">Sort by Name (A-Z)</option>
-          <option value="nameDescending">Sort by Name (Z-A)</option>
+          <option value="All">All Materials</option>
+          <option value="predictedValue">Algorithm Predictions</option>
+          <option value="stockIsSufficient">Sufficient Stock</option>
+          <option value="N/A">Insufficient Data for Prediction</option>
         </select>
       </div>
-
       {/* Render the filtered and sorted materials */}
       <div className="m-auto w-full">
         <div className="flex flex-col gap-4">
@@ -155,7 +160,7 @@ const MaterialList = ({ searchTerm, view }) => {
                 <p className="p-2 text-right font-semibold w-2/5 whitespace-normal">
                   {(prediction[material.id] != null) ? prediction[material.id] : "No Data"}
                   {((prediction[material.id] === "N/A" || prediction[material.id] === "Stock is Sufficient") && prediction[material.id] != null) ? " " : material.REF_METRIC.metric_unit}
-                  
+
                 </p>
 
                 {/* <p
@@ -172,7 +177,7 @@ const MaterialList = ({ searchTerm, view }) => {
                 <p
                   className={`w-flex p-2 text-right font-semibold w-2/5 whitespace-normal rounded-md rounded-tl-none rounded-bl-none ${
                     'bg-[#F1F3F8]'
-                  }`} 
+                  }`}
                 ></p>
               </div>
             </div>
