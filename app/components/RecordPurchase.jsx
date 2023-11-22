@@ -36,22 +36,20 @@ const RecordPurchase = (props) => {
   
       props.purchaseList.forEach((material) => {
         material.variants.forEach((variant) => {
-          if (variant.variantName === "") {
+          if (variant.name === material.id) {
             // Add to directPurchases
-            let ratio = parseFloat(variant.unit)
-            let amount = variant.amount * ratio
             
             const newDirectPurchase = {
               material_id: material.id,
               qty_purchased: variant.quantity,
-              amt: amount,
+              amt: variant.finalAmount,
             };
             updatedDirectPurchases.push(newDirectPurchase);
           } else {
             // Add to purchases
             const newPurchase = {
               material_id: material.id,
-              variation_id: variant.variantName,
+              variation_id: variant.name,
               qty_purchased: variant.quantity,
             };
             updatedPurchases.push(newPurchase);
