@@ -6,6 +6,42 @@ import ClearManualCount
  import Navbar from "./Navbar";
 import { GET as getAllVariants} from "../api/purchasevariant/route";
 import { GET as getAllMaterials} from "../api/purchase/route";
+import { createClient } from '@supabase/supabase-js';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSort } from "@fortawesome/free-solid-svg-icons";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+
+// // Fetch data from two tables
+// async function fetchMultipleTablesData() {
+//   try {
+//     const { data: MD_RAW_MATERIALS, error: error1 } = await supabase.from(MD_RAW_MATERIALS).select('*');
+//     const { data: MD_MATVARIATION, error: error2 } = await supabase.from(MD_MATVARIATION).select('*');
+
+//     if (error1) {
+//       console.error('Error fetching data from table1:', error1);
+//       return;
+//     }
+
+//     if (error2) {
+//       console.error('Error fetching data from table2:', error2);
+//       return;
+//     }
+
+//     console.log('Fetched data from MD_RAW_MATERIALS:', table1Data);
+//     console.log('Fetched data from MD_RAW_MATERIALS:', table2Data);
+//     // Process the fetched data from both tables here
+//   } catch (error) {
+//     console.error('Error fetching data:', error.message);
+//   }
+// }
+
+// // Call the fetchMultipleTablesData function to initiate the data retrieval
+// fetchMultipleTablesData();
 
 
 const ManualCount
@@ -90,21 +126,27 @@ const ManualCount
     },
   ]);
 
-  // Sorting function for materials based on name
-  const sortMaterialsByName = () => {
+  const [sortOrder, setSortOrder] = useState("ascending");
+  
+  const sortMaterialsAndVariantsByName = () => {
     const sortedMaterials = [...materialList].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    setMaterialList(sortedMaterials);
-  };
-
-  // Sorting function for variants based on name
-  const sortVariantsByName = () => {
     const sortedVariants = [...variantsList].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    setVariantsList(sortedVariants);
+
+    if (sortOrder === "ascending") {
+      setMaterialList(sortedMaterials);
+      setVariantsList(sortedVariants);
+      setSortOrder("descending");
+    } else {
+      setMaterialList(sortedMaterials.reverse());
+      setVariantsList(sortedVariants.reverse());
+      setSortOrder("ascending");
+    }
   };
+  
 
   
 
@@ -115,54 +157,69 @@ const ManualCount
 
 
   const handleQtyChange = (productIndex, variantIndex, event) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants[variantIndex].quantity =
-      event.target.valueAsNumber;
-    setManualCount
-    (newManualCount
-      );
+    const newManualCount = [...ManualCount];
+  
+    // Check if ManualCount, productIndex, and variants exist before setting the quantity
+    if (
+      newManualCount[productIndex] &&
+      newManualCount[productIndex].variants &&
+      newManualCount[productIndex].variants[variantIndex]
+    ) {
+      newManualCount[productIndex].variants[variantIndex].quantity =
+        event.target.valueAsNumber;
+      setManualCount(newManualCount);
+    }
   };
 
 
   const handleAmtChange = (productIndex, variantIndex, event) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants[variantIndex].amount =
-      event.target.valueAsNumber;
-    setManualCount
-    (newManualCount
-      );
+    const updatedManualCount = [...ManualCount];
+    
+    // Ensure the ManualCount array is not empty and the indices are valid
+    if (
+      updatedManualCount.length > productIndex &&
+      updatedManualCount[productIndex].variants &&
+      updatedManualCount[productIndex].variants.length > variantIndex
+    ) {
+      updatedManualCount[productIndex].variants[variantIndex].amount =
+        event.target.valueAsNumber;
+      setManualCount(updatedManualCount);
+    }
   };
-
 
   const handleIncrement = (productIndex, variantIndex) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    newManualCount
-    [productIndex].variants[variantIndex].quantity++;
-    setManualCount
-    (newManualCount
-      );
+    const updatedManualCount = [...ManualCount];
+  
+    // Check if the array indices are valid and the object exists
+    if (
+      updatedManualCount[productIndex]?.variants &&
+      updatedManualCount[productIndex].variants[variantIndex]
+    ) {
+      const currentQuantity =
+        updatedManualCount[productIndex].variants[variantIndex].quantity || 0;
+  
+      if (currentQuantity < 1) {
+        updatedManualCount[productIndex].variants[variantIndex].quantity++;
+        setManualCount(updatedManualCount);
+      }
+    }
   };
-
-
+  
   const handleDecrement = (productIndex, variantIndex) => {
-    const newManualCount
-     = [...ManualCount
-    ];
-    if (newManualCount
-      [productIndex].variants[variantIndex].quantity > 1) {
-      newManualCount
-      [productIndex].variants[variantIndex].quantity--;
-      setManualCount
-      (newManualCount
-        );
+    const updatedManualCount = [...ManualCount];
+  
+    // Check if the array indices are valid and the object exists
+    if (
+      updatedManualCount[productIndex]?.variants &&
+      updatedManualCount[productIndex].variants[variantIndex]
+    ) {
+      const currentQuantity =
+        updatedManualCount[productIndex].variants[variantIndex].quantity || 0;
+  
+      if (currentQuantity > 1) {
+        updatedManualCount[productIndex].variants[variantIndex].quantity--;
+        setManualCount(updatedManualCount);
+      }
     }
   };
 
@@ -171,9 +228,20 @@ const ManualCount
   return (
     
     <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
-    {/* Sorting buttons for materials and variants */}
-    <button onClick={sortMaterialsByName}>Sort Materials by Name an </button> 
-    <button onClick={sortVariantsByName}>d Sort Variants by Name</button>
+<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
+  <button
+    onClick={sortMaterialsAndVariantsByName}
+    style={{
+      padding: "5px 10px", // Example padding
+      borderRadius: "5px", // Example border radius
+      display: "flex", // Make button inline with icon
+      alignItems: "center", // Align items vertically
+    }}
+  >
+    Sort{" "}
+    <FontAwesomeIcon icon={faSort} style={{ marginLeft: "5px" }} />
+  </button>
+</div>
 
 
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
@@ -217,6 +285,14 @@ const ManualCount
 
                       <div>
                       {materialList
+                      //   .sort((a, b) => {
+                      //    // Sort by status first (active employees first)
+                      //   if (a.status === b.status) {
+                      //   // If status is the same, sort by user type
+                      //   return a.user_type - b.user_type;
+                      //   }
+                      //   return a.status ? -1 : 1; // Active employees first
+                      // })
                       .map((material, index) => (
                         <div key={index}>
                           <div
@@ -287,11 +363,16 @@ const ManualCount
                                         event,
                                       )
                                     }
+                                    // disabled={product.id != variant.id ? false : true}
+
+
                                   />
                                   <button
                                     onClick={() =>
                                       handleIncrement(index, variantIndex)
                                     }
+                                    // disabled={product_id != variant_id ? false : true}
+
                                     className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer"
                                     style={{ backgroundColor: "#097969" }}
                                   >
@@ -314,6 +395,7 @@ const ManualCount
                                         event,
                                       )
                                     }
+
                                   />
                                 </div>
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
