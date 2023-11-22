@@ -5,16 +5,18 @@ import Navbar from "../components/Navbar";
 
 //icons
 import { IoIosArrowForward } from "react-icons/io";
+import { FiSearch } from "react-icons/fi";
 
-import useUpdateVariantStatus from "../../hooks/useUpdateVariantStatus"
+import useUpdateVariantStatus from "../../hooks/useUpdateVariantStatus";
 
 const MaterialMasterlist = () => {
-  const {updateVariantStatus} = useUpdateVariantStatus();
+  const { updateVariantStatus } = useUpdateVariantStatus();
   const [masterlist, setMasterlist] = useState([]);
   const [error, setError] = useState(null);
   const [isMasterlistChanged, setChangeMasterlist] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState("");
   const [isChanged, setIsChanged] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function getMaterialsMasterlist() {
@@ -41,35 +43,88 @@ const MaterialMasterlist = () => {
     //function
     await updateVariantStatus(id, setSelectedMaterial, selectedMaterial);
     setChangeMasterlist((old) => !old);
-    
   };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredMaterials = masterlist.filter((material) =>
+    material.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="w-full">
       <Navbar userType={"Stock Controller"} />
       <div className="w-full p-4 flex flex-col gap-4">
-        <h1 className="top-0 sticky bg-slate-400 p-4 rounded-md text-2xl font-black">Materials Masterlist</h1>
+        <div className="w-full top-0 sticky bg-slate-400 p-4 rounded-md flex justify-between">
+          <h1 className="text-2xl font-black">
+            Materials Masterlist
+          </h1>
+          <div className="w-[300px] flex items-center justify-between p-1 rounded-md bg-white">
+            <input type="text" placeholder="Search Material Variant..." value={searchTerm} onChange={handleSearchChange} className="bg-inherit focus:outline-none"/>
+            <FiSearch className="text-slate-400" />
+          </div>
+        </div>
         <div className="w-full flex gap-4">
           <div className="w-full h-[60vh] bg-slate-200 top-0 sticky flex flex-col gap-2 p-4 rounded-md overflow-y-auto">
-            {masterlist &&
-              masterlist?.map((material) => (
+            {filteredMaterials &&
+              filteredMaterials?.map((material) => (
                 <div
                   key={material.id}
-                  className="bg-slate-300 p-2 flex flex-col justify-between items-start"
+                  className="bg-slate-300 p-2 flex flex-col gap-2 justify-between items-start"
                   onClick={(e) => setSelectedMaterial(material)}
-                
                 >
-                  <p>{material.name}</p>
-                  
-                  <div className="w-full flex flex-col">
-                    {material.variants.length > 0 ? material.variants.map((variant) => (
-                      <div key={variant.id} className="bg-slate-300 flex justify-between p-2 rounded-md">
-                        <p>{variant.name}</p>
-                      {variant.status === true ? (<button className="w-[100px] bg-slate-100 p-0.5 rounded-md" onClick={() => handleChangeVariantStatus(variant.id)}>Deactivate</button>) : <button className="w-[100px] bg-slate-100 p-0.5 rounded-md" onClick={() => handleChangeVariantStatus(variant.id)}>Activate</button>}
-                      </div>
-                    )) : <p>There are no variants for {material.name}</p>}
+                  <p className="font-black text-xl">{material.name}</p>
+
+                  <div className="w-full flex flex-col gap-2">
+                    {material.variants.length > 0 ? (
+                      material.variants.map((variant) => (
+                        <div
+                          key={variant.id}
+                          className="bg-slate-400 flex justify-between p-2 rounded-md"
+                        >
+                          <div className="flex flex-col gap-2">
+                            <p className="text-white font-bold drop-shadow-md">
+                              {variant.name}
+                            </p>
+                            {variant.status === true ? (
+                              <p className="w-fit bg-green-300 p-0.5 text-xs rounded-sm">
+                                Status: Active
+                              </p>
+                            ) : (
+                              <p className="w-fit bg-red-300 p-0.5 text-xs rounded-sm">
+                                Status: Inactive
+                              </p>
+                            )}
+                          </div>
+                          {variant.status === true ? (
+                            <button
+                              className="w-[100px] bg-slate-100 p-0.5 rounded-md drop-shadow-md"
+                              onClick={() =>
+                                handleChangeVariantStatus(variant.id)
+                              }
+                            >
+                              Deactivate
+                            </button>
+                          ) : (
+                            <button
+                              className="w-[100px] bg-slate-100 p-0.5 rounded-md drop-shadow-md"
+                              onClick={() =>
+                                handleChangeVariantStatus(variant.id)
+                              }
+                            >
+                              Activate
+                            </button>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <p>There are no variants for {material.name}</p>
+                    )}
                   </div>
                 </div>
-              )) }
+              ))}
           </div>
           {/* <div className="w-full bg-slate-200 rounded-md">
           {selectedMaterial ? (
