@@ -153,14 +153,18 @@ const MaterialList = ({ searchTerm, view, sortOption }) => {
               >
                 <p className="pl-10 text-left font-semibold w-1/5 whitespace-normal">
                   {material.name}</p>
-                <p className="p-2 text-right font-semibold w-2/5 whitespace-normal">
+                <p className="p-6 text-right font-semibold w-2/5 whitespace-normal">
                   {material.qty_available}
                   {material.REF_METRIC.metric_unit}
                 </p>
-                <p className="p-2 text-right font-semibold w-2/5 whitespace-normal">
-                  {(prediction[material.id] != null) ? prediction[material.id] : "No Data"}
-                  {((prediction[material.id] === "N/A" || prediction[material.id] === "Stock is Sufficient") && prediction[material.id] != null) ? " " : material.REF_METRIC.metric_unit}
-
+                <p className="p-6 font-semibold text-right w-2/5 whitespace-normal">
+                  {(prediction[material.id] != null) ? (
+                    prediction[material.id] === "N/A"
+                      ? "Insufficient Data for Prediction"
+                      : prediction[material.id] === "Stock is Sufficient"
+                        ? "Stock is Sufficient"
+                        : `${prediction[material.id]} ${material.REF_METRIC.metric_unit || ""}`
+                  ) : "No Data"}
                 </p>
 
                 {/* <p
