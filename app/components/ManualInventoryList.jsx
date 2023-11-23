@@ -157,20 +157,24 @@ const ManualCount = () => {
                               color: "#27374D",
                             }}
                           >
-                            <div className="col-span-5 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
 
-                              <div className="ml-0 font-black text-xl ms-20 mt-1"> 
-                                {material.name}
+                            {material.variants.length > 0 ? (
+                              <div className="col-span-5 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
+                                <div className="ml-0 font-black text-xl ms-20 mt-1"> 
+                                  {material.name}
+                                </div>
                               </div>
-                            </div>
-
-
+                            ) : null}
+                            
+                            
                             {material.variants.map((variant, variantIndex) => (
                               
                               <>
                                 {variantIndex !== 0 ? (
                                   <div className="col-span-5 me-5 mt-3" />
                                 ) : null}
+
+                                
 
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
