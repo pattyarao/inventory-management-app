@@ -1,8 +1,9 @@
-import supabase from "../../supabase";
+import supabase from "../../../supabase";
+import { NextResponse } from "next/server";
 
 function simpleExpSmoothing(order_list) {
   let predictions = {};
-  let alpha = 0.8
+  let alpha = 0.1
   const DATA_LIMIT = 3
 
   // Loop through each product's sales data
@@ -19,13 +20,8 @@ function simpleExpSmoothing(order_list) {
       smoothedValues.push(smoothedValue);
     }
 
-    console.log(salesValues)
-    console.log(smoothedValues)
-
     // Predict future sales
     let lastSmoothedValue = smoothedValues[smoothedValues.length - 1];
-
-    console.log("PREDICTION FORMULA: ", alpha, " * ", salesValues[salesValues.length - 1], " + ", (1 - alpha), " * ", lastSmoothedValue)
 
     lastSmoothedValue = alpha * salesValues[salesValues.length - 1] + (1 - alpha) * lastSmoothedValue;
     predictions[productId] = Math.round(lastSmoothedValue);
@@ -63,13 +59,7 @@ function additiveDoubleExpSmoothing(order_list) {
 
 
     if(salesValues.length > DATA_LIMIT){
-    console.log(productId)
-    console.log(salesValues)
 
-    console.log("BEFORE: ")
-    console.log("SMOOTHED VALUES: ", smoothedValues)
-    console.log("TREND VALUES: ", trendValues)
-    console.log("FORECAST VALUES: ",forecasts)
     for (let i = 1; i < salesValues.length; i++) {
       let smoothedValue = alpha * salesValues[i] + (1 - alpha) * (smoothedValues[i - 1] + trendValues[i - 1]);
       smoothedValues.push(smoothedValue);
@@ -80,11 +70,6 @@ function additiveDoubleExpSmoothing(order_list) {
       forecasts.push(smoothedValue + trendValue)
     }
 
-    
-    console.log("AFTER: ")
-    console.log("SMOOTHED VALUES: ", smoothedValues)
-    console.log("TREND VALUES: ", trendValues)
-    console.log("FORECAST VALUES: ",forecasts)
 
 
     // Predict next sale
@@ -95,7 +80,7 @@ function additiveDoubleExpSmoothing(order_list) {
     predictions[productId] = Math.round(prediction);
     }
   }
-  console.log(predictions)
+
   return predictions;
 }
 
@@ -126,13 +111,7 @@ function multiplicativeDoubleExpSmoothing(order_list) {
 
 
     if(salesValues.length > DATA_LIMIT){
-    // console.log(productId)
-    // console.log(salesValues)
 
-    // console.log("BEFORE: ")
-    // console.log("SMOOTHED VALUES: ", smoothedValues)
-    // console.log("TREND VALUES: ", trendValues)
-    // console.log("FORECAST VALUES: ",forecasts)
     for (let i = 1; i < salesValues.length; i++) {
       let smoothedValue = alpha * (salesValues[i] / smoothedValues[i - 1]) + (1 - alpha) * (smoothedValues[i - 1] + trendValues[i - 1]);
       smoothedValues.push(smoothedValue);
@@ -142,12 +121,6 @@ function multiplicativeDoubleExpSmoothing(order_list) {
 
       forecasts.push(smoothedValue * trendValue);
     }
-
-    
-    // console.log("AFTER: ")
-    // console.log("SMOOTHED VALUES: ", smoothedValues)
-    // console.log("TREND VALUES: ", trendValues)
-    // console.log("FORECAST VALUES: ",forecasts)
 
 
     // Predict next sale
@@ -227,7 +200,6 @@ function additiveTripleExponentialSmoothing(order_list) {
     predictions[productId] = Math.round(prediction);
     }
   }
-  console.log("MGA PREDIKSYON: ", predictions)
   return predictions;
 }
 
@@ -297,7 +269,6 @@ function multiplicativeTripleExponentialSmoothing(order_list) {
     predictions[productId] = Math.round(prediction);
     }
   }
-  console.log("MGA PREDIKSYON: ", predictions)
   return predictions;
 }
 
@@ -331,8 +302,8 @@ function movingAverage(order_list) {
 
 
 
-export async function GET(model_choice) {
-
+export async function GET(request, {params}) {
+    const {id} = params
     const { data: materials, error } = await supabase
       .from("MD_RAW_MATERIALS")
       .select("id, qty_available");
@@ -399,22 +370,25 @@ export async function GET(model_choice) {
     order_list[product].push({ date, qty_ordered });
     });
 
-    console.log("THIS IS THE ORDER LIST: ", order_list)
     // Impelement Sales Prediction Algorithm (P1 PROCESS)
     let predicted_sales = {};
 
     //MODAL MAPPING DRAFT: get models in the future
-    const modelMapping = {
-      "cf357686-8ee1-4b42-b0a1-1996c8a14298": additiveDoubleExpSmoothing(order_list), 
-      "7532bc26-b259-43d6-b967-3ac12da76c4e": multiplicativeDoubleExpSmoothing(order_list), 
-      "87b7eca6-73e0-46c4-a5b4-27901bc9dd9c": additiveTripleExponentialSmoothing(order_list), 
-      "dd5852ac-8e7e-4e46-b24b-633461f276e1": multiplicativeTripleExponentialSmoothing(order_list),
-      "7d41c496-f85e-499c-82f5-82b31835c8e2": movingAverage(order_list), 
-      "9533d69e-e579-4aa3-8c27-428cc6f8fff6": simpleExpSmoothing(order_list)
+
+    if (id === "cf357686-8ee1-4b42-b0a1-1996c8a14298") {
+      predicted_sales = additiveDoubleExpSmoothing(order_list);
+    } else if (id === "7532bc26-b259-43d6-b967-3ac12da76c4e") {
+      predicted_sales = multiplicativeDoubleExpSmoothing(order_list);
+    } else if (id === "87b7eca6-73e0-46c4-a5b4-27901bc9dd9c") {
+      predicted_sales = additiveTripleExponentialSmoothing(order_list);
+    } else if (id === "dd5852ac-8e7e-4e46-b24b-633461f276e1") {
+      predicted_sales = multiplicativeTripleExponentialSmoothing(order_list);
+    } else if (id === "7d41c496-f85e-499c-82f5-82b31835c8e2") {
+      predicted_sales = movingAverage(order_list);
+    } else if (id === "9533d69e-e579-4aa3-8c27-428cc6f8fff6") {
+      predicted_sales = simpleExpSmoothing(order_list);
     }
 
-
-    predicted_sales = modelMapping[model_choice]
     // predicted_sales = movingAverage(order_list)
 
     const predicted_products = Object.keys(predicted_sales);
@@ -497,11 +471,8 @@ export async function GET(model_choice) {
     const json = {
       data: suggestedRestock,
     };
-  
-    return new Response(JSON.stringify(json), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    
+    return NextResponse.json(json, {status:200});
   }
   
 
