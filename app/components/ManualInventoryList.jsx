@@ -31,21 +31,27 @@ const ManualCount = () => {
     console.log('updated complete list:', completeList);
   }, [completeList])
 
-  // Sorting function for materials based on name
-  const sortMaterialsByName = () => {
+  const [sortOrder, setSortOrder] = useState("ascending");
+  
+  const sortMaterialsAndVariantsByName = () => {
     const sortedMaterials = [...materialList].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    setMaterialList(sortedMaterials);
-  };
-
-  // Sorting function for variants based on name
-  const sortVariantsByName = () => {
     const sortedVariants = [...variantsList].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    setVariantsList(sortedVariants);
+
+    if (sortOrder === "ascending") {
+      setMaterialList(sortedMaterials);
+      setVariantsList(sortedVariants);
+      setSortOrder("descending");
+    } else {
+      setMaterialList(sortedMaterials.reverse());
+      setVariantsList(sortedVariants.reverse());
+      setSortOrder("ascending");
+    }
   };
+  
 
 
 
@@ -65,7 +71,6 @@ const ManualCount = () => {
     setCompleteList(newCompleteList);
   };
 
-
   const handleIncrement = (productIndex, variantIndex) => {
       const newCompleteList = [...completeList];
 
@@ -74,8 +79,7 @@ const ManualCount = () => {
       setCompleteList(newCompleteList);
     
   };
-
-
+  
   const handleDecrement = (productIndex, variantIndex) => {
     const newManualCount = [...completeList];
     if (newManualCount[productIndex].variants[variantIndex].quantity > 0) {
@@ -87,9 +91,20 @@ const ManualCount = () => {
   return (
     
     <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
-    {/* Sorting buttons for materials and variants */}
-    <button onClick={sortMaterialsByName}>Sort Materials by Name an </button> 
-    <button onClick={sortVariantsByName}>d Sort Variants by Name</button>
+<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
+  <button
+    onClick={sortMaterialsAndVariantsByName}
+    style={{
+      padding: "5px 10px", // Example padding
+      borderRadius: "5px", // Example border radius
+      display: "flex", // Make button inline with icon
+      alignItems: "center", // Align items vertically
+    }}
+  >
+    Sort{" "}
+    <FontAwesomeIcon icon={faSort} style={{ marginLeft: "5px" }} />
+  </button>
+</div>
 
 
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
@@ -231,6 +246,7 @@ const ManualCount = () => {
                                         event,
                                       )
                                     }
+
                                   />
                                 </div>
                                 {/** to be updated with unit feature */}

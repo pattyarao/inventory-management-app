@@ -12,6 +12,7 @@ import { GET as GETUNIT } from "../api/submetric/route";
 const PurchaseList = () => {
   //stores all ordered products
   const [purchaseList, setPurchaseList] = useState([]);
+  const [usedItemList, setUsedItemList] = useState([]); 
   const [variantsList, setVariantsList] = useState([]);
   const [unitsList, setUnitsList] = useState([]);
   const [error, setError] = useState(null);
@@ -64,13 +65,113 @@ const PurchaseList = () => {
   console.log(purchaseList)
 
 // Function to update the selected products
-const handleAddMaterials = (materials) => {
-  const productsWithVariants = materials.map((material) => ({
-    ...material,
-    variants: [{ variantName: "", amount: 0, unit: "", quantity: 1}],
-  }));
+const handleAddMaterials = (discardItem) => {
 
-  setPurchaseList(purchaseList.concat(productsWithVariants));
+    
+
+  // store each id into usedItemList
+  let idList = []
+  let updatedDiscardedList = [...purchaseList] // remove the asyncronous nature of setDiscardedList
+  
+  discardItem.map((item) => {
+
+    // store each id into usedItemList
+    idList.push({id: item.id})
+    console.log(idList)
+    setUsedItemList(usedItemList.concat(idList))
+
+    // determine which case the item belongs to
+    const isMaterial = !Boolean(item.material_id)
+    const isInList = isMaterial ? updatedDiscardedList.some(discarded => discarded.id === item.id) : updatedDiscardedList.some(discarded => discarded.id === item.material_id)
+
+    console.log('Test Case: ', isMaterial, isInList)
+
+    // new condition checker
+    if (isMaterial && isInList) {
+      console.log("CASE 4: item is a material and a variant of the item has already been added to the discard list")
+
+      updatedDiscardedList.map((discarded) => {
+        if (discarded.id === item.id) {
+          discarded.variants.push({ 
+            name: item.name, 
+            amount: null, 
+            unit: item.REF_METRIC.id, 
+            quantity: 1, 
+            id: item.id, 
+            reason_id: null,
+            partialamount: 0,
+          })
+
+          console.log("case 4 insert successful", updatedDiscardedList);
+        }
+      })
+    }
+    else if (isMaterial && !isInList) {
+      console.log("CASE 1: item is a new material in the list")
+      const updatedDiscardItem = {
+        name: item.name,
+        id: item.id,
+        qty_available: item.qty_available,
+        mainMetric: item.REF_METRIC.id,
+        variants: [
+          { 
+            name: item.id, 
+            amount: 0,
+            finalAmount: 0,
+            unit: item.REF_METRIC.id, 
+            quantity: 1,  
+            reason_id: null,
+            partialamount: 0,
+            finalPartialAmount: 0,
+          }
+        ]
+      }
+
+      updatedDiscardedList.push(updatedDiscardItem)
+      console.log('case 1 insert succesfull: ', updatedDiscardItem, updatedDiscardedList)
+    }
+    else if (!isMaterial && isInList) {
+      console.log("CASE 2: item is a variant with its material already in the list")
+
+      updatedDiscardedList.map((discarded) => {
+          if (discarded.id === item.material_id) {
+            discarded.variants.push({ 
+              name: item.id, 
+              amount: item.amt,
+              finalAmount: item.amt,
+              unit: item.MD_RAW_MATERIALS.metric_id, 
+              quantity: 1, 
+            })
+          }
+      })
+      console.log("case 2 insert successful", updatedDiscardedList);
+    }
+    else if (!isMaterial && !isInList) {
+      console.log("CASE 3: item is a variant with its material NOT in the list")
+
+      const updatedDiscardItem = {
+        name: item.MD_RAW_MATERIALS.name,
+        id: item.MD_RAW_MATERIALS.id,
+        qty_available: item.MD_RAW_MATERIALS.qty_available,
+        mainMetric: item.MD_RAW_MATERIALS.metric_id,
+        variants: [
+          {
+            name: item.id, 
+            amount: item.amt, 
+            finalAmount: item.amt,
+            unit: item.MD_RAW_MATERIALS.metric_id, 
+            quantity: 1,  
+          }
+        ]
+      }
+
+      updatedDiscardedList.push(updatedDiscardItem)
+      console.log("case 3 insert successful: ", updatedDiscardItem, updatedDiscardedList);
+    }
+  })
+
+  setPurchaseList(updatedDiscardedList)
+
 };
 
 
@@ -96,13 +197,11 @@ const handleAddMaterials = (materials) => {
     }
  
     if (event.target.value===""){
-      newPurchaseList[productIndex].variants[variantIndex].variantName = event.target.value;
-      newPurchaseList[productIndex].variants[variantIndex].unit = "0";
+      newPurchaseList[productIndex].variants[variantIndex].name = event.target.value;
+      newPurchaseList[productIndex].variants[variantIndex].unit = newPurchaseList[productIndex].mainMetric;
       newPurchaseList[productIndex].variants[variantIndex].amount = 0;
     } else {
-      newPurchaseList[productIndex].variants[variantIndex].variantName = event.target.value;
-      newPurchaseList[productIndex].variants[variantIndex].unit = "0";
-
+      newPurchaseList[productIndex].variants[variantIndex].name = event.target.value;
       const selectedVariant = variantsList.find((variant) => variant.id === event.target.value);
       newPurchaseList[productIndex].variants[variantIndex].amount = selectedVariant.amt;
     }
@@ -120,10 +219,35 @@ const handleAddMaterials = (materials) => {
       return;
     }
 
-    newPurchaseList[productIndex].variants[variantIndex].unit =
-      event.target.value;
+    newPurchaseList[productIndex].variants[variantIndex].unit = event.target.value;
+    const selectedUnit = unitsList.find((unit) => unit.id === newPurchaseList[productIndex].variants[variantIndex].unit);
+    let ratio = selectedUnit.ratio
+    newPurchaseList[productIndex].variants[variantIndex].finalAmount = ratio * newPurchaseList[productIndex].variants[variantIndex].amount;
     setPurchaseList(newPurchaseList);
   };
+
+  const handleAmtChange = (productIndex, variantIndex, event) => {
+    const newPurchaseList = [...purchaseList];
+
+    if(newPurchaseList[productIndex].variants[variantIndex].unit === newPurchaseList[productIndex].mainMetric){
+      newPurchaseList[productIndex].variants[variantIndex].amount = event.target.valueAsNumber;
+      newPurchaseList[productIndex].variants[variantIndex].finalAmount = event.target.valueAsNumber;
+      setPurchaseList(newPurchaseList);
+    } else {
+      const selectedUnit = unitsList.find((unit) => unit.id === newPurchaseList[productIndex].variants[variantIndex].unit);
+
+      console.log(selectedUnit)
+      let amt = event.target.valueAsNumber
+      let ratio = selectedUnit.ratio
+      newPurchaseList[productIndex].variants[variantIndex].amount = amt;
+      newPurchaseList[productIndex].variants[variantIndex].finalAmount = ratio * amt;
+      setPurchaseList(newPurchaseList);
+    }
+   
+  };
+
+
+
 
   const handleQtyChange = (productIndex, variantIndex, event) => {
     const newPurchaseList = [...purchaseList];
@@ -132,12 +256,7 @@ const handleAddMaterials = (materials) => {
     setPurchaseList(newPurchaseList);
   };
 
-  const handleAmtChange = (productIndex, variantIndex, event) => {
-    const newPurchaseList = [...purchaseList];
-    newPurchaseList[productIndex].variants[variantIndex].amount =
-      event.target.valueAsNumber;
-    setPurchaseList(newPurchaseList);
-  };
+
 
   const handleIncrement = (productIndex, variantIndex) => {
     const newPurchaseList = [...purchaseList];
@@ -257,12 +376,11 @@ const handleAddMaterials = (materials) => {
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
                                     <select
-                                      value={variant.variantName}
+                                      value={variant.name}
                                       onChange={(event) =>
                                         handleVariantNameChange(
-                                          material.REF_METRIC.id,
+                                          material.mainMetric,
                                           material.id,
-
                                           index,
                                           variantIndex,
                                           event,
@@ -297,7 +415,7 @@ const handleAddMaterials = (materials) => {
                                         event,
                                       )
                                     }
-                                    disabled={variant.variantName!==""}
+                                    disabled={variant.name != material.id ? true : false}
                                   />
                                 </div>
 
@@ -305,7 +423,7 @@ const handleAddMaterials = (materials) => {
                                   <div className="relative">
                                     <select
                                         id="large"
-                                        disabled={variant.variantName !== ""}
+                                        disabled={variant.name != material.id ? true : false}
                                         value={variant.unit}
                                         onChange={(event) =>
                                             handleUnitChange(
@@ -317,9 +435,9 @@ const handleAddMaterials = (materials) => {
                                         className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
                                         {unitsList
-                                            .filter((unit) => unit.metric_id === material.REF_METRIC.id)
+                                            .filter((unit) => material.mainMetric === unit.metric_id)
                                             .map((unit) => (
-                                                <option key={unit.id} value={unit.ratio}>
+                                                <option key={unit.id} value={unit.id}>
                                                     {unit.abbreviation}
                                                 </option>
                                             ))}
@@ -332,6 +450,7 @@ const handleAddMaterials = (materials) => {
 
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
                                   <button
+                                    disabled={variant.name != material.id ? true : false}
                                     onClick={() =>
                                       handleDecrement(index, variantIndex)
                                     }
@@ -343,6 +462,7 @@ const handleAddMaterials = (materials) => {
                                     </span>
                                   </button>
                                   <input
+                                    
                                     type="number"
                                     className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
                                     value={variant.quantity}
@@ -353,6 +473,7 @@ const handleAddMaterials = (materials) => {
                                         event,
                                       )
                                     }
+                                    disabled={variant.name != material.id ? false : true}
                                   />
                                   <button
                                     onClick={() =>
