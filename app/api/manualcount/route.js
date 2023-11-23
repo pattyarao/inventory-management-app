@@ -56,7 +56,7 @@ async function createPostData(manualcountList, macount_id) {
         // store to array
         var materialtotalamount = 0
         material.variants.map((variant) => {
-            materialtotalamount += (variant.amount * variant.quantity) + variant.partialamount
+            materialtotalamount += (variant.amt * variant.quantity) + variant.amount
         })
 
         discrepancyList.push({id: material.id, totalamount: materialtotalamount})
@@ -73,9 +73,9 @@ export async function GET() {
 
     const { data: materials, error } = await supabase
         .from('MD_RAW_MATERIALS')
-        .select("*, variations:MD_MATVARIATION(*)")
+        .select("*, variants:MD_MATVARIATION(*)")
         .eq('status', true)
-        .eq('variations.status', true)
+        .eq('variants.status', true)
 
     if (error){
         return new Response(JSON.stringify({ error: 'Failed to fetch materials' }), {
@@ -84,19 +84,47 @@ export async function GET() {
         });
     }
 
+    // insert material as variant to material list
+    const updatedMaterials = materials.map((material) => {
+        const updatedVariants = material.variants.map((variant) => ({
+            ...variant,
+            amount: 0,
+            quantity: 0,
+        }));
+    
+        // Add a new variant to the updatedVariants array
+        updatedVariants.push({
+            id: material.id,
+            name: material.name,
+            amount: 0,
+            quantity: 1,
+        });
+    
+        return {
+            ...material,
+            variants: updatedVariants,
+        };
+    });
+    
+    // Now updatedMaterials contains the modified array of materials
+    
+
     const json = {
-        materials: materials
+        materials: updatedMaterials
     };
 
-    console.log('manual count material list: ', materials)
+    console.log('manual count material list: ', updatedMaterials)
     return new Response(JSON.stringify(json), {
         status: 200,
         headers: { "Content-Type": "application/json" },
     });
-    
 }
 
 export async function POST(manualcountList, user_id) {
+
+    console.log('manual count in POST: ', manualcountList)
+    console.log('user id in POST: ', user_id)
+
 
     // create manual count data
     const macountData = {
@@ -104,18 +132,26 @@ export async function POST(manualcountList, user_id) {
         user_id: user_id
     }
 
-    // post manual count data
-    const { data, error } = await supabase
-        .from('TD_MANUALCOUNT')
-        .insert(macountData)
-        .select()
-    
-    if (error) {
-        console.log(error)
-        return;
-    }
+    console.log('macountData: ', macountData)
 
-    // create discrepancy data
-    let macount_id = data[0].id
-    const discrepancyData  = createPostData(manualcountList, macount_id)
+    
+    // // post manual count data
+    // const { data, error } = await supabase
+    //     .from('TD_MANUALCOUNT')
+    //     .insert(macountData)
+    //     .select()
+    
+    // if (error) {
+    //     console.log(error)
+    //     return;
+    // }
+
+    // // create discrepancy data
+    // let macount_id = data[0].id
+    // const discrepancyData  = createPostData(manualcountList, macount_id)
+
+    return new Response('post success', {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+    });
 }
