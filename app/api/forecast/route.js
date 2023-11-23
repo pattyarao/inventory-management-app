@@ -2,7 +2,7 @@ import supabase from "../../supabase";
 
 function simpleExpSmoothing(order_list) {
   let predictions = {};
-  let alpha = 0.1
+  let alpha = 0.8
   const DATA_LIMIT = 3
 
   // Loop through each product's sales data
@@ -13,16 +13,21 @@ function simpleExpSmoothing(order_list) {
 
     if(salesValues.length > DATA_LIMIT){
     // Apply exponential smoothing
+    // SES FORMULA => Yt+1 = alpha * At + (1-alpha)(Yt)
     for (let i = 1; i < salesValues.length; i++) {
       let smoothedValue = alpha * salesValues[i] + (1 - alpha) * smoothedValues[i - 1];
       smoothedValues.push(smoothedValue);
     }
 
+    console.log(salesValues)
+    console.log(smoothedValues)
+
     // Predict future sales
     let lastSmoothedValue = smoothedValues[smoothedValues.length - 1];
 
-    lastSmoothedValue = alpha * lastSmoothedValue + (1 - alpha) * smoothedValues[smoothedValues.length - 1];
-    
+    console.log("PREDICTION FORMULA: ", alpha, " * ", salesValues[salesValues.length - 1], " + ", (1 - alpha), " * ", lastSmoothedValue)
+
+    lastSmoothedValue = alpha * salesValues[salesValues.length - 1] + (1 - alpha) * lastSmoothedValue;
     predictions[productId] = Math.round(lastSmoothedValue);
     }
   }
@@ -31,7 +36,302 @@ function simpleExpSmoothing(order_list) {
 }
 
 
-export async function GET() {
+function additiveDoubleExpSmoothing(order_list) {
+  //AKA HOLT EXPONENTIAL SMOOTHING
+  let predictions = {};
+  let alpha = 0.8
+  let beta = 0.8
+  const DATA_LIMIT = 3
+
+  //FORMULA for Forecasting: F_t+k = S_t + T_t 
+  //WHERE:
+  // F_t+k is the forecasted value
+  // S_t = Smoothed Value (Level)
+  // T_t = Trend Value (Trend)
+
+  // S_t = ALPHA * (current_value) + (1 - ALPHA) * (previous_S_t + previous_trend)
+  // T_t = BETA * (current_S_t - previous_S_t) + (1 - BETA) * previous_T_t
+
+  // Loop through each product's sales data
+  for (let productId in order_list) {
+    let sales = order_list[productId];
+    let salesValues = sales.map(entry => entry.qty_ordered);
+    let smoothedValues = [salesValues[0]]; // Initialize with first value
+    let trendValues = [0]
+    let forecasts = []
+
+
+
+    if(salesValues.length > DATA_LIMIT){
+    console.log(productId)
+    console.log(salesValues)
+
+    console.log("BEFORE: ")
+    console.log("SMOOTHED VALUES: ", smoothedValues)
+    console.log("TREND VALUES: ", trendValues)
+    console.log("FORECAST VALUES: ",forecasts)
+    for (let i = 1; i < salesValues.length; i++) {
+      let smoothedValue = alpha * salesValues[i] + (1 - alpha) * (smoothedValues[i - 1] + trendValues[i - 1]);
+      smoothedValues.push(smoothedValue);
+
+      let trendValue = beta * (smoothedValue - smoothedValues[i - 1]) + (1 - beta) * trendValues[i - 1];
+      trendValues.push(trendValue)
+
+      forecasts.push(smoothedValue + trendValue)
+    }
+
+    
+    console.log("AFTER: ")
+    console.log("SMOOTHED VALUES: ", smoothedValues)
+    console.log("TREND VALUES: ", trendValues)
+    console.log("FORECAST VALUES: ",forecasts)
+
+
+    // Predict next sale
+    let lastSmoothedValue = alpha * salesValues[salesValues.length - 1] + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
+    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
+
+    let prediction = lastSmoothedValue + lastTrendValue
+    predictions[productId] = Math.round(prediction);
+    }
+  }
+  console.log(predictions)
+  return predictions;
+}
+
+function multiplicativeDoubleExpSmoothing(order_list) {
+  //AKA HOLT EXPONENTIAL SMOOTHING
+  let predictions = {};
+  let alpha = 0.8
+  let beta = 0.8
+  const DATA_LIMIT = 3
+
+  //FORMULA for Forecasting: F_t+k = S_t * T_t 
+  //WHERE:
+  // F_t+k is the forecasted value
+  // S_t = Smoothed Value (Level)
+  // T_t = Trend Value (Trend)
+
+  // S_t = ALPHA * (current_value / previous_S_t) + (1 - ALPHA) * (previous_S_t + previous_trend)
+  // T_t = BETA * (current_S_t - previous_S_t) + (1 - BETA) * previous_T_t
+
+  // Loop through each product's sales data
+  for (let productId in order_list) {
+    let sales = order_list[productId];
+    let salesValues = sales.map(entry => entry.qty_ordered);
+    let smoothedValues = [salesValues[0]]; // Initialize with first value
+    let trendValues = [0]
+    let forecasts = []
+
+
+
+    if(salesValues.length > DATA_LIMIT){
+    // console.log(productId)
+    // console.log(salesValues)
+
+    // console.log("BEFORE: ")
+    // console.log("SMOOTHED VALUES: ", smoothedValues)
+    // console.log("TREND VALUES: ", trendValues)
+    // console.log("FORECAST VALUES: ",forecasts)
+    for (let i = 1; i < salesValues.length; i++) {
+      let smoothedValue = alpha * (salesValues[i] / smoothedValues[i - 1]) + (1 - alpha) * (smoothedValues[i - 1] + trendValues[i - 1]);
+      smoothedValues.push(smoothedValue);
+
+      let trendValue = beta * (smoothedValues[i] - smoothedValues[i - 1]) + (1 - beta) * trendValues[i - 1];
+      trendValues.push(trendValue);
+
+      forecasts.push(smoothedValue * trendValue);
+    }
+
+    
+    // console.log("AFTER: ")
+    // console.log("SMOOTHED VALUES: ", smoothedValues)
+    // console.log("TREND VALUES: ", trendValues)
+    // console.log("FORECAST VALUES: ",forecasts)
+
+
+    // Predict next sale
+    let lastSmoothedValue = alpha * (salesValues[salesValues.length - 1] / smoothedValues[smoothedValues.length - 1]) + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
+    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
+
+    let prediction = lastSmoothedValue + lastTrendValue
+    predictions[productId] = Math.round(prediction);
+    }
+  }
+  console.log(predictions)
+  return predictions;
+}
+
+function additiveTripleExponentialSmoothing(order_list) {
+  //AKA HOLT WINTERS EXPONENTIAL SMOOTHING
+  let predictions = {};
+  let alpha = 0.8
+  let beta = 0.8
+  let gamma = 0.8
+  let M = 3
+  const DATA_LIMIT = 7
+
+  for (let productId in order_list) {
+    let sales = order_list[productId];
+    let salesValues = sales.map(entry => entry.qty_ordered);
+    let seasonalValues = []
+    let seasonalAve = 0
+
+
+    if(salesValues.length > DATA_LIMIT){
+
+    // Initial Values
+
+    //Get the Initial Seasonal Average
+    for (let i = 0; i < M; i++){
+      seasonalAve += salesValues[i]
+    }
+    seasonalAve = seasonalAve / M 
+
+    //Get Initial Seasonal Values 
+    for (let i = 0; i < M; i++){
+      seasonalValues.push(salesValues[i] / seasonalAve)
+    }
+
+    // Initial Values
+    
+    let smoothedValues = [salesValues[M] - seasonalValues[M - M]]; 
+    let trendValues = [smoothedValues[0] - (salesValues[M - 1] / seasonalValues[M - 1])]
+    seasonalValues.push(gamma * (salesValues[M] - smoothedValues[0]) + (1 - gamma) * seasonalValues[0])
+    let forecasts = [smoothedValues[0] + trendValues[0] + seasonalValues[M - M + 1]]
+    
+
+    // Model Application   
+    let k = 0
+    for (let i = M + 1; i < salesValues.length; i++) {
+      let smoothedValue = alpha * (salesValues[i] - seasonalValues[i - M]) + (1 - alpha) * (smoothedValues[k] + trendValues[k]);
+      smoothedValues.push(smoothedValue);
+      
+
+      let trendValue = beta * (smoothedValue - smoothedValues[k]) + (1 - beta) * trendValues[k];
+      trendValues.push(trendValue)
+      
+
+      let seasonalValue = gamma * (salesValues[i] - smoothedValues[i - M]) + (1 - gamma) * seasonalValues[i - M]
+      seasonalValues.push(seasonalValue)
+      
+      forecasts.push(smoothedValue + trendValue + seasonalValue)
+      k++;
+    }
+    // Predict next sale
+    let lastSmoothedValue = alpha * (salesValues[salesValues.length - 1] - seasonalValues[seasonalValues.length - M]) + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
+    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
+    let lastSeasonalValue =  gamma * (salesValues[salesValues.length - 1] - smoothedValues[smoothedValues.length - M]) + (1 - gamma) * seasonalValues[seasonalValues.length - M]
+
+    let prediction = lastSmoothedValue + lastTrendValue + lastSeasonalValue;
+    predictions[productId] = Math.round(prediction);
+    }
+  }
+  console.log("MGA PREDIKSYON: ", predictions)
+  return predictions;
+}
+
+
+function multiplicativeTripleExponentialSmoothing(order_list) {
+  //AKA HOLT WINTERS EXPONENTIAL SMOOTHING
+  let predictions = {};
+  let alpha = 0.8
+  let beta = 0.8
+  let gamma = 0.8
+  let M = 3
+  const DATA_LIMIT = 7
+
+  for (let productId in order_list) {
+    let sales = order_list[productId];
+    let salesValues = sales.map(entry => entry.qty_ordered);
+    let seasonalValues = []
+    let seasonalAve = 0
+
+
+    if(salesValues.length > DATA_LIMIT){
+
+    // Initial Values
+
+    //Get the Initial Seasonal Average
+    for (let i = 0; i < M; i++){
+      seasonalAve += salesValues[i]
+    }
+    seasonalAve = seasonalAve / M 
+
+    //Get Initial Seasonal Values 
+    for (let i = 0; i < M; i++){
+      seasonalValues.push(salesValues[i] / seasonalAve)
+    }
+
+    // Initial Values
+    
+    let smoothedValues = [salesValues[M] / seasonalValues[M - M]]; 
+    let trendValues = [smoothedValues[0] - (salesValues[M - 1] / seasonalValues[M - 1])]
+    seasonalValues.push(gamma * (salesValues[M] / smoothedValues[0]) + (1 - gamma) * seasonalValues[0])
+    let forecasts = [(smoothedValues[0] + trendValues[0]) * seasonalValues[M - M + 1]]
+    
+
+    // Model Application   
+    let k = 0
+    for (let i = M + 1; i < salesValues.length; i++) {
+      let smoothedValue = alpha * (salesValues[i] / seasonalValues[i - M]) + (1 - alpha) * (smoothedValues[k] + trendValues[k]);
+      smoothedValues.push(smoothedValue);
+      
+
+      let trendValue = beta * (smoothedValue - smoothedValues[k]) + (1 - beta) * trendValues[k];
+      trendValues.push(trendValue)
+      
+
+      let seasonalValue = gamma * (salesValues[i] / smoothedValues[i - M]) + (1 - gamma) * seasonalValues[i - M]
+      seasonalValues.push(seasonalValue)
+      
+      forecasts.push((smoothedValue + trendValue) * seasonalValue)
+      k++;
+    }
+    // Predict next sale
+    let lastSmoothedValue = alpha * (salesValues[salesValues.length - 1] / seasonalValues[seasonalValues.length - M]) + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
+    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
+    let lastSeasonalValue =  gamma * (salesValues[salesValues.length - 1] / smoothedValues[smoothedValues.length - M]) + (1 - gamma) * seasonalValues[seasonalValues.length - M]
+
+    let prediction = (lastSmoothedValue + lastTrendValue) * lastSeasonalValue;
+    predictions[productId] = Math.round(prediction);
+    }
+  }
+  console.log("MGA PREDIKSYON: ", predictions)
+  return predictions;
+}
+
+
+function movingAverage(order_list) {
+  let predictions = {};
+  // 7-Day MA
+  let MA = 7
+  const DATA_LIMIT = 7
+
+  // Loop through each product's sales data
+  for (let productId in order_list) {
+    let sales = order_list[productId];
+    let salesValues = sales.map(entry => entry.qty_ordered);
+    
+    if(salesValues.length > DATA_LIMIT){
+    let average = 0; // Initialize with first value
+    
+    for (let i = salesValues.length - 1; i > salesValues.length - 1 - MA; i--) {
+      average += salesValues[i];
+    }
+
+    average /= MA
+    predictions[productId] = Math.round(average);
+    }
+  }
+
+  return predictions;
+}
+
+
+
+
+export async function GET(model_choice) {
 
     const { data: materials, error } = await supabase
       .from("MD_RAW_MATERIALS")
@@ -99,10 +399,23 @@ export async function GET() {
     order_list[product].push({ date, qty_ordered });
     });
 
-    
+    console.log("THIS IS THE ORDER LIST: ", order_list)
     // Impelement Sales Prediction Algorithm (P1 PROCESS)
     let predicted_sales = {};
-    predicted_sales = simpleExpSmoothing(order_list)
+
+    //MODAL MAPPING DRAFT: get models in the future
+    const modelMapping = {
+      "cf357686-8ee1-4b42-b0a1-1996c8a14298": additiveDoubleExpSmoothing(order_list), 
+      "7532bc26-b259-43d6-b967-3ac12da76c4e": multiplicativeDoubleExpSmoothing(order_list), 
+      "87b7eca6-73e0-46c4-a5b4-27901bc9dd9c": additiveTripleExponentialSmoothing(order_list), 
+      "dd5852ac-8e7e-4e46-b24b-633461f276e1": multiplicativeTripleExponentialSmoothing(order_list),
+      "7d41c496-f85e-499c-82f5-82b31835c8e2": movingAverage(order_list), 
+      "9533d69e-e579-4aa3-8c27-428cc6f8fff6": simpleExpSmoothing(order_list)
+    }
+
+
+    predicted_sales = modelMapping[model_choice]
+    // predicted_sales = movingAverage(order_list)
 
     const predicted_products = Object.keys(predicted_sales);
 
@@ -120,7 +433,6 @@ export async function GET() {
       });
     }
 
-    console.log(ingredients)
 
     const productFormula = ingredients.reduce((result, item) => {
       if (!result[item.product_id]) {
@@ -166,9 +478,9 @@ export async function GET() {
 
 
     //GET THE DIFFERENCE BETWEEN forecastedRestock and currentStock, then update the values in suggestedRestock
-    console.log("forecasted Restock", forecastedRestock)
-    console.log("Current Stock", currentStock)
-    console.log("Suggested Restock", suggestedRestock)
+    // console.log("forecasted Restock", forecastedRestock)
+    // console.log("Current Stock", currentStock)
+    // console.log("Suggested Restock", suggestedRestock)
 
     for (const productId in suggestedRestock){
         if (forecastedRestock[productId]){
@@ -192,3 +504,41 @@ export async function GET() {
     });
   }
   
+
+  
+
+//   PREDICTION PSEUDO CODE
+// - Select an Algorithm 
+// - GET current material stock levels set it as an object called "currentStock" DONE
+// - Copy "currentStock" and store it to "suggestedRestock" DONE
+// - GET all IDs of products on MD_PRODUCTS (product_list = MD
+// - Check if each product has sufficient data to do the predictions
+// 	product_data = GET product transactions from TD_ORDERITEMS WHERE product_id = product
+// 	IF product_data.length >= row requirement: P1,P2
+// 	ELSE: Set product element in the "suggestedRestock" object as "NA" 
+
+// - P1 (PROCESS 1): 
+// 	- input product_data to model
+// 	- train the model based on product data 
+// 	- get forecasted product sales 
+// 	- return predicted_sales
+// 	- PROCEED TO P2 
+// - P2 (PROCESS 2):
+// 	- GET formula of product FROM ML_PRODUCT_FORMULA store it in "temp_formula"
+// 	- for each material in temp_formula: material = material * predicted_sales
+// 	- for each material in temp_formula, add it to each of the material in "suggestedRestock"
+
+// - FINALLY
+// 	- comparedStock = suggestedRestock - currentStock
+// 	- return comparedStock
+
+
+
+// PREDICTION PIPELINE 
+// 1. Check if each product suffices 
+// 	IF ATLEAST ONE product satisfies, THEN PROCEED
+// 	OTHERWISE, END PROCESS 
+// 2. Input the data into the machine learning API 
+// 3. Train the data 
+// 4. Make a prediction for the next day of sales 
+// 5. Send predictions
