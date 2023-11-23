@@ -1,91 +1,155 @@
 import supabase from "../../supabase";
 
-function checkDiscrepancy(discrepancyList) {
-    const availableAmountList = []
+function checkDiscrepancy(discrepancyList, availableAmountList, macount_id) {
     const discrepancyData = []
-    // fetch the list of available amount for each material passed
-    discrepancyList.map( async (material) => {
-        const { data, error } = await supabase
-            .from('MD_RAW_MATERIALS')
-            .select('qty_available')
-            .eq('id', material.id)
 
-        if (error) {
-            console.log(error)
-            return;
-        }
-
-        availableAmountList.push(
-            {
-                id: material.id,
-                qty_available: data.quantity_available
-            }
-        )
-    })
 
     // compare available amount to discrepancy list
     discrepancyList.map((item, index) => {
         if (!(item.totalamount === availableAmountList[index].qty_available)) {
-            
+            discrepancyData.push({
+                material_id: item.id,
+                qty_disc: availableAmountList[index].qty_available - item.totalamount,
+                macount_id: macount_id
+            })
         }
     })
+
+    console.log('discrepancyData: ', discrepancyData)
 
     return discrepancyData
 }
     
 
 
-async function createPostData(manualcountList, user_id) {
+function createDiscrepancyList(manualcountList) {
     const discrepancyList = []
-    const timestamp = new Date().toISOString()
-    const macountData = {
-        created_at: timestamp,
-        user_id: user_id
-    }
+    const availableList = []
     manualcountList.map((material) => {
 
         // get sum of material amount for every variant
         // store to array
         var materialtotalamount = 0
         material.variants.map((variant) => {
-            materialtotalamount += variant.amount * variant.quantity
+            console.log('variant amount: ', variant.amt, variant.quantity, variant.amount)
+            materialtotalamount += (variant.amt * variant.quantity) + variant.amount
         })
 
+        availableList.push({id: material.id, qty_available: material.qty_available})
         discrepancyList.push({id: material.id, totalamount: materialtotalamount})
     })
 
-    const discrepancyData = checkDiscrepancy(discrepancyList)
-
+    console.log('discrepancyList: ', discrepancyList)
+    console.log('availableList: ', availableList)
     
-    return { macountData, discrepancyData }
+    return { discrepancyList, availableList }
 }
 
 export async function GET() {
     // returns all materials and the recorded variants
 
-    const { data, error } = await supabase
+    const { data: materials, error } = await supabase
         .from('MD_RAW_MATERIALS')
-        .select("*, variations:MD_MATVARIATION(*)")
+        .select("*, variants:MD_MATVARIATION(*)")
         .eq('status', true)
-        .eq('variations.status', true)
+        .eq('variants.status', true)
+        .order('name', { ascending: true });
 
     if (error){
-        console.log(error)
-    }
-    else {
-        const json = {
-            materials: data
-        };
-    
-        console.log('manual count material list: ', data)
-        return new Response(JSON.stringify(json), {
-            status: 200,
+        return new Response(JSON.stringify({ error: 'Failed to fetch materials' }), {
+            status: 500,
             headers: { "Content-Type": "application/json" },
         });
     }
+
+    // insert material as variant to material list
+    const updatedMaterials = materials.map((material) => {
+        const updatedVariants = material.variants.map((variant) => ({
+            ...variant,
+            amount: 0,
+            quantity: 0,
+        }));
+    
+        // Add a new variant to the updatedVariants array
+        updatedVariants.push({
+            id: material.id,
+            name: material.name,
+            amount: 0,
+            quantity: 0,
+            amt: 0,
+        });
+    
+        return {
+            ...material,
+            variants: updatedVariants,
+        };
+    });
+    
+    // Now updatedMaterials contains the modified array of materials
+    
+
+    const json = {
+        materials: updatedMaterials
+    };
+
+    console.log('manual count material list: ', updatedMaterials)
+    return new Response(JSON.stringify(json), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+    });
 }
 
 export async function POST(manualcountList, user_id) {
 
-    const { macountData, discrepancyData } = createPostData(manualcountList, user_id)
+    console.log('manual count in POST: ', manualcountList)
+    console.log('user id in POST: ', user_id)
+
+
+    // create manual count data
+    const macountData = {
+        created_at: new Date().toISOString(),
+        user_id: user_id
+    }
+
+    console.log('macountData: ', macountData)
+
+    
+    // post manual count data
+    try {
+        const { data: response1, error: error1 } = await supabase
+        .from('TD_MACOUNT')
+        .insert(macountData)
+        .select()
+
+        console.log('supabase return response: ', response1, error1)
+        // create discrepancy data
+    
+        let macount_id = response1[0].id
+        console.log('macount_id: ', macount_id)
+
+        const { discrepancyList, availableList }  = createDiscrepancyList(manualcountList)
+        const discrepancyPostData = checkDiscrepancy(discrepancyList, availableList, macount_id)
+
+        console.log('discrepancyPostData: ', discrepancyPostData)
+
+        const { data: response2, error: error2 } = await supabase
+        .from('TD_DISCREPANCY')
+        .insert(discrepancyPostData)
+        .select()
+
+        console.log('post completed', response2)
+
+    } catch (error) {
+        console.log(error)
+        return new Response('post failure', {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+
+
+    return new Response('post success', {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+    });
 }

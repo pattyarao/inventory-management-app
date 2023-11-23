@@ -61,20 +61,24 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black backdrop-filter backdrop-blur-lg">
-      <div className="bg-white p-8 rounded-md shadow-lg max-h-96 overflow-y-auto">
-        <button
-          className="absolute top-4 right-4 text-white hover:text-red-500"
-          onClick={onClose}
-        >
-          CLOSE X
-        </button>
-
-        <div>
-            <h2 className="text-2xl font-bold mb-4">{choice} Drilled Down Report</h2>
-            <h3 className="text-2xl font-bold mb-4">No Variations</h3>    
+      <div className="w-[90%] h-[90vh] bg-white rounded-md shadow-lg overflow-y-auto">
+      <div className="top-0 sticky w-full flex flex-col gap-2 items-center justify-between bg-neutral-400/80 px-6 py-2">
+              <div className="w-full flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-black">{choice} Drilled Down Report</h2>
+                  <p className="text-sm">Created at: {currentDate}</p>
+                </div>
+                <button className="text-black py-2 px-6 bg-gray-200 hover:bg-red-500 hover:text-white rounded-md transition ease duration-70"
+                onClick={onClose}>
+                  CLOSE</button>
+              </div>
+            </div>
+        <div className="p-8">
+            
+            <h3 className="text-xl font-bold mb-4">No Variations</h3>    
             {Object.keys(groupedData).map((materialName) => (
       <div key={materialName} className="mb-8">
-        <h3 className="text-2xl font-bold mb-4">{choice}</h3>
+        <h3 className="text-lg font-bold mb-4">{choice}</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
@@ -108,10 +112,10 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
       </div>
     ))}
         
-        <h3 className="text-2xl font-bold mb-4">With Variations</h3>            
+        <h3 className="text-xl font-bold mb-4">With Variations</h3>            
         {Object.keys(groupedData).map((materialName) => (
         <div key={materialName} className="mb-8">
-            <h3 className="text-2xl font-bold mb-4">{choice}</h3>
+            <h3 className="text-lg font-bold mb-4">{choice}</h3>
             <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-300">
                 <thead>

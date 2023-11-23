@@ -39,6 +39,8 @@ const AddMaterialDiscard = (props) => {
       }
       getMaterials();
     }, [showModal]);
+
+    console.log(materialsList)
     
 
 

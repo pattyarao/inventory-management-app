@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { PATCH, POST } from "../api/order/route";
+import { POST as POSTFAIL } from "../api/rejectedorder/route";
 import { GET as GETPROF } from "../api/productprofile/route";
 import { GET as GETMAT } from "../api/purchase/route";
 
@@ -136,19 +137,51 @@ const RecordOrder = (props) => {
           if (material) {
             entry.qty_available = material.qty_available - entry.qty_available;
             entry.name = material.name; // Add the name of the material
+
+            if (entry.qty_available < 0) {
+              // Check if entry already exists in shortageList
+              const existingEntryIndex = shortageList.findIndex(
+                (shortageEntry) => shortageEntry.id === entry.id
+              );
+  
+              if (existingEntryIndex !== -1) {
+                // If entry exists, update the existing value
+                setShortageList((prevShortageList) => {
+                  const updatedShortageList = [...prevShortageList];
+                  updatedShortageList[existingEntryIndex].qty_available = Math.abs(
+                    entry.qty_available
+                  );
+                  return updatedShortageList;
+                });
+              } else {
+                // If entry doesn't exist, add a new entry
+                setShortageList((prevShortageList) => [
+                  ...prevShortageList,
+                  {
+                    id: entry.id,
+                    qty_available: Math.abs(entry.qty_available),
+                  },
+                ]);
+              }
+            }
           }
   
           return entry;
         }
       );
-  
-      setSuccess(!(updatedQuantities.some((entry) => entry.qty_available < 0)));
+
       setNewQuantities(updatedQuantities);
+      setSuccess(!(updatedQuantities.some((entry) => entry.qty_available < 0)));
+      
+      
+      
     }
   
     updateNewQuantities();
   }, [props.orderList, ingredientsList, materialsList]);
+  console.log(shortageList);
   console.log(newQuantities);
+  console.log(orders);
   
 
 
@@ -157,11 +190,19 @@ const RecordOrder = (props) => {
 
   const handleSubmit = async () => {
     // Check if there are negative qty_available values in newQuantities
-    
-  
     if (!success) {
-      // If there are negative qty_available values, setSuccess to false
-      setShowModal(true);
+      try {
+        // Assuming you have the 'orders' data available
+        const postResult = await POSTFAIL(shortageList, userID);
+        setShowModal(true);
+  
+        if (postResult.error) {
+          setError(postResult.error);
+          console.log(postResult.error);
+        }
+      } catch (error) {
+        setError(error.message);
+      }
     } else {
       try {
         // Assuming you have the 'orders' data available

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GET } from "../api/purchase/route";
+import { GET } from "../api/discard/route";
 
 const AddMaterialPurchase = (props) => {
   //stores all products in the database

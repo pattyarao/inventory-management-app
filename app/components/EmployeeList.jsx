@@ -12,6 +12,7 @@ import { BsViewList } from "react-icons/bs";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { HiSortDescending } from "react-icons/hi";
 import { HiSortAscending } from "react-icons/hi";
+import { FiSearch } from "react-icons/fi";
 
 //toast
 import { toast } from "react-toastify";
@@ -27,6 +28,7 @@ const EmployeeList = () => {
   const [error, setError] = useState(null);
   const [isEmployeeListChanged, setEmployeeListChanged] = useState(false);
   const [sort, setSort] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -80,8 +82,16 @@ const EmployeeList = () => {
       }
       return 0;
     }
-      
   };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredEmployees = employees.filter((employee) => {
+    const fullName = `${employee.first_name} ${employee.last_name}`;
+    return fullName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   return (
     <>
@@ -103,50 +113,62 @@ const EmployeeList = () => {
             Add Employee
           </button>
         </div>
-        <div className="w-full flex gap-4 justify-end">
-          <div className="w-[20%] px-4 py-2 flex items-center justify-center gap-4 bg-slate-400 rounded-lg">
-            {sort !== "descending" ? (
-              <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSort("descending")}>
-                <HiSortDescending
-                  className="hover:text-white hover:scale-125 transition ease duration-70"
-                  
-                />
-                <p className="text-sm">Sort by Name (Z-A)</p>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSort("ascending")}>
-                <HiSortAscending
-                  className="hover:text-white hover:scale-125 transition ease duration-70"
-                  
-                />
-                <p className="text-sm">Sort by Name (A-Z)</p>
-              </div>
-            )}
+        <div className="w-full flex gap-4 justify-between">
+          <div className="w-[300px] bg-white px-2 py-1 rounded-md flex items-center justify-between">
+            <input
+              type="text"
+              placeholder="Search Employee..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="bg-inherit focus:outline-none"
+            />
+            <FiSearch className="text-slate-400" />
           </div>
-          <div className="w-[10%] px-4 py-2 flex items-center justify-center gap-4 bg-slate-400 rounded-lg">
-            <BsFillGrid3X2GapFill
-              className={`${
-                view === "grid"
-                  ? "scale-125 text-white"
-                  : "hover:scale-125 hover:text-white transition ease-in ease-out duration-70"
-              }`}
-              onClick={(e) => setView("grid")}
-              value="grid"
-            />
-            <BsViewList
-              className={`${
-                view === "list"
-                  ? "scale-125 text-white"
-                  : "hover:scale-125 hover:text-white transition ease-in ease-out duration-70"
-              }`}
-              onClick={(e) => setView("list")}
-              value="list"
-            />
+          <div className="w-[50%] flex items-center justify-end gap-2">
+            <div className="w-fit px-4 py-2 flex items-center justify-center gap-4 bg-slate-400 rounded-lg">
+              {sort !== "descending" ? (
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => setSort("descending")}
+                >
+                  <HiSortDescending className="hover:text-white hover:scale-125 transition ease duration-70" />
+                  <p className="text-sm">Sort by Name (Z-A)</p>
+                </div>
+              ) : (
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => setSort("ascending")}
+                >
+                  <HiSortAscending className="hover:text-white hover:scale-125 transition ease duration-70" />
+                  <p className="text-sm">Sort by Name (A-Z)</p>
+                </div>
+              )}
+            </div>
+            <div className="w-fit h-full px-4 py-2 flex items-center justify-center gap-4 bg-slate-400 rounded-lg">
+              <BsFillGrid3X2GapFill
+                className={`${
+                  view === "grid"
+                    ? "scale-125 text-white"
+                    : "hover:scale-125 hover:text-white transition ease-in ease-out duration-70"
+                }`}
+                onClick={(e) => setView("grid")}
+                value="grid"
+              />
+              <BsViewList
+                className={`${
+                  view === "list"
+                    ? "scale-125 text-white"
+                    : "hover:scale-125 hover:text-white transition ease-in ease-out duration-70"
+                }`}
+                onClick={(e) => setView("list")}
+                value="list"
+              />
+            </div>
           </div>
         </div>
 
         {error && <div>{error}</div>}
-        {employees.length > 0 && (
+        {filteredEmployees.length > 0 && (
           <div
             className={`m-auto w-full flex ${
               view === "grid"
@@ -154,7 +176,7 @@ const EmployeeList = () => {
                 : "flex flex-col gap-4"
             }`}
           >
-            {employees
+            {filteredEmployees
               .slice() // Create a shallow copy to avoid modifying the original array
               .sort(sortEmployees)
               .map((employee, index) => (

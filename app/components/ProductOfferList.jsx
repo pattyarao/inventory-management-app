@@ -13,6 +13,7 @@ const [productList, setProductList] = useState([]);
 const [selectedProduct, setSelectedProduct] = useState(null);
 const [showProductDetailsModal, setShowProductDetailsModal] = useState(false);
 const [sortOption, setSortOption] = useState("Sort A-Z");
+const [filterOption, setFilterOption] = useState("All");
 
 const sortedProductList = () => {
   switch (sortOption) {
@@ -20,6 +21,13 @@ const sortedProductList = () => {
       return [...productList].sort((a, b) => a.name.localeCompare(b.name));
     case "Sort Z-A":
       return [...productList].sort((a, b) => b.name.localeCompare(a.name));
+    default:
+      return productList;
+  }
+};
+
+const filteredProductList = () => {
+  switch (filterOption) {
     case "Filter by Active Products":
       return productList.filter((product) => product.status);
     case "Filter by Inactive Products":
@@ -30,6 +38,9 @@ const sortedProductList = () => {
 };
 
 const displayedProductList = sortedProductList();
+const filteredList = filteredProductList();
+
+const combinedList = displayedProductList.filter(product => filteredList.includes(product));
 
 useEffect(() => {
   // Fetch products from your Supabase API
@@ -106,14 +117,19 @@ const toggleProductStatus = (productToToggle) => {
                 {productList.length !== 0 ? (
                   <>
                     <div className="flex justify-end">
-                      <select className="text-sm px-3 py-2 mb-5 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                      <select className="text-sm px-3 py-2 mb-5 mr-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
                           style={{ backgroundColor: "#27374D", color: "white" }}
                           onChange={(e) => setSortOption(e.target.value)}>
-                        <option value="">Select Filter/Sort</option>
-                        <option value="Filter by Active Products">Filter by Active Products</option>
-                        <option value="Filter by Inactive Products">Filter by Inactive Products</option>
+                        <option value="">Select Sort</option>
                         <option value="Sort A-Z">Sort A-Z</option>
                         <option value="Sort Z-A">Sort Z-A</option>
+                      </select>
+                      <select className="text-sm px-3 py-2 mb-5 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                          style={{ backgroundColor: "#27374D", color: "white" }}
+                          onChange={(e) => setFilterOption(e.target.value)}>
+                        <option value="">Select Filter</option>
+                        <option value="Filter by Active Products">Filter by Active Products</option>
+                        <option value="Filter by Inactive Products">Filter by Inactive Products</option>
                       </select>
                     </div>
                     <div
@@ -129,7 +145,7 @@ const toggleProductStatus = (productToToggle) => {
                       </div>
                     </div>
 
-                    {displayedProductList.map((product, index) => (
+                    {combinedList.map((product, index) => (
                       <div key={index}>
                         <div
                           className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
