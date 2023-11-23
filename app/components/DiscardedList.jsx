@@ -654,7 +654,7 @@ const DiscardedList = () => {
                   {discardedList.length !== 0 ? (
                     <>
                       <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
-                      <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() => setDiscardedList([])} />
+                      <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() =>{ setDiscardedList([]); setUsedItemList([]) }} />
                     
                     </>
                       ) 
