@@ -295,11 +295,7 @@ const DiscardedList = () => {
   
   const handleIncrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
-
-    if (!newDiscardedList[productIndex].variants[variantIndex].quantity) {
-      newDiscardedList[productIndex].variants[variantIndex].quantity = 1;
-    }
-
+    
     newDiscardedList[productIndex].variants[variantIndex].quantity++;
     setDiscardedList(newDiscardedList);
   };

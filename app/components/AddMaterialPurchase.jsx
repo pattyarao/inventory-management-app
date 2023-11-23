@@ -189,7 +189,7 @@ const AddMaterialPurchase = (props) => {
                       <option value="name-desc">Sort by Name (Z-A)</option>
                     </select>
                   </div>
-                  <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                  <div className="relative overflow-y-auto shadow-md sm:rounded-lg" style={{ maxHeight: "500px", overflowY: "auto" }}>
                     {filteredProductsList.length > 0 ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
