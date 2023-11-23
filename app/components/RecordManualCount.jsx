@@ -7,23 +7,26 @@ import { useState } from "react";
 const RecordManualCount = (props) => {
 
 
-
-
-
-
   const [showModal, setShowModal] = useState(false);
   const [success, setSuccess] = useState(false);
  
-
+  const handleSubmit = () => {
+    const postData = () => {
+      const postResponse = props.postMaterial(props.completeList, "4601007f-506d-4e36-acbc-dd8ff126de78");
+      console.log(postResponse);
+    }
+    postData();
+    setShowModal(true);
+  }
 
   return (
     <>
       <button
-        className="text-sm font-semibold px-6 py-3 ms-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
-        style={{ backgroundColor: "#097969", color: "black" }}
-        type="button"
-        onClick={() => setShowModal(true)}
-      >
+          className="text-sm font-semibold px-6 py-3 ms-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+          style={{ backgroundColor: "#097969", color: "white" }}
+          type="button"
+          onClick={handleSubmit}
+        >
         Record Manual Count
      
       </button>

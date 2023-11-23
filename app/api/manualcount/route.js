@@ -1,35 +1,8 @@
 import supabase from "../../supabase";
 
-function checkDiscrepancy(discrepancyList, macount_id) {
-    const availableAmountList = []
+function checkDiscrepancy(discrepancyList, availableAmountList, macount_id) {
     const discrepancyData = []
-    // fetch the list of available amount for each material passed
-    // fetch available amount from MD_RAW_MATERIALS
 
-    // sort by id
-
-    // sort discrepancy list by id
-
-    // compare available amount to discrepancy list
-
-    discrepancyList.map( async (material) => {
-        const { data, error } = await supabase
-            .from('MD_RAW_MATERIALS')
-            .select('qty_available')
-            .eq('id', material.id)
-
-        if (error) {
-            console.log(error)
-            return;
-        }
-
-        availableAmountList.push(
-            {
-                id: material.id,
-                qty_available: data.quantity_available
-            }
-        )
-    })
 
     // compare available amount to discrepancy list
     discrepancyList.map((item, index) => {
@@ -42,30 +15,34 @@ function checkDiscrepancy(discrepancyList, macount_id) {
         }
     })
 
+    console.log('discrepancyData: ', discrepancyData)
+
     return discrepancyData
 }
     
 
 
-async function createPostData(manualcountList, macount_id) {
+function createDiscrepancyList(manualcountList) {
     const discrepancyList = []
-    
+    const availableList = []
     manualcountList.map((material) => {
 
         // get sum of material amount for every variant
         // store to array
         var materialtotalamount = 0
         material.variants.map((variant) => {
-            materialtotalamount += (variant.amount * variant.quantity) + variant.partialamount
+            console.log('variant amount: ', variant.amt, variant.quantity, variant.amount)
+            materialtotalamount += (variant.amt * variant.quantity) + variant.amount
         })
 
+        availableList.push({id: material.id, qty_available: material.qty_available})
         discrepancyList.push({id: material.id, totalamount: materialtotalamount})
     })
 
-    const discrepancyData = checkDiscrepancy(discrepancyList, macount_id)
-
+    console.log('discrepancyList: ', discrepancyList)
+    console.log('availableList: ', availableList)
     
-    return discrepancyData
+    return { discrepancyList, availableList }
 }
 
 export async function GET() {
@@ -73,9 +50,10 @@ export async function GET() {
 
     const { data: materials, error } = await supabase
         .from('MD_RAW_MATERIALS')
-        .select("*, variations:MD_MATVARIATION(*)")
+        .select("*, variants:MD_MATVARIATION(*)")
         .eq('status', true)
-        .eq('variations.status', true)
+        .eq('variants.status', true)
+        .order('name', { ascending: true });
 
     if (error){
         return new Response(JSON.stringify({ error: 'Failed to fetch materials' }), {
@@ -84,19 +62,48 @@ export async function GET() {
         });
     }
 
+    // insert material as variant to material list
+    const updatedMaterials = materials.map((material) => {
+        const updatedVariants = material.variants.map((variant) => ({
+            ...variant,
+            amount: 0,
+            quantity: 0,
+        }));
+    
+        // Add a new variant to the updatedVariants array
+        updatedVariants.push({
+            id: material.id,
+            name: material.name,
+            amount: 0,
+            quantity: 0,
+            amt: 0,
+        });
+    
+        return {
+            ...material,
+            variants: updatedVariants,
+        };
+    });
+    
+    // Now updatedMaterials contains the modified array of materials
+    
+
     const json = {
-        materials: materials
+        materials: updatedMaterials
     };
 
-    console.log('manual count material list: ', materials)
+    console.log('manual count material list: ', updatedMaterials)
     return new Response(JSON.stringify(json), {
         status: 200,
         headers: { "Content-Type": "application/json" },
     });
-    
 }
 
 export async function POST(manualcountList, user_id) {
+
+    console.log('manual count in POST: ', manualcountList)
+    console.log('user id in POST: ', user_id)
+
 
     // create manual count data
     const macountData = {
@@ -104,18 +111,45 @@ export async function POST(manualcountList, user_id) {
         user_id: user_id
     }
 
+    console.log('macountData: ', macountData)
+
+    
     // post manual count data
-    const { data, error } = await supabase
-        .from('TD_MANUALCOUNT')
+    try {
+        const { data: response1, error: error1 } = await supabase
+        .from('TD_MACOUNT')
         .insert(macountData)
         .select()
+
+        console.log('supabase return response: ', response1, error1)
+        // create discrepancy data
     
-    if (error) {
+        let macount_id = response1[0].id
+        console.log('macount_id: ', macount_id)
+
+        const { discrepancyList, availableList }  = createDiscrepancyList(manualcountList)
+        const discrepancyPostData = checkDiscrepancy(discrepancyList, availableList, macount_id)
+
+        console.log('discrepancyPostData: ', discrepancyPostData)
+
+        const { data: response2, error: error2 } = await supabase
+        .from('TD_DISCREPANCY')
+        .insert(discrepancyPostData)
+        .select()
+
+        console.log('post completed', response2)
+
+    } catch (error) {
         console.log(error)
-        return;
+        return new Response('post failure', {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 
-    // create discrepancy data
-    let macount_id = data[0].id
-    const discrepancyData  = createPostData(manualcountList, macount_id)
+
+    return new Response('post success', {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+    });
 }
