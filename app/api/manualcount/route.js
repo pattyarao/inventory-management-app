@@ -45,6 +45,15 @@ function createDiscrepancyList(manualcountList) {
     return { discrepancyList, availableList }
 }
 
+function PATCH(discrepancyList) {
+    discrepancyList.forEach(async (item) => {
+        const { data: response, error } = await supabase
+            .from('MD_RAW_MATERIALS')
+            .update({ qty_available: item.totalamount })
+            .eq('id', item.id)
+    })
+}
+
 export async function GET() {
     // returns all materials and the recorded variants
 
@@ -92,7 +101,7 @@ export async function GET() {
             ...material,
             variants: updatedVariants,
         };
-    })
+    }).filter((material) => material.variants.length > 0); // remove materials with no variants
     
 
     const json = {
@@ -124,9 +133,9 @@ export async function POST(manualcountList, user_id) {
     // post manual count data
     try {
         const { data: response1, error: error1 } = await supabase
-        .from('TD_MACOUNT')
-        .insert(macountData)
-        .select()
+            .from('TD_MACOUNT')
+            .insert(macountData)
+            .select()
 
         console.log('supabase return response: ', response1, error1)
         // create discrepancy data
@@ -140,11 +149,15 @@ export async function POST(manualcountList, user_id) {
         console.log('discrepancyPostData: ', discrepancyPostData)
 
         const { data: response2, error: error2 } = await supabase
-        .from('TD_DISCREPANCY')
-        .insert(discrepancyPostData)
-        .select()
+            .from('TD_DISCREPANCY')
+            .insert(discrepancyPostData)
+            .select()
 
         console.log('post completed', response2)
+
+        // patch masterlist with new qty_available
+        const patchResponse = PATCH(discrepancyList)
+        console.log(patchResponse)
 
     } catch (error) {
         console.log(error)
