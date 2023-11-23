@@ -1,35 +1,8 @@
 import supabase from "../../supabase";
 
-function checkDiscrepancy(discrepancyList, macount_id) {
-    const availableAmountList = []
+function checkDiscrepancy(discrepancyList, availableAmountList, macount_id) {
     const discrepancyData = []
-    // fetch the list of available amount for each material passed
-    // fetch available amount from MD_RAW_MATERIALS
 
-    // sort by id
-
-    // sort discrepancy list by id
-
-    // compare available amount to discrepancy list
-
-    discrepancyList.map( async (material) => {
-        const { data, error } = await supabase
-            .from('MD_RAW_MATERIALS')
-            .select('qty_available')
-            .eq('id', material.id)
-
-        if (error) {
-            console.log(error)
-            return;
-        }
-
-        availableAmountList.push(
-            {
-                id: material.id,
-                qty_available: data.quantity_available
-            }
-        )
-    })
 
     // compare available amount to discrepancy list
     discrepancyList.map((item, index) => {
@@ -42,30 +15,34 @@ function checkDiscrepancy(discrepancyList, macount_id) {
         }
     })
 
+    console.log('discrepancyData: ', discrepancyData)
+
     return discrepancyData
 }
     
 
 
-async function createPostData(manualcountList, macount_id) {
+function createDiscrepancyList(manualcountList) {
     const discrepancyList = []
-    
+    const availableList = []
     manualcountList.map((material) => {
 
         // get sum of material amount for every variant
         // store to array
         var materialtotalamount = 0
         material.variants.map((variant) => {
+            console.log('variant amount: ', variant.amt, variant.quantity, variant.amount)
             materialtotalamount += (variant.amt * variant.quantity) + variant.amount
         })
 
+        availableList.push({id: material.id, qty_available: material.qty_available})
         discrepancyList.push({id: material.id, totalamount: materialtotalamount})
     })
 
-    const discrepancyData = checkDiscrepancy(discrepancyList, macount_id)
-
+    console.log('discrepancyList: ', discrepancyList)
+    console.log('availableList: ', availableList)
     
-    return discrepancyData
+    return { discrepancyList, availableList }
 }
 
 export async function GET() {
@@ -76,6 +53,7 @@ export async function GET() {
         .select("*, variants:MD_MATVARIATION(*)")
         .eq('status', true)
         .eq('variants.status', true)
+        .order('name', { ascending: true });
 
     if (error){
         return new Response(JSON.stringify({ error: 'Failed to fetch materials' }), {
@@ -97,7 +75,8 @@ export async function GET() {
             id: material.id,
             name: material.name,
             amount: 0,
-            quantity: 1,
+            quantity: 0,
+            amt: 0,
         });
     
         return {
@@ -135,20 +114,39 @@ export async function POST(manualcountList, user_id) {
     console.log('macountData: ', macountData)
 
     
-    // // post manual count data
-    // const { data, error } = await supabase
-    //     .from('TD_MANUALCOUNT')
-    //     .insert(macountData)
-    //     .select()
-    
-    // if (error) {
-    //     console.log(error)
-    //     return;
-    // }
+    // post manual count data
+    try {
+        const { data: response1, error: error1 } = await supabase
+        .from('TD_MACOUNT')
+        .insert(macountData)
+        .select()
 
-    // // create discrepancy data
-    // let macount_id = data[0].id
-    // const discrepancyData  = createPostData(manualcountList, macount_id)
+        console.log('supabase return response: ', response1, error1)
+        // create discrepancy data
+    
+        let macount_id = response1[0].id
+        console.log('macount_id: ', macount_id)
+
+        const { discrepancyList, availableList }  = createDiscrepancyList(manualcountList)
+        const discrepancyPostData = checkDiscrepancy(discrepancyList, availableList, macount_id)
+
+        console.log('discrepancyPostData: ', discrepancyPostData)
+
+        const { data: response2, error: error2 } = await supabase
+        .from('TD_DISCREPANCY')
+        .insert(discrepancyPostData)
+        .select()
+
+        console.log('post completed', response2)
+
+    } catch (error) {
+        console.log(error)
+        return new Response('post failure', {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+
 
     return new Response('post success', {
         status: 200,

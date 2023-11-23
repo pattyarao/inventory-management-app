@@ -4,7 +4,8 @@ import RecordManualCount from "./RecordManualCount";
 import ClearManualCount from "./ClearManualCount";
 import Navbar from "./Navbar";
 import { GET as getCompleteList, POST} from "../api/manualcount/route";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSort } from "@fortawesome/free-solid-svg-icons";
 const ManualCount = () => {
   const [completeList, setCompleteList] = useState([]);
   const [error, setError] = useState(null);
