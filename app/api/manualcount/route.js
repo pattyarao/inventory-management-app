@@ -62,30 +62,37 @@ export async function GET() {
         });
     }
 
-    // insert material as variant to material list
+    // get all unique material id from TD_PURCHASEITEMS
+    const { data: purchaseItems, error2 } = await supabase
+        .from('distinct_purchaseitems')
+        .select('*')
+
+    console.log('purchaseItems: ', purchaseItems)
+
     const updatedMaterials = materials.map((material) => {
+        
         const updatedVariants = material.variants.map((variant) => ({
             ...variant,
             amount: 0,
             quantity: 0,
         }));
     
-        // Add a new variant to the updatedVariants array
-        updatedVariants.push({
-            id: material.id,
-            name: material.name,
-            amount: 0,
-            quantity: 0,
-            amt: 0,
-        });
+        // Add a generic variant to the variants array if material id is in purchaseItems
+        if (purchaseItems.some((item) => item.material_id === material.id)) {
+            updatedVariants.push({
+                id: material.id,
+                name: material.name,
+                amount: 0,
+                quantity: 0,
+                amt: 0,
+            });
+        }
     
         return {
             ...material,
             variants: updatedVariants,
         };
-    });
-    
-    // Now updatedMaterials contains the modified array of materials
+    })
     
 
     const json = {
