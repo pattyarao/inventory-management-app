@@ -80,33 +80,35 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
 
       return (
 <div>
-  <h2 className="text-2xl font-bold mb-4">Detailed Sales Report</h2>
-  <p className="text-lg font-semibold mb-2">Created at: {currentDate}</p>
+  <div className="w-full flex flex-col mb-4">
+  <h2 className="text-2xl font-bold">Detailed Sales Report</h2>
+  <p className="font-semibold">Created at: {currentDate}</p>
+  </div>
   {Object.keys(groupedData).map((productName) => (
     <div key={productName} className="mb-8">
 
-      <h3 className="text-2xl font-bold mb-4">{productName}</h3>
+      <h3 className="text-2xl font-bold mb-2">{productName}</h3>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr>
-              <th className="border-b px-4 py-2">Date</th>
-              <th className="border-b px-4 py-2">Product Name</th>
-              <th className="border-b px-4 py-2">Product Status</th>
-              <th className="border-b px-4 py-2">User</th>
-              <th className="border-b px-4 py-2">Quantity Ordered</th>
+              <th className="border-b border-r px-4 py-2 text-left">Date</th>
+              <th className="border-b border-r px-4 py-2 text-left">Product Name</th>
+              <th className="border-b border-r px-4 py-2 text-left">Product Status</th>
+              <th className="border-b border-r px-4 py-2 text-left">User</th>
+              <th className="border-b border-r px-4 py-2 text-left">Quantity Ordered</th>
             </tr>
           </thead>
           <tbody>
             {groupedData[productName].map((item, index) => (
               <tr key={index}>
-                <td className="border-b px-4 py-2">
+                <td className="border-b border-r px-4 py-2">
                 {new Date(item.date).toLocaleDateString("en-GB")}
                 </td>
-                <td className="border-b px-4 py-2">{item.product_name}</td>
-                <td className="border-b px-4 py-2">{item.product_status}</td>
-                <td className="border-b px-4 py-2">{item.user}</td>
-                <td className="border-b px-4 py-2">{item.qty_ordered}</td>
+                <td className="border-b border-r px-4 py-2">{item.product_name}</td>
+                <td className="border-b border-r px-4 py-2">{item.product_status}</td>
+                <td className="border-b border-r px-4 py-2">{item.user}</td>
+                <td className="border-b border-r px-4 py-2">{item.qty_ordered}</td>
               </tr>
             ))}
           </tbody>
@@ -122,21 +124,24 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
     } else if (reportType === "summary" && choice === 1) {
       // Render summary content for reportType 1
       return (
-      <div>
-          <h2 className="text-2xl font-bold mb-4">Summarized Sales Report</h2>
-          <p className="text-lg font-semibold mb-2">Created at: {currentDate}</p>
+      <div className="w-full flex flex-col gap-3">
+          <h2 className="text-2xl font-bold">Summarized Sales Report</h2>
+          <p className="">Created at: {currentDate}</p>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300">
-            <thead>
+            <thead className="text-left">
               <tr>
-                <th className="border-b px-4 py-2">Product Name</th>
+                <th className="border-b border-r px-4 py-2">
+                  <p>Product Name</p>
+                  <p className="font-light text-xs italic">Select a product</p>
+                  </th>
                 <th className="border-b px-4 py-2">Total Sales</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="">
               {reportData.map((item, index) => (
                 <tr key={index}>
-                  <td className="border-b px-4 py-2" onClick={() => handlesSalesDrillDown(item.product_name)}>{item.product_name}</td>
+                  <td className="border-b border-r px-4 py-2 cursor-pointer hover:bg-slate-200 transition ease duration-70" onClick={() => handlesSalesDrillDown(item.product_name)}>{item.product_name}</td>
                   <td className="border-b px-4 py-2">{item.total_sales}</td>
                 </tr>
               ))}
@@ -151,12 +156,15 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
     } else if (reportType === "detailed" && choice === 2) {
       // Render detailed content for reportType 2
           console.log("DETAILED MATERIALS", groupedData)
-          return (
-            <div className="w-[60%]">
-            <h2 className="text-2xl font-bold mb-4">Detailed Material Report</h2>
-            <p className="text-lg font-semibold mb-2">Created at: {currentDate}</p>
-            <h3 className="text-2xl font-bold mb-4">No Variations</h3>    
-            {Object.keys(groupedData).map((materialName) => (
+    return (
+    <div className="w-full">
+      <div className="w-full flex flex-col mb-4 gap-2">
+      <h2 className="text-2xl font-bold">Detailed Material Report</h2>
+      <p className="font-semibold">Created at: {currentDate}</p>
+      <hr className="w-full border border-gray-300"/>
+      </div>
+      <h3 className="text-2xl font-bold mb-4 bg-slate-300 p-2 rounded-md">No Variations</h3>    
+        {Object.keys(groupedData).map((materialName) => (
       <div key={materialName} className="mb-8">
         <h3 className="text-2xl font-bold mb-4">{materialName}</h3>
         <div className="overflow-x-auto">
@@ -192,7 +200,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       </div>
     ))}
 
-      <h3 className="text-2xl font-bold mb-4">With Variations</h3>            
+      <h3 className="text-2xl font-bold mb-4 bg-slate-300 p-2 rounded-md">With Variations</h3>            
       {Object.keys(groupedData).map((materialName) => (
       <div key={materialName} className="mb-8">
         <h3 className="text-2xl font-bold mb-4">{materialName}</h3>
@@ -236,25 +244,29 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       // Render summary content for reportType 2
       console.log("SUMMARY MATERIAL", groupedData)
       return (
-        <div>
+        <div className="w-full flex flex-col gap-4">
+          <div>
+          <h2 className="text-2xl font-bold">Summarized Materials Report</h2>
+          <p className="text-xs italic">Select a material to view its detailed report</p>
+          </div>
         {Object.keys(groupedData).map((materialName) => (
-          <div key={materialName} className="mb-8">
-            <h2 className="text-2xl font-bold mb-4" onClick={() => handleMaterialDrillDown(materialName)}>{materialName}</h2>
+          <div key={materialName} className="flex flex-col mb-6">
+            <h2 className="w-full py-1 px-4 rounded-t-md text-center text-xl font-bold bg-slate-300 hover:bg-slate-400 cursor-pointer transition ease duration-70" onClick={() => handleMaterialDrillDown(materialName)}>{materialName}</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                   <tr>
-                    <th className="border-b px-4 py-2">Transaction Type</th>
-                    <th className="border-b px-4 py-2">Material Name</th>
-                    <th className="border-b px-4 py-2">Amount</th>
+                    <th className="border-b border-r text-left px-4 py-2">Transaction Type</th>
+                    <th className="border-b border-r text-left px-4 py-2">Material Name</th>
+                    <th className="border-b border-r text-left px-4 py-2">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {groupedData[materialName].map((item, index) => (
                     <tr key={index}>
-                      <td className="border-b px-4 py-2">{item.grouped_transac_type}</td>
-                      <td className="border-b px-4 py-2" >{item.material_name}</td>
-                      <td className="border-b px-4 py-2">{item.total_amt}</td>
+                      <td className="border-b border-r px-4 py-2">{item.grouped_transac_type}</td>
+                      <td className="border-b border-r px-4 py-2" >{item.material_name}</td>
+                      <td className="border-b border-r px-4 py-2">{item.total_amt}</td>
                     </tr>
                   ))}
                 </tbody>

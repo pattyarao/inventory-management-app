@@ -7,6 +7,9 @@ import { GET as getDetailedProducts} from '../api/detailedproducts/route';
 import { GET as getSummaryMaterials} from '../api/summarymaterials/route';
 import { GET as getSummaryProducts} from '../api/summaryproducts/route';
 import TableModal from "../components/TableModal"; 
+import { RiArrowDownSLine } from "react-icons/ri";
+import { RiArrowUpSLine } from "react-icons/ri";
+
 const ReportSettings = (props) => {
   const router = useRouter();
   
@@ -190,120 +193,100 @@ const ReportSettings = (props) => {
     
 
   return (
-    <>
-
-      <div>
+    <div className="w-full py-2 px-4 flex flex-col gap-4">
+        <div className="w-full flex justify-between items-center">
           {/* Conditional rendering for the heading based on props.choice */}
+          
           {props.choice === 1 ? (
-            <h2 className="text-2xl font-semibold">Sales Report</h2>
+            <h2 className="text-2xl font-black">Sales Report</h2>
           ) : props.choice === 2 ? (
-            <h2 className="text-2xl font-semibold">Material Report</h2>
+            <h2 className="text-2xl font-black">Material Report</h2>
           ) : null}
-          <label className="text-lg font-semibold">Report Type:</label>
-          <div className="flex gap-4">
-        <label className="text-lg font-semibold">Report Type:</label>
-        <div className="flex gap-4">
-          <label className="inline-flex items-center">
-            <input
-              type="radio"
-              className="form-radio"
-              name="reportType"
-              value="summary"
-              checked={reportType === "summary"}
-              onChange={handleReportTypeChange}
-            /> Summary
-          </label>
-          <label className="inline-flex items-center">
-            <input
-              type="radio"
-              className="form-radio"
-              name="reportType"
-              value="detailed"
-              checked={reportType === "detailed"}
-              onChange={handleReportTypeChange}
-            /> Detailed
-          </label>
-        </div>
-      </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between">
-            <label className="text-lg font-semibold">Product Selection:</label>
+          
+          <div className="w-[20%]">
             <button
-              className={`bg-blue-500 text-white rounded p-2 ${
-                isProductSelectionOpen ? "rounded-t" : "rounded"
-              }`}
-              onClick={toggleProductSelection}
+              onClick={generateReport}
+              className="bg-blue-800 text-white rounded p-1 w-full"
             >
-              {isProductSelectionOpen ? "Collapse" : "Expand"}
+            Generate Report
             </button>
           </div>
-          {isProductSelectionOpen && (
-              <div>
-                    <label className="text-sm font-semibold">Select Products:</label>
-                      <div>
-                  {options.map((product) => (
-                <label key={product} className="inline-flex items-center mb-2">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox mr-2"
-                    value={product}
-                    checked={selectedOptions.includes(product) || (selectedOptions.length === options.length)}
-                    onChange={handleProductChange}
-                  />
-                  {product}
-                </label>
-              ))}
-              <label className="inline-flex items-center mb-2">
-                <input
-                  type="checkbox"
-                  className="form-checkbox mr-2"
-                  value="Select All"
-                  checked={selectedOptions.length === options.length}
-                  onChange={handleSelectAll}
-                />
-                Select All
-              </label>
-                {/* Add more product options as needed */}
+        </div>
+        <div className="w-full flex gap-4">
+          <div className="w-full flex flex-col justify-start gap-4">
+            <p>Fill in the necessary details to generate a report.</p>
+            <div className="w-full p-2 flex flex-col gap-2 bg-slate-300 rounded-md">
+              <label className="font-semibold">Select Report Type:</label>
+              <div className="w-full flex items-center gap-2">
+                <button className={`w-1/2 p-2 bg-slate-400 rounded-md text-sm transition ease duration-70 ${reportType === "summary" ? "bg-slate-500 text-white" : null}`} value="summary"
+                  onClick={handleReportTypeChange}>Summary</button>
+                <button className={`w-1/2 p-2 bg-slate-400 rounded-md text-sm transition ease duration-70 ${reportType === "detailed" ? "bg-slate-500 text-white" : null}`} value="detailed"
+                    onClick={handleReportTypeChange}>Detailed</button>
               </div>
             </div>
-          )}
-        </div>
+            <div className="w-full p-2 flex items-center justify-center gap-4 bg-slate-300 rounded-md">
+              <div>
+                <label className="font-semibold">Start Date:</label>
+                <input
+                  type="date"
+                  className="w-full p-2 bg-white border rounded"
+                  value={startDate}
+                  onChange={handleStartDateChange}
+                />
+              </div>
+              <div>
+                <label className="font-semibold">End Date:</label>
+                <input
+                  type="date"
+                  className="w-full p-2 bg-white border rounded"
+                  value={endDate}
+                  onChange={handleEndDateChange}
+                />
+              </div>
+            </div>
+            
+          </div>
+          <div className="w-full flex flex-col rounded-md">
+              <div className="p-1 flex justify-between bg-gray-200 rounded-md" onClick={toggleProductSelection}>
+                <label className="text-sm font-semibold">Select Products:</label>
+                <button
+                  className="text-black"
+                  
+                  >
+                  {isProductSelectionOpen ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
+                </button>
+              </div>
+              {isProductSelectionOpen && (
+              <div className="w-full p-2 bg-white flex justify-between flex-wrap gap-2 rounded-md">  
+                  {options.map((product) => (
+                  <div key={product} className="w-[170px] px-2 py-0.5 rounded-md flex items-center gap-2 bg-slate-200 text-sm">
+                    <input
+                      type="checkbox"
+                      value={product}
+                      checked={selectedOptions.includes(product) || (selectedOptions.length === options.length)}
+                      onChange={handleProductChange}
+                    />
+                    <p>{product}</p>
+                  </div>
+                  ))}
+                  <div className="w-full flex gap-2 bg-slate-300 px-2 py-0.5 rounded-md">
+                    <input
+                    type="checkbox"
+                    value="Select All"
+                    checked={selectedOptions.length === options.length}
+                    onChange={handleSelectAll}
+                    />
+                    Select All
+                  </div>
+                  {/* Add more product options as needed */}
+              </div>
+              )}
+            </div>
+          </div>
 
-        <div className="flex gap-4">
-        <div>
-          <label className="text-lg font-semibold">Start Date:</label>
-          <input
-            type="date"
-            className="w-full p-2 bg-white border rounded"
-            value={startDate}
-            onChange={handleStartDateChange}
-          />
-        </div>
-        <div>
-          <label className="text-lg font-semibold">End Date:</label>
-          <input
-            type="date"
-            className="w-full p-2 bg-white border rounded"
-            value={endDate}
-            onChange={handleEndDateChange}
-          />
-        </div>
-      </div>
-
-
-        <div className="w-full">
-          <button
-            onClick={generateReport}
-            className="bg-blue-500 text-white rounded p-2 w-full"
-          >
-            Generate Report
-          </button>
-        </div>
         <TableModal isVisible={showModal} reportData={reportData} reportType={reportType} choice={props.choice} onClose={closeModal} startDate={startDate} endDate={endDate} />
               
-    </>
+    </div>
   );
 };
 

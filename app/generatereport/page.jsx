@@ -7,10 +7,11 @@ import ReportSelect from "../components/ReportSelect";
 
 const ReportGeneration = ({ userType, userInfo }) => {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-between gap-8 bg-[#F1F3F8]">
+    <div className="w-full h-screen flex flex-col items-center justify-start bg-[#F1F3F8]">
       <Navbar userType={userType} email={userInfo.email} />
-      <ReportSelect />
-      
+      <div className="w-full h-screen flex justify-center items-center">
+        <ReportSelect />
+      </div>
     </div>
   );
 };
