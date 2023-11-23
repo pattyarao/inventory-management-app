@@ -123,12 +123,14 @@ export async function GET() {
     const { data: materials, error } = await supabase
         .from("MD_RAW_MATERIALS")
         .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
-        .eq("status", "TRUE")  
+        .eq("status", "TRUE")
+        
   
     const { data: variants, error2 } = await supabase
         .from("MD_MATVARIATION")
         .select("*, MD_RAW_MATERIALS(*)")
         .eq("status", "TRUE")
+        
   
     // new code that returns a complete list of material and variants
     if (!error && !error2) {
@@ -137,8 +139,11 @@ export async function GET() {
         ...variants
       ]
   
+      const sortedMergedList = [...mergedlist].sort((a, b) => a.name.localeCompare(b.name));
+
+
       const json = {
-        materials: mergedlist
+        materials: sortedMergedList
       };
   
       console.log('material list: ', mergedlist)
