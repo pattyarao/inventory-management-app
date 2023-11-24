@@ -4,8 +4,10 @@ import { useRouter } from "next/navigation";
 import DetailedTable from "../components/DetailedTable"
 import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
 import { GET as getDetailedProducts} from '../api/detailedproducts/route';
+import { GET as getDetailedRejOrders} from '../api/detailedrejected/route';
 import { GET as getSummaryMaterials} from '../api/summarymaterials/route';
 import { GET as getSummaryProducts} from '../api/summaryproducts/route';
+import { GET as getSummaryRejOrders} from '../api/summaryrejected/route';
 import TableModal from "../components/TableModal"; 
 import { RiArrowDownSLine } from "react-icons/ri";
 import { RiArrowUpSLine } from "react-icons/ri";
@@ -181,6 +183,36 @@ const ReportSettings = (props) => {
                 console.error("API Error:", response);
               }
           }
+        } else if (props.choice === 3) { 
+          
+          if(reportType === "detailed"){
+              const response = await getDetailedRejOrders(startDate, endDate, selectedOptions);
+          
+              if (response.status === 200) {
+                // Request was successful, log the data
+                const data = await response.json();
+                setReportData(data.detailedReport); // Store the data in the state variable
+                console.log("API Response:", data.detailedReport);
+                setShowModal(true)
+              } else {
+                // Request failed, log the error
+                console.error("API Error:", response);
+              }
+          }
+          else if (reportType === "summary"){
+              const response = await getSummaryRejOrders(startDate, endDate, selectedOptions);
+            
+              if (response.status === 200) {
+                // Request was successful, log the data
+                const data = await response.json();
+                setReportData(data.data); // Store the data in the state variable
+                console.log("API Response:", data.data);
+                setShowModal(true)
+              } else {
+                // Request failed, log the error
+                console.error("API Error:", response);
+              }
+          }
         }
 
 
@@ -201,6 +233,8 @@ const ReportSettings = (props) => {
             <h2 className="text-2xl font-black">Sales Report</h2>
           ) : props.choice === 2 ? (
             <h2 className="text-2xl font-black">Material Report</h2>
+          ) : props.choice === 3 ? (
+            <h2 className="text-2xl font-black">Rejected Orders Report</h2>
           ) : null}
           
           <div className="w-[20%]">

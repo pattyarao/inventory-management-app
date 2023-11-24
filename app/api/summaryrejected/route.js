@@ -3,8 +3,8 @@ import supabase from "../../supabase";
 export async function GET(start_date, end_date, selectedOptions) {
 
     const { data, error } = await supabase
-    .rpc('summary_product', {start_date, end_date})
-    .in('product_name', selectedOptions)
+    .rpc('summary_rejorders', {start_date, end_date})
+    .in('name', selectedOptions)
 
   if (error) {
     return new Response(JSON.stringify({ error }), {

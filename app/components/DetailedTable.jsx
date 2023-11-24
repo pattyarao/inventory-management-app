@@ -281,6 +281,81 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         
       );
     }
+    else if (reportType === "detailed" && choice === 3) {
+      // Render detailed content for reportType 2
+    console.log("DETAILED REJ ORDERS", groupedData)
+    return (
+    <div className="w-full">
+      <div className="w-full flex flex-col mb-4 gap-2">
+      <h2 className="text-2xl font-bold">Detailed Rejeceted Sales Report</h2>
+      <p className="font-semibold">Created at: {currentDate}</p>
+      <hr className="w-full border border-gray-300"/>
+      </div>     
+      <div key="detailed-rejectedorders" className="mb-8">
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Date</th>
+                <th className="border-b px-4 py-2">Material Name</th>
+                <th className="border-b px-4 py-2">User</th>
+                <th className="border-b px-4 py-2">Insufficient Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData
+                .map((item, index) => (
+                  <tr key={index}>
+                    <td className="border-b px-4 py-2">{new Date(item.created_at).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2">{item.name}</td>
+                    <td className="border-b px-4 py-2">{item.full_name}</td>
+                    <td className="border-b px-4 py-2">{item.insufficient_qty} {item.metric_unit}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+          <h1>*** END OF REPORT ***</h1>
+        </div>
+      );
+    } else if (reportType === "summary" && choice === 3) {
+      // Render summary content for reportType 2
+      console.log("SUMMARY REJ ORDERS", groupedData)
+      return (
+        <div className="w-full flex flex-col gap-4">
+          <div>
+          <h2 className="text-2xl font-bold">Summarized Rejected Orders Report</h2>
+          </div>
+          <div key="Summary Rejected Orders" className="flex flex-col mb-6">
+            {/* <h2 className="w-full py-1 px-4 rounded-t-md text-center text-xl font-bold bg-slate-300 hover:bg-slate-400 cursor-pointer transition ease duration-70" onClick={() => handleMaterialDrillDown(materialName)}>{materialName}</h2> */}
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-300">
+                <thead>
+                  <tr>
+                    <th className="border-b border-r text-left px-4 py-2">Material Name</th>
+                    <th className="border-b border-r text-left px-4 py-2">Total Insufficient Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportData.map((item, index) => (
+                    <tr key={index}>
+                      <td className="border-b border-r px-4 py-2">{item.name}</td>
+                      <td className="border-b border-r px-4 py-2" >{item.total_insufficient_qty} {item.metric_unit}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {/* <DetailedMaterialsModal isVisible={showDetailedMaterialsModal} startDate={startDate} endDate={endDate} choice={materialDrillDown} onClose={closeDetailedMaterials}/> */}
+            </div>
+          </div>
+        <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+      </div>
+      
+        
+      );
+    }
   }
 
   // If none of the conditions match, you can return a default message or null.
