@@ -133,7 +133,7 @@ const AddMaterialPurchase = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Add Products to Order List
+        Add Materials to Purchase List
       </button>
 
       {showModal ? (
@@ -154,7 +154,7 @@ const AddMaterialPurchase = (props) => {
                   style={{ backgroundColor: "#27374D" }}
                 >
                   <h3 className="text-3xl font-semibold">
-                    Select Products to Add
+                    Select Materials to Add
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -195,7 +195,7 @@ const AddMaterialPurchase = (props) => {
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                           <tr>
                             <th scope="col" className="px-6 py-3">
-                              Product name
+                              Material Name
                             </th>
                           </tr>
                         </thead>

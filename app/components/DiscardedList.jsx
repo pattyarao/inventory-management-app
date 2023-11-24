@@ -636,7 +636,7 @@ const DiscardedList = () => {
                         <FaInbox style={{ fontSize: '20em'}} />
                         <div className="flex flex-col">
                             <div className="text-3xl justify-center text-grey ">
-                                Your <b>Expired Material List</b> is <b>Empty</b>
+                                Your Discard List is Empty
                             </div>
                             <div className="text-black text-xl mt-6">
                                 <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
