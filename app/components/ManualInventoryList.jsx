@@ -30,7 +30,6 @@ const ManualCount = () => {
               finalPartialAmount: 0
             })),
           }));
-    
           setCompleteList(modifiedMaterials);
           console.log('New Complete List Data:', modifiedMaterials);
         }
@@ -47,8 +46,6 @@ const ManualCount = () => {
           if (error) {
             setError(error);
           } else {
-            setCompleteList(materials)
-            console.log('New Complete List Data:', materials);
             setUnitsList(metrics);
           }
         } catch (error) {
