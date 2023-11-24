@@ -66,7 +66,7 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
       if (response.status === 200) {
         const data = await response.json();
         setPrediction(data.data);
-        console.log("SUCCESS")
+        console.log(response)
       } else {
         console.error('API Error:', response);
       }

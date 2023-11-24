@@ -29,7 +29,7 @@ const ReportSettings = (props) => {
         let endpoint = "";
         if (props.choice === 1) {
           endpoint = "/api/allproducts";
-        } else if (props.choice === 2) { // Change this to 2 if it's a different choice
+        } else if (props.choice === 2 || props.choice === 3) { // Change this to 2 if it's a different choice
           endpoint = "/api/allmaterials";
         }
         
@@ -47,7 +47,7 @@ const ReportSettings = (props) => {
             if (props.choice === 1) {
               const names = data.products.map(item => item.name);
               setOptions(names);
-            } else if (props.choice === 2) { 
+            } else if (props.choice === 2 || props.choice === 3) { 
               const names = data.materials.map(item => item.name);
               setOptions(names);
             }

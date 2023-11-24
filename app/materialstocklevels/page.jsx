@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import MaterialList from "../components/MaterialList";
 import Navbar from "../components/Navbar";
-import { GET as GETModels } from '../api/modelchoices/route';
+// import { GET as GETModels } from '../api/modelchoices/route';
 
 const MaterialStockLevel = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,11 +13,10 @@ const MaterialStockLevel = () => {
 
   useEffect(() => {
     async function getModels() {
-      const response = await GETModels();
-
+      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/api/modelchoices');
+      
       if (response.status === 200) {
         const models = await response.json();
-
         setPredmodels(models.models);
         setSelectedOption(models.models[0]?.id)
       } else {
@@ -39,6 +38,8 @@ const MaterialStockLevel = () => {
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
   };
+
+  useEffect (() => console.log(predmodels), [predmodels])
 
   return (
     <>
