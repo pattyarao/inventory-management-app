@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.1",
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@supabase/supabase-js": "^2.38.5",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18",
