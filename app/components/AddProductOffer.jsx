@@ -293,7 +293,7 @@ const handleMaterialUnitChange = (e) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Add Product
+        Add New Product
       </button>
 
       {showModal ? (

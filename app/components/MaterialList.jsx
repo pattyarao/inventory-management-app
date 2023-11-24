@@ -153,7 +153,7 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
           onChange={handleFilterChange}
         >
           <option value="All">All Materials</option>
-          <option value="predictedValue">Algorithm Predictions</option>
+          <option value="predictedValue">Materials for Restocking</option>
           <option value="stockIsSufficient">Sufficient Stock</option>
           <option value="N/A">Insufficient Data for Prediction</option>
         </select>
