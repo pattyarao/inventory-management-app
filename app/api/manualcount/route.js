@@ -31,7 +31,7 @@ function createDiscrepancyList(manualcountList) {
         var materialtotalamount = 0
         material.variants.map((variant) => {
             console.log('variant amount: ', variant.amt, variant.quantity, variant.amount)
-            materialtotalamount += (variant.amt * variant.quantity) + variant.amount
+            materialtotalamount += (variant.amt * variant.quantity) + variant.finalPartialAmount
         })
 
         availableList.push({id: material.id, qty_available: material.qty_available}) // create list of available amount for comparison

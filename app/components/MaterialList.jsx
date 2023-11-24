@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { GET as GETMaterialMaster } from '../api/materialmaster/route';
-import { GET as GETForecast } from '../api/forecast/route';
+// import { GET as GETForecast } from '../api/forecast/route';
 
-const MaterialList = ({ searchTerm, view, sortOption }) => {
+
+const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
   const [materials, setMaterials] = useState([]);
   const [filterOption, setFilterOption] = useState('predictedValue'); // Default filter option
   const [prediction, setPrediction] = useState([]);
@@ -46,19 +47,36 @@ const MaterialList = ({ searchTerm, view, sortOption }) => {
   }, []);
 
   useEffect(() => {
-    async function getForecast() {
-      const response = await GETForecast();
 
+    // async function getForecast() {
+      
+    //   const response = await GETForecast(selected_model);
+
+    //   if (response.status === 200) {
+    //     const data = await response.json();
+    //     setPrediction(data.data);
+    //   } else {
+    //     console.error('API Error:', response);
+    //   }
+    // }
+
+    async function forecast(){
+      console.log("Model Selected: ", selected_model)
+      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/api/forecast/' + selected_model)
       if (response.status === 200) {
         const data = await response.json();
         setPrediction(data.data);
+        console.log(response)
       } else {
         console.error('API Error:', response);
       }
     }
 
-    getForecast();
-  }, []);
+    // getForecast();
+    forecast();
+  }, [selected_model]);
+
+  useEffect (() => console.log(prediction), [prediction])
 
   // Filter materials based on the search term and filter option
   const filteredMaterials = materials.filter((material) => {
@@ -106,8 +124,9 @@ const MaterialList = ({ searchTerm, view, sortOption }) => {
     setFilterOption(e.target.value);
   };
 
-  console.log('PREDIKSYONNN: ', prediction);
-  console.log('MATERYALES: ', materials);
+  // console.log('MATERYALES: ', materials);
+  // console.log('PREDIKSYONNN: ', prediction);
+  
 
   return (
     <div className="mb-2 bg-[#D6E0F0] p-4 flex flex-col rounded-md">
@@ -134,7 +153,7 @@ const MaterialList = ({ searchTerm, view, sortOption }) => {
           onChange={handleFilterChange}
         >
           <option value="All">All Materials</option>
-          <option value="predictedValue">Algorithm Predictions</option>
+          <option value="predictedValue">Materials for Restocking</option>
           <option value="stockIsSufficient">Sufficient Stock</option>
           <option value="N/A">Insufficient Data for Prediction</option>
         </select>

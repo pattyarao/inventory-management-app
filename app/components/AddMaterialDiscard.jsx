@@ -140,14 +140,14 @@ const AddMaterialDiscard = (props) => {
 
       {showModal ? (
         <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+          <div className="justify-center items-center flex fixed inset-0 z-50 outline-none focus:outline-none ">
             <div
               className="relative w-auto my-6 mx-auto max-w-5xl"
               style={{ minWidth: "40%" }}
             >
               {/*content*/}
               <div
-                className="border-0 rounded-lg relative flex flex-col w-full outline-none focus:outline-none"
+                className="border-0 rounded-lg relative flex flex-col w-full outline-none focus:outline-none "
                 style={{ backgroundColor: "#526D82" }}
               >
                 {/*header*/}
@@ -169,7 +169,7 @@ const AddMaterialDiscard = (props) => {
                 </div>
                 {/*body*/}
                 <div
-                  className="relative p-6 flex-auto rounded-b-lg"
+                  className="relative p-6 flex-auto rounded-b-lg "
                   style={{ backgroundColor: "#526D82" }}
                 >
                   <div className="flex space-x-4 mb-4">
@@ -191,7 +191,7 @@ const AddMaterialDiscard = (props) => {
                       <option value="name-desc">Sort by Name (Z-A)</option>
                     </select>
                   </div>
-                  <div className="relative overflow-x-auto shadow-md sm:rounded-lg" style={{ maxHeight: "800px", overflowY: "auto" }}>
+                  <div className="relative overflow-y-auto shadow-md sm:rounded-lg" style={{ maxHeight: "500px", overflowY: "auto" }}>
                     {filteredProductsList.length > 0 ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

@@ -1,13 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MaterialList from "../components/MaterialList";
 import Navbar from "../components/Navbar";
+// import { GET as GETModels } from '../api/modelchoices/route';
 
 const MaterialStockLevel = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [sortOption, setSortOption] = useState('predictionValue'); // Default sort option
+  const [predmodels, setPredmodels] = useState([])
+
+  useEffect(() => {
+    async function getModels() {
+      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/api/modelchoices');
+      
+      if (response.status === 200) {
+        const models = await response.json();
+        setPredmodels(models.models);
+        setSelectedOption(models.models[0]?.id)
+      } else {
+        console.error('API Error:', response);
+      }
+    }
+
+    getModels();
+  }, []);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -20,6 +38,8 @@ const MaterialStockLevel = () => {
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
   };
+
+  useEffect (() => console.log(predmodels), [predmodels])
 
   return (
     <>
@@ -45,16 +65,16 @@ const MaterialStockLevel = () => {
             <div className="ml-8">
               <label className="font-semibold ">Select Algorithm: </label>
               <select
-                className="ml-4 p-3 rounded"
-                value={selectedOption}
-                onChange={handleOptionChange}
-              >
-                <option value="a">Algorithm A</option>
-                <option value="b">Algorithm B</option>
-                <option value="c">Algorithm C</option>
-                <option value="d">Algorithm D</option>
-                <option value="e">Algorithm E</option>
-              </select>
+              className="ml-4 p-3 rounded"
+              value={selectedOption}
+              onChange={handleOptionChange}
+            >
+              {predmodels.map((option, index) => (
+                <option key={index} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
             </div>
 
             {/* Sort dropdown */}
@@ -77,6 +97,7 @@ const MaterialStockLevel = () => {
             searchTerm={searchTerm}
             view="list"
             sortOption={sortOption}
+            selected_model={selectedOption}
           />
 
           {/* You can use the selectedOption state as needed in your application */}
