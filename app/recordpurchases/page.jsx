@@ -5,6 +5,7 @@ import PurchaseList from "../components/PurchaseList";
 import Navbar from "../components/Navbar";
 
 
+
 const RecordPurchases = () => {
   return (
     <>
@@ -18,8 +19,10 @@ const RecordPurchases = () => {
       </div>
     </>
 
+
     
   );
 };
 
 export default RecordPurchases;
+

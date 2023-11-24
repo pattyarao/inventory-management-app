@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 const ClearPurchaseList = (props) => {
+
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -85,4 +86,6 @@ const ClearPurchaseList = (props) => {
   );
 };
 
+
 export default ClearPurchaseList;
+

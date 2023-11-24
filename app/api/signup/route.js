@@ -42,7 +42,7 @@ export async function POST(req, res) {
       first_name: reqdata.firstName,
       last_name: reqdata.lastName,
       user_type: userTypeData[0].id, // Use the key from REF_USERTYPE
-      status: "FALSE",
+      status: "TRUE",
     };
 
     console.log(profileData);

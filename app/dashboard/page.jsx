@@ -10,7 +10,7 @@ const Dashboard = ({ role }) => {
     renderComponent = <OwnerHome />;
   } else if (role === "Stock Controller") {
     renderComponent = <StockControllerHome />;
-  } else if (role === "Manufacturer") {
+  } else if (role === "Manufacturing Head") {
     renderComponent = <ManufacturerHome />;
   } else if (role === "Sales Person") {
     renderComponent = <SalesPersonHome />;

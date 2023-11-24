@@ -1,76 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AddNewUnit from "./AddNewUnit";
 import { POST } from "../api/purchasevariant/route";
-
+import { GET } from "../api/submetric/route";
 
 const AddNewVariant = (props) => {
 
     //stores all products in the database
     
     const [error, setError] = useState(null);
+    const [unitsList, setUnitsList] = useState([]);
+    const [addUnitCondition, setAddUnitCondition] = useState(false);
     const [newVariant, setNewVariant] = useState({
         material_id: props.material_id,
         name: "",
         initialAmt: 0,
         amt: 0,
-        unit: "0"
+        unit: "1"
     });
-    console.log(newVariant)
+    console.log(unitsList)
 
-    const convertAmount = (amount, value) => {
-      
-      if (value==="0"){
-      return amount;
-      } else if (value==="1"){
-        return amount*1000;
-      } else if (value==="2"){
-        return amount/1000;
-      } 
-
-    };
+    useEffect(() => {
+      async function getUnits() {
+        try {
+          const response = await GET();
+          const { metrics, error } = await response.json();
+  
+          if (error) {
+            setError(error);
+          } else {
+            setUnitsList(metrics);
+          }
+        } catch (error) {
+          setError(error.message);
+        }
+      }
+      getUnits();
+    }, [addUnitCondition]);
     
 
     const handleChange = (e) => {
       const { name, value } = e.target;
   
       // Convert the amount to its default unit if the unit is changed
+
+      if (e.target.name === "unit" && e.target.value === "Add New Unit") {
+        setAddUnitCondition(true);
+        return;
+      }
       
-      if (name === "initialAmt" && newVariant.unit==="0") {
+      if (name === "initialAmt") {
+        let ratio = parseFloat(newVariant.unit)
+        let amount = parseFloat(value) * ratio 
+
         setNewVariant({
           ...newVariant,
           [name]: value,
-          amt: value,
+          amt: amount,
         });
-      } else if (name === "initialAmt" && newVariant.unit==="1") {
+      } else if (name === "unit") {
+        let ratio = parseFloat(value)
+        let amount = parseFloat(newVariant.initialAmt) * ratio 
+
         setNewVariant({
           ...newVariant,
           [name]: value,
-          amt: value*1000,
-        });
-      } else if (name === "initialAmt" && newVariant.unit==="2") {
-        setNewVariant({
-          ...newVariant,
-          [name]: value,
-          amt: value/1000,
-        });
-      } else if (name === "unit" && value === "0") {
-        setNewVariant({
-          ...newVariant,
-          [name]: value,
-          amt: newVariant.initialAmt,
-        });
-      } else if (name === "unit" && value === "1") {
-        setNewVariant({
-          ...newVariant,
-          [name]: value,
-          amt: newVariant.initialAmt*1000,
-        });
-      } else if (name === "unit" && value === "2") {
-        setNewVariant({
-          ...newVariant,
-          [name]: value,
-          amt: newVariant.initialAmt/1000,
+          amt: amount,
         });
       } else {
         // Update other properties normally
@@ -81,6 +77,7 @@ const AddNewVariant = (props) => {
       }
     };
     
+    console.log(newVariant)
 
 
      //closes the modal and removes all previous personalizations
@@ -89,12 +86,6 @@ const AddNewVariant = (props) => {
       };
 
       const handleSubmit = async () => {
-          const convertedAmt = convertAmount(newVariant.amt, newVariant.unit); // Implement convertToDefaultUnit function
-          console.log
-          setNewVariant({
-            ...newVariant,
-            amt: convertedAmt,
-          });
       
         try {
           // Assuming you have the 'variants' data available
@@ -179,16 +170,16 @@ const AddNewVariant = (props) => {
                             onChange={(event) => handleChange(event)}
                             class="block w-15 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                         >
-                            {props.unit === "g" ? (
-                                        <>
-                                          <option value="0">g</option>
-                                          <option value="1">kg</option>
-                                          <option value="2">mg</option>
-                                        </>
-                                      ): <>
-                                        <option value="0">mL</option>
-                                        <option value="1">L</option>
-                                          </>}
+                            {unitsList
+                                            .filter((unit) => unit.metric_id === props.unit)
+                                            .map((unit) => (
+                                                <option key={unit.id} value={unit.ratio}>
+                                                    {unit.abbreviation}
+                                                </option>
+                                            ))}
+                                        <option disabled>─────────────</option>
+                                        {unitsList.length > 0 ? (
+                                        <option>Add New Unit</option>): null}
                         </select>
                         </div>
                     </div>
@@ -223,6 +214,9 @@ const AddNewVariant = (props) => {
                   
                 </div>
               </div>
+              {addUnitCondition ? (
+        <AddNewUnit onClose={() => setAddUnitCondition(false)} />
+      ) : null}
             </div>
             <div className="opacity-75 fixed inset-0 z-40 bg-black"></div>
           </>

@@ -1,12 +1,15 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 const useSignup = () => {
   const [isLoading, setIsLoading] = useState(null);
   const [isError, setIsError] = useState(null);
+  const toastID = useRef();
   const router = useRouter();
 
   const signup = async (firstName, lastName, email, password, selectedRole) => {
+    toastID.current = toast.loading("Loading...");
     setIsLoading(true);
     setIsError(null);
     try {
@@ -27,13 +30,37 @@ const useSignup = () => {
       if (!response.ok) {
         setIsLoading(false);
         setError(json.error);
-        return "error";
+        toast.update(toastID.current ?? "", {
+          render: "Something went wrong",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          type: "error",
+          isLoading: false,
+        });
+        return;
       }
-      return "success";
+
+      toast.update(toastID.current ?? "", {
+        render: "Employee added!",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        type: "success",
+        isLoading: false,
+      });
 
       //   router.push("/assignroles");
     } catch (e) {
       console.log(e);
+      toast.update(toastID.current ?? "", {
+        render: "Something went wrong",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        type: "error",
+        isLoading: false,
+      });
     }
   };
   return { signup, isLoading, isError };

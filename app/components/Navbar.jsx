@@ -26,6 +26,7 @@ const Navbar = ({ userType, email }) => {
       await supabase.auth.signOut();
       router.push("/onboarding");
     }
+    console.log(userType)
   };
   return (
     <div className="w-full h-fit flex flex-col">
@@ -38,9 +39,11 @@ const Navbar = ({ userType, email }) => {
             <div className="bg-[#D6E0F0] p-2 rounded-full">
               {/* <FaUserAlt /> */}
             </div>
+
             <div className="flex flex-col">
               <p className="font-bold text-sm text-[#041C32]">{email}</p>
               <p className="text-xs">{userType}</p>
+
             </div>
           </div>
 
@@ -58,12 +61,6 @@ const Navbar = ({ userType, email }) => {
         {userType === "Owner" ? (
           <div className="w-[45%] flex items-center justify-center gap-4 ">
             <Link
-              href="/"
-              className="w-1/3 text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
-            >
-              Home
-            </Link>
-            <Link
               href="/assignroles"
               className="w-1/3 text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
             >
@@ -78,9 +75,37 @@ const Navbar = ({ userType, email }) => {
             </Link>
           </div>
         ) : userType === "Stock Controller" ? (
-          <div className="flex gap-4">
-            <Link href="/">Home</Link>
-            <Link href="/recordpurchases">Assign Roles</Link>
+          <div className="w-full flex items-center justify-center gap-4 ">
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/materialstocklevels"
+            >
+              View Inventory Status
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/recordpurchases"
+            >
+              Record Purchases
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/recordexpired"
+            >
+              Record Discarded
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/manualcount"
+            >
+              Perform Manual Count
+            </Link>
+            <Link
+              className="w-[20%] text-[white] font-bold hover:bg-black/40 rounded-md py-0.5 px-2 transition ease-in duration-50"
+              href="/materialsmasterlist"
+            >
+              View All Material Variants
+            </Link>
           </div>
         ) : null}
       </div>

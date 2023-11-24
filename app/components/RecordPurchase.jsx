@@ -36,26 +36,20 @@ const RecordPurchase = (props) => {
   
       props.purchaseList.forEach((material) => {
         material.variants.forEach((variant) => {
-          if (variant.variantName === "") {
+          if (variant.name === material.id) {
             // Add to directPurchases
-            let amt = variant.amount; // Default to variant.amount
-            if (variant.unit === "1") {
-              amt = variant.amount * 1000;
-            } else if (variant.unit === "2") {
-              amt = variant.amount / 1000;
-            }
             
             const newDirectPurchase = {
               material_id: material.id,
               qty_purchased: variant.quantity,
-              amt: variant.amount,
+              amt: variant.finalAmount,
             };
             updatedDirectPurchases.push(newDirectPurchase);
           } else {
             // Add to purchases
             const newPurchase = {
               material_id: material.id,
-              variation_id: variant.variantName,
+              variation_id: variant.name,
               qty_purchased: variant.quantity,
             };
             updatedPurchases.push(newPurchase);
@@ -78,12 +72,8 @@ const RecordPurchase = (props) => {
         material.variants.forEach((variant) => {
           if (variant.variantName === "") {
             // Calculate the new quantity for direct purchases based on the variant's unit
-            let amt = variant.amount; // Default to variant.amount
-            if (variant.unit === "1") {
-              amt = variant.amount * 1000;
-            } else if (variant.unit === "2") {
-              amt = variant.amount / 1000;
-            }
+            let ratio = parseFloat(variant.unit)
+            let amt = variant.amount * ratio
     
             // Update the material's quantity available with the direct purchase quantity
             updatedMaterial.qty_available += amt * variant.quantity;
@@ -153,6 +143,7 @@ const RecordPurchase = (props) => {
         style={{ backgroundColor: "#097969", color: "white" }}
         type="button"
         onClick={() => handleSubmit()}
+
       >
         Record Purchase
       </button>
@@ -204,6 +195,7 @@ const RecordPurchase = (props) => {
                       type="button"
                       onClick={() => {setShowModal(false);
                         props.onConfirmClear();}}
+
                     >
                       Confirm
                     </button>
