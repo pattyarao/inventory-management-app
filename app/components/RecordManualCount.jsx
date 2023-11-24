@@ -80,7 +80,7 @@ const RecordManualCount = (props) => {
                       className="text-black font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#27374D" }}
                       type="button"
-                      onClick={() => setShowModal(false)}
+                      onClick={() => {setShowModal(false); props.onConfirmClear()}}
                     >
                       Confirm
                     </button>
