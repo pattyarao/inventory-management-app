@@ -81,6 +81,7 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
   // Filter materials based on the search term and filter option
   const filteredMaterials = materials.filter((material) => {
     const matchesSearchTerm = material.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const isQtyZero = material.qty_available === 0;
 
     switch (filterOption) {
       case 'N/A':
@@ -89,6 +90,8 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
         return matchesSearchTerm && prediction[material.id] === 'Stock is Sufficient';
       case 'predictedValue':
         return matchesSearchTerm && prediction[material.id] !== 'N/A' && prediction[material.id] !== 'Stock is Sufficient';
+      case 'qtyIsZero':
+          return matchesSearchTerm && isQtyZero;
       default:
         return matchesSearchTerm;
     }
@@ -153,6 +156,7 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
           onChange={handleFilterChange}
         >
           <option value="All">All Materials</option>
+          <option value="qtyIsZero">Materials with No Stock</option>
           <option value="predictedValue">Materials for Restocking</option>
           <option value="stockIsSufficient">Sufficient Stock</option>
           <option value="N/A">Insufficient Data for Prediction</option>

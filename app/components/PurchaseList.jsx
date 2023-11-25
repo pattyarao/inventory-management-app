@@ -180,9 +180,10 @@ const handleAddMaterials = (discardItem) => {
 
 
   const addVariant = (productIndex) => {
-    const newVariant = { variantName: "", amount: 0, unit: "", quantity: 1};
+    
 
     const newPurchaseList = [...purchaseList];
+    const newVariant = { name: newPurchaseList[productIndex].id, amount: 0, finalAmount: 0, unit: newPurchaseList[productIndex].mainMetric, quantity: 1};
     newPurchaseList[productIndex].variants.push(newVariant);
     setPurchaseList(newPurchaseList);
   };
