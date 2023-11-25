@@ -8,6 +8,7 @@ import { GET as getCompleteList, POST} from "../api/manualcount/route";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort } from "@fortawesome/free-solid-svg-icons";
 const ManualCount = () => {
+  const [postSuccess, setPostSuccess] = useState(false);
   const [completeList, setCompleteList] = useState([]);
   const [unitsList, setUnitsList] = useState([]);
   const [error, setError] = useState(null);
@@ -29,7 +30,6 @@ const ManualCount = () => {
               finalPartialAmount: 0
             })),
           }));
-    
           setCompleteList(modifiedMaterials);
           console.log('New Complete List Data:', modifiedMaterials);
         }
@@ -55,7 +55,7 @@ const ManualCount = () => {
       }
       getUnits();
       fetchData();
-  }, [])
+  }, [postSuccess])
 
   useEffect(() => {
     console.log('updated complete list:', completeList);
@@ -340,7 +340,7 @@ const ManualCount = () => {
                   {completeList
                   .length !== 0 ? (
                     <>            
-                      <RecordManualCount completeList={completeList} postMaterial={POST}/>
+                      <RecordManualCount completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
                     </>
                   ) : null}
                 </div>
