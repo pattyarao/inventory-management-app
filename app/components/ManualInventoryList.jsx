@@ -119,9 +119,9 @@ const ManualCount = (props) => {
 
   return (
     <div className="w-full flex flex-col items-center gap-4">
-    {isLoading ? ( <Loader/>) : (
+      {isLoading ? ( <Loader/>) : (
       
-    <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
+      <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
 
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
         <div className="col-span-5 md:col-span-5 text-xl font-bold">
@@ -302,10 +302,8 @@ const ManualCount = (props) => {
                       ))}
                       </div>
                     </>
-                  
                   ) : (
-                    <div
-                    >
+                    <div>
                     </div>
                   )}
                 </div>
@@ -323,10 +321,10 @@ const ManualCount = (props) => {
         </div>
       </div>
     </div>
-    );
-  
-};
+    )}
+    </div>
+    )}
+      
 
 
 export default ManualCount
-;
