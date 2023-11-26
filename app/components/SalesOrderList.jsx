@@ -74,7 +74,7 @@ const SalesOrderList = (props) => {
   console.log(orderList)
 
   return (
-    <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: '#526D82', color: 'white' }}>
+    <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: '#526D82', color: 'white' }}>
         <div className="px-3 w-full grid grid-cols-5 rounded-lg"> 
         <div className="col-span-3 md:col-span-4 text-xl font-bold">Order List</div>
         <div className="col-span-2 md:col-span-1 text-md flex items-center justify-center"> 

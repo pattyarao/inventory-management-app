@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const ClearPurchaseList = (props) => {
+const ClearDiscardList = (props) => {
 
   const [showModal, setShowModal] = useState(false);
 
@@ -14,7 +14,7 @@ const ClearPurchaseList = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Clear List
+        Clear Discard List
       </button>
 
       {showModal ? (
@@ -50,7 +50,7 @@ const ClearPurchaseList = (props) => {
                     />
                   </svg>
                   <div className="flex justify-center p-5 mb-5 text-2xl">
-                    Are you sure you want to clear the list?
+                    Are you sure you want to clear the Discard List?
                   </div>
 
                   <div className="flex justify-center">
@@ -87,5 +87,5 @@ const ClearPurchaseList = (props) => {
 };
 
 
-export default ClearPurchaseList;
+export default ClearDiscardList;
 
