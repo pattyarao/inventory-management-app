@@ -10,7 +10,7 @@ import Loader from "../components/Loader";
 const MaterialStockLevel = ({userType, userInfo}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
-  const [sortOption, setSortOption] = useState('predictionValue'); // Default sort option
+  const [sortOption, setSortOption] = useState('nameAscending'); // Default sort option
   const [predmodels, setPredmodels] = useState([])
 
   useEffect(() => {
@@ -91,7 +91,7 @@ const MaterialStockLevel = ({userType, userInfo}) => {
                 value={sortOption}
                 onChange={handleSortChange}
               >
-                <option value="predictionValue">No Sort</option>
+                {/* <option value="predictionValue">No Sort</option> */}
                 <option value="nameAscending">A - Z</option>
                 <option value="nameDescending">Z - A</option>
               </select>
