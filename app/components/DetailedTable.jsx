@@ -42,6 +42,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
   
 
   const currentDate = new Date().toLocaleDateString('en-GB');
+  const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
   useEffect(() => {
     const grouped = {};
 
@@ -82,7 +83,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
 <div>
   <div className="w-full flex flex-col mb-4">
   <h2 className="text-2xl font-bold">Detailed Sales Report</h2>
-  <p className="font-semibold">Created at: {currentDate}</p>
+  <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
   </div>
   {Object.keys(groupedData).map((productName) => (
     <div key={productName} className="mb-8">
@@ -92,11 +93,9 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr>
-              <th className="border-b border-r px-4 py-2 text-left">Date</th>
-              <th className="border-b border-r px-4 py-2 text-left">Product Name</th>
-              <th className="border-b border-r px-4 py-2 text-left">Product Status</th>
-              <th className="border-b border-r px-4 py-2 text-left">User</th>
-              <th className="border-b border-r px-4 py-2 text-left">Quantity Ordered</th>
+              <th className="border-b border-r px-4 py-2 text-left">Date of Transaction</th>
+              <th className="border-b border-r px-4 py-2 text-left">Recording Sales Person</th>
+              <th className="border-b border-r px-4 py-2 text-right">Quantity Ordered</th>
             </tr>
           </thead>
           <tbody>
@@ -105,10 +104,8 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                 <td className="border-b border-r px-4 py-2">
                 {new Date(item.date).toLocaleDateString("en-GB")}
                 </td>
-                <td className="border-b border-r px-4 py-2">{item.product_name}</td>
-                <td className="border-b border-r px-4 py-2">{item.product_status}</td>
                 <td className="border-b border-r px-4 py-2">{item.user}</td>
-                <td className="border-b border-r px-4 py-2">{item.qty_ordered}</td>
+                <td className="border-b border-r px-4 py-2 text-right">{item.qty_ordered} units</td>
               </tr>
             ))}
           </tbody>
@@ -116,7 +113,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       </div>
     </div>
   ))}
-  <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+  <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
 </div>
 
 
@@ -124,9 +121,9 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
     } else if (reportType === "summary" && choice === 1) {
       // Render summary content for reportType 1
       return (
-      <div className="w-full flex flex-col gap-3">
+      <div className="w-[60%] mx-auto flex flex-col gap-3">
           <h2 className="text-2xl font-bold">Summarized Sales Report</h2>
-          <p className="">Created at: {currentDate}</p>
+          <p className="">Created at: {currentDate} {currentTime}</p>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300">
             <thead className="text-left">
@@ -135,20 +132,20 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                   <p>Product Name</p>
                   <p className="font-light text-xs italic">Select a product</p>
                   </th>
-                <th className="border-b px-4 py-2">Total Sales</th>
+                <th className="border-b px-4 py-2 text-right">Total Sales</th>
               </tr>
             </thead>
             <tbody className="">
               {reportData.map((item, index) => (
                 <tr key={index}>
                   <td className="border-b border-r px-4 py-2 cursor-pointer hover:bg-slate-200 transition ease duration-70" onClick={() => handlesSalesDrillDown(item.product_name)}>{item.product_name}</td>
-                  <td className="border-b px-4 py-2">{item.total_sales}</td>
+                  <td className="border-b px-4 py-2 text-right">{item.total_sales} units</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+        <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
         <DetailedSalesModal isVisible={showDetailedSalesModal} startDate={startDate} endDate={endDate} choice={salesDrillDown} onClose={closeDetailedSalesModal}/>
       </div>
 
@@ -160,7 +157,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
     <div className="w-full">
       <div className="w-full flex flex-col mb-4 gap-2">
       <h2 className="text-2xl font-bold">Detailed Material Report</h2>
-      <p className="font-semibold">Created at: {currentDate}</p>
+      <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
       <hr className="w-full border border-gray-300"/>
       </div>
       <h3 className="text-2xl font-bold mb-4 bg-slate-300 p-2 rounded-md">No Variations</h3>    
@@ -171,13 +168,10 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
               <tr>
-                <th className="border-b px-4 py-2">Date</th>
-                <th className="border-b px-4 py-2">Material Name</th>
-                <th className="border-b px-4 py-2">Quantity</th>
-                <th className="border-b px-4 py-2">Transaction Type</th>
-                <th className="border-b px-4 py-2">User</th>
-                <th className="border-b px-4 py-2">Variation</th>
-                <th className="border-b px-4 py-2">Amount</th>
+                <th className="border-b px-4 py-2 text-left">Date of Transaction</th>
+                <th className="border-b px-4 py-2 text-left">Transaction Type</th>
+                <th className="border-b px-4 py-2 text-left">Recording Staff</th>
+                <th className="border-b px-4 py-2 text-right">Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -185,13 +179,10 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                 .filter((item) => item.variation === "No Variation")
                 .map((item, index) => (
                   <tr key={index}>
-                    <td className="border-b px-4 py-2">{new Date(item.date).toLocaleDateString("en-GB")}</td>
-                    <td className="border-b px-4 py-2">{item.material_name}</td>
-                    <td className="border-b px-4 py-2">{item.qty}</td>
-                    <td className="border-b px-4 py-2">{item.transac_type}</td>
-                    <td className="border-b px-4 py-2">{item.user}</td>
-                    <td className="border-b px-4 py-2">{item.variation}</td>
-                    <td className="border-b px-4 py-2">{item.amount}</td>
+                    <td className="border-b px-4 py-2 text-left">{new Date(item.date).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.user}</td>
+                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
                   </tr>
                 ))}
             </tbody>
@@ -208,13 +199,12 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
               <tr>
-                <th className="border-b px-4 py-2">Date</th>
-                <th className="border-b px-4 py-2">Material Name</th>
-                <th className="border-b px-4 py-2">Quantity</th>
-                <th className="border-b px-4 py-2">Transaction Type</th>
-                <th className="border-b px-4 py-2">User</th>
-                <th className="border-b px-4 py-2">Variation</th>
-                <th className="border-b px-4 py-2">Amount</th>
+                <th className="border-b px-4 py-2 text-left">Date of Transaction</th>
+                <th className="border-b px-4 py-2 text-left">Quantity</th>
+                <th className="border-b px-4 py-2 text-left">Transaction Type</th>
+                <th className="border-b px-4 py-2 text-left">Recording Staff</th>
+                <th className="border-b px-4 py-2 text-left">Variation</th>
+                <th className="border-b px-4 py-2 text-right">Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -222,13 +212,12 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                 .filter((item) => item.variation !== "No Variation")
                 .map((item, index) => (
                   <tr key={index}>
-                    <td className="border-b px-4 py-2">{new Date(item.date).toLocaleDateString("en-GB")}</td>
-                    <td className="border-b px-4 py-2">{item.material_name}</td>
-                    <td className="border-b px-4 py-2">{item.qty}</td>
-                    <td className="border-b px-4 py-2">{item.transac_type}</td>
-                    <td className="border-b px-4 py-2">{item.user}</td>
-                    <td className="border-b px-4 py-2">{item.variation}</td>
-                    <td className="border-b px-4 py-2">{item.amount}</td>
+                    <td className="border-b px-4 py-2 text-left">{new Date(item.date).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.qty}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.user}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.variation}</td>
+                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
                   </tr>
                 ))}
             </tbody>
@@ -237,7 +226,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       </div>
     ))}
 
-          <h1>*** END OF REPORT ***</h1>
+<h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
         </div>
       );
     } else if (reportType === "summary" && choice === 2) {
@@ -247,7 +236,8 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         <div className="w-full flex flex-col gap-4">
           <div>
           <h2 className="text-2xl font-bold">Summarized Materials Report</h2>
-          <p className="text-xs italic">Select a material to view its detailed report</p>
+          <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
+          <p className="text-xs italic mt-2">Select a material to view its detailed report</p>
           </div>
         {Object.keys(groupedData).map((materialName) => (
           <div key={materialName} className="flex flex-col mb-6">
@@ -257,25 +247,28 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                 <thead>
                   <tr>
                     <th className="border-b border-r text-left px-4 py-2">Transaction Type</th>
-                    <th className="border-b border-r text-left px-4 py-2">Material Name</th>
-                    <th className="border-b border-r text-left px-4 py-2">Amount</th>
+                    <th className="border-b border-r text-left px-4 py-2 text-right">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {groupedData[materialName].map((item, index) => (
-                    <tr key={index}>
-                      <td className="border-b border-r px-4 py-2">{item.grouped_transac_type}</td>
-                      <td className="border-b border-r px-4 py-2" >{item.material_name}</td>
-                      <td className="border-b border-r px-4 py-2">{item.total_amt}</td>
-                    </tr>
-                  ))}
+                {groupedData[materialName].map((item, index) => (
+                  <tr key={index}>
+                    <td className={`border-b border-r px-4 py-2`}>
+                      {item.grouped_transac_type}
+                    </td>
+                    <td className={`border-b border-r px-4 py-2 text-right ${item.grouped_transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>
+                      {item.total_amt}
+                    </td>
+                  </tr>
+                ))}
+
                 </tbody>
               </table>
               <DetailedMaterialsModal isVisible={showDetailedMaterialsModal} startDate={startDate} endDate={endDate} choice={materialDrillDown} onClose={closeDetailedMaterials}/>
             </div>
           </div>
         ))}
-        <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+        <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
       </div>
       
         
@@ -287,29 +280,28 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
     return (
     <div className="w-full">
       <div className="w-full flex flex-col mb-4 gap-2">
-      <h2 className="text-2xl font-bold">Detailed Rejeceted Sales Report</h2>
-      <p className="font-semibold">Created at: {currentDate}</p>
-      <hr className="w-full border border-gray-300"/>
+      <h2 className="text-2xl font-bold">Detailed Rejected Sales Report</h2>
+      <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
       </div>     
       <div key="detailed-rejectedorders" className="mb-8">
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
               <tr>
-                <th className="border-b px-4 py-2">Date</th>
-                <th className="border-b px-4 py-2">Material Name</th>
-                <th className="border-b px-4 py-2">User</th>
-                <th className="border-b px-4 py-2">Insufficient Quantity</th>
+                <th className="border-b px-4 py-2 text-left">Date of Transaction</th>
+                <th className="border-b px-4 py-2 text-left">Material Name</th>
+                <th className="border-b px-4 py-2 text-left">Recording Sales Person</th>
+                <th className="border-b px-4 py-2 text-right">Insufficient Quantity</th>
               </tr>
             </thead>
             <tbody>
               {reportData
                 .map((item, index) => (
                   <tr key={index}>
-                    <td className="border-b px-4 py-2">{new Date(item.created_at).toLocaleDateString("en-GB")}</td>
-                    <td className="border-b px-4 py-2">{item.name}</td>
-                    <td className="border-b px-4 py-2">{item.full_name}</td>
-                    <td className="border-b px-4 py-2">{item.insufficient_qty} {item.metric_unit}</td>
+                    <td className="border-b px-4 py-2 text-left">{new Date(item.created_at).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.name}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.full_name}</td>
+                    <td className="border-b px-4 py-2 text-right">{item.insufficient_qty} {item.metric_unit}</td>
                   </tr>
                 ))}
             </tbody>
@@ -317,16 +309,17 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         </div>
       </div>
 
-          <h1>*** END OF REPORT ***</h1>
+      <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
         </div>
       );
     } else if (reportType === "summary" && choice === 3) {
       // Render summary content for reportType 2
       console.log("SUMMARY REJ ORDERS", groupedData)
       return (
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-[80%] mx-auto flex flex-col gap-4">
           <div>
           <h2 className="text-2xl font-bold">Summarized Rejected Orders Report</h2>
+          <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
           </div>
           <div key="Summary Rejected Orders" className="flex flex-col mb-6">
             {/* <h2 className="w-full py-1 px-4 rounded-t-md text-center text-xl font-bold bg-slate-300 hover:bg-slate-400 cursor-pointer transition ease duration-70" onClick={() => handleMaterialDrillDown(materialName)}>{materialName}</h2> */}
@@ -334,15 +327,15 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
               <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                   <tr>
-                    <th className="border-b border-r text-left px-4 py-2">Material Name</th>
-                    <th className="border-b border-r text-left px-4 py-2">Total Insufficient Quantity</th>
+                    <th className="border-b border-r text-left px-4 py-2 text-left">Material Name</th>
+                    <th className="border-b border-r text-left px-4 py-2 text-right">Total Insufficient Quantity</th>
                   </tr>
                 </thead>
                 <tbody>
                   {reportData.map((item, index) => (
                     <tr key={index}>
-                      <td className="border-b border-r px-4 py-2">{item.name}</td>
-                      <td className="border-b border-r px-4 py-2" >{item.total_insufficient_qty} {item.metric_unit}</td>
+                      <td className="border-b border-r px-4 py-2 text-left">{item.name}</td>
+                      <td className="border-b border-r px-4 py-2 text-right" >{item.total_insufficient_qty} {item.metric_unit}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -350,8 +343,85 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
               {/* <DetailedMaterialsModal isVisible={showDetailedMaterialsModal} startDate={startDate} endDate={endDate} choice={materialDrillDown} onClose={closeDetailedMaterials}/> */}
             </div>
           </div>
-        <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+        <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
       </div>
+      
+        
+      );
+    } else if (reportType === "detailed" && choice === 4) {
+      // Render summary content for reportType 2
+      console.log("SUMMARY REJ ORDERS", groupedData)
+      return (
+        <div className="w-full">
+      <div className="w-full flex flex-col mb-4 gap-2">
+      <h2 className="text-2xl font-bold">Detailed Discrepancy Report</h2>
+      <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
+      </div>     
+      <div key="detailed-rejectedorders" className="mb-8">
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2 text-left">Date of Manual Count</th>
+                <th className="border-b px-4 py-2 text-left">Material Name</th>
+                <th className="border-b px-4 py-2 text-left">Recording Stock Controller</th>
+                <th className="border-b px-4 py-2 text-right">Discrepancy Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData
+                .map((item, index) => (
+                  <tr key={index}>
+                    <td className="border-b px-4 py-2 text-left">{new Date(item.transaction_date).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.material_name}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.user_name}</td>
+                    <td className="border-b px-4 py-2 text-right">{item.qty_disc} {item.metric_unit}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
+        </div>
+      
+        
+      );
+    } else if (reportType === "summary" && choice === 4) {
+      // Render summary content for reportType 2
+      console.log("SUMMARY REJ ORDERS", groupedData)
+      return (
+        <div className="w-[60%] mx-auto">
+      <div className="w-full flex flex-col mb-4 gap-2">
+      <h2 className="text-2xl font-bold">Summary Discrepancy Report</h2>
+      <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
+      </div>     
+      <div key="detailed-rejectedorders" className="mb-8">
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2 text-left">Material Name</th>
+                <th className="border-b px-4 py-2 text-right">Total Discrepancy Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData
+                .map((item, index) => (
+                  <tr key={index}>
+                 
+                    <td className="border-b px-4 py-2 text-left">{item.name}</td>
+                    <td className="border-b px-4 py-2 text-right">{item.total_disc} {item.metric_unit}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
+        </div>
       
         
       );

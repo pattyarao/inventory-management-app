@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 // import { useRouter } from "next/router";
 import DetailedTable from "../components/DetailedTable"
+import { GET as getDetailedDiscrepancy} from '../api/detaileddiscrepancy/route';
 import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
 import { GET as getDetailedProducts} from '../api/detailedproducts/route';
 import { GET as getDetailedRejOrders} from '../api/detailedrejected/route';
 import { GET as getSummaryMaterials} from '../api/summarymaterials/route';
 import { GET as getSummaryProducts} from '../api/summaryproducts/route';
 import { GET as getSummaryRejOrders} from '../api/summaryrejected/route';
+import { GET as getSummaryDiscrepancy} from '../api/summarydiscrepancy/route';
 import TableModal from "../components/TableModal"; 
 import { RiArrowDownSLine } from "react-icons/ri";
 import { RiArrowUpSLine } from "react-icons/ri";
@@ -31,7 +33,7 @@ const ReportSettings = (props) => {
         let endpoint = "";
         if (props.choice === 1) {
           endpoint = "/api/allproducts";
-        } else if (props.choice === 2 || props.choice === 3) { // Change this to 2 if it's a different choice
+        } else if (props.choice === 2 || props.choice === 3 || props.choice === 4) { // Change this to 2 if it's a different choice
           endpoint = "/api/allmaterials";
         }
         
@@ -49,7 +51,7 @@ const ReportSettings = (props) => {
             if (props.choice === 1) {
               const names = data.products.map(item => item.name);
               setOptions(names);
-            } else if (props.choice === 2 || props.choice === 3) { 
+            } else if (props.choice === 2 || props.choice === 3 || props.choice === 4) { 
               const names = data.materials.map(item => item.name);
               setOptions(names);
             }
@@ -213,6 +215,36 @@ const ReportSettings = (props) => {
                 console.error("API Error:", response);
               }
           }
+        }else if (props.choice === 4) { 
+          
+          if(reportType === "detailed"){
+              const response = await getDetailedDiscrepancy(startDate, endDate, selectedOptions);
+          
+              if (response.status === 200) {
+                // Request was successful, log the data
+                const data = await response.json();
+                setReportData(data.detailedReport); // Store the data in the state variable
+                console.log("API Response:", data.detailedReport);
+                setShowModal(true)
+              } else {
+                // Request failed, log the error
+                console.error("API Error:", response);
+              }
+          }
+          else if (reportType === "summary"){
+              const response = await getSummaryDiscrepancy(startDate, endDate, selectedOptions);
+            
+              if (response.status === 200) {
+                // Request was successful, log the data
+                const data = await response.json();
+                setReportData(data.data); // Store the data in the state variable
+                console.log("API Response:", data.data);
+                setShowModal(true)
+              } else {
+                // Request failed, log the error
+                console.error("API Error:", response);
+              }
+          }
         }
 
 
@@ -235,6 +267,8 @@ const ReportSettings = (props) => {
             <h2 className="text-2xl font-black">Material Report</h2>
           ) : props.choice === 3 ? (
             <h2 className="text-2xl font-black">Rejected Orders Report</h2>
+          ) : props.choice === 4 ? (
+            <h2 className="text-2xl font-black">Discrepancy Report</h2>
           ) : null}
           
           <div className="w-[20%]">

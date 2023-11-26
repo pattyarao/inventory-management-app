@@ -8,7 +8,7 @@ const TableModal = ({ isVisible, reportData, reportType, choice, onClose, startD
     
     
     <div className="fixed top-0 left-0 w-full h-screen flex items-center justify-center bg-opacity-50 bg-black backdrop-filter backdrop-blur-lg">
-      <div className="w-[90%] h-[90vh] bg-white rounded-md shadow-lg h-[80%] overflow-y-auto">
+      <div className="w-[70%] h-[90vh] bg-white rounded-md shadow-lg h-[80%] overflow-y-auto">
         <div className="w-full flex justify-between items-center top-0 sticky bg-neutral-400/60 p-2 px-6 drop-shadow-md">
           <h1 className="font-black">Report</h1>
         <button
