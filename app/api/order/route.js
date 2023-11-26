@@ -4,7 +4,8 @@ export async function GET() {
     const { data: products, error } = await supabase
     .from("MD_PRODUCTS")
     .select("*")
-    .eq("status", "TRUE") 
+    .eq("status", "TRUE")
+    .order("name", { ascending: true }); 
 
   if (error) {
     return new Response(JSON.stringify({ error }), {
