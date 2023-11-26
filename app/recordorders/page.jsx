@@ -1,13 +1,18 @@
 "use client";
 
+import withAuthentication from "../auth";
 import SalesOrderList from "../components/SalesOrderList";
 import Navbar from "../components/Navbar";
-
-const RecordOrder = () => {
- 
+import Loader from "../components/Loader";
+const RecordOrder = ({userType, userInfo}) => {
+  if (!userType) {
+    return (
+      <Loader/>
+    );
+  }
   return (
     <>
-     <Navbar userType={"Sales Person"}/>
+     <Navbar userType={userType} email={userInfo.email}/>
     
     <div className="w-full min-h-screen flex flex-col justify-center items-center gap-2" style={{ backgroundColor: '#27374D', color: 'white' }}>
       
@@ -16,7 +21,7 @@ const RecordOrder = () => {
       </div>
       
 
-        <SalesOrderList/>
+        <SalesOrderList userID={userInfo.user_id}/>
 
         
       </div>
@@ -26,4 +31,4 @@ const RecordOrder = () => {
   );
 };
 
-export default RecordOrder;
+export default withAuthentication(RecordOrder, ['Sales Person'])

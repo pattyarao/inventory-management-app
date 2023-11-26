@@ -6,7 +6,7 @@ import { PATCH, POST } from "../api/purchase/route";
 const RecordPurchase = (props) => {
 
   //replace userID with current user logic
-  const [userID, setUserID] = useState("b3a1e7a7-2932-435b-b07b-9a0d64cf4637");
+  const [userID, setUserID] = useState(props.userID);
 
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);

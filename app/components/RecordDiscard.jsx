@@ -11,7 +11,7 @@ const RecordDiscard = (props) => {
 
       const postData = async () => {
         
-        const postResponse = await POST(props.discardedList, "4601007f-506d-4e36-acbc-dd8ff126de78");
+        const postResponse = await POST(props.discardedList, props.userID);
         // if (postResponse.error) {
         //   console.error("Error posting discarded items:", postResponse.error.message);
         //   return;
@@ -69,8 +69,7 @@ const RecordDiscard = (props) => {
                       className="flex justify-center text-white font-bold uppercase text-sm px-6 py-3 mb-5"
                       style={{ fontSize: "30px", color: "black" }}
                     >
-                      Discard
-                     Recorded Successfully
+                      Discard Recorded Successfully
                     </div>
   
                     <div className="flex justify-center">

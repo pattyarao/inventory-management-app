@@ -7,7 +7,8 @@ import { GET as GETUNIT } from "../api/submetric/route";
 import { GET as getCompleteList, POST} from "../api/manualcount/route";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort } from "@fortawesome/free-solid-svg-icons";
-const ManualCount = () => {
+
+const ManualCount = (props) => {
   const [postSuccess, setPostSuccess] = useState(false);
   const [completeList, setCompleteList] = useState([]);
   const [unitsList, setUnitsList] = useState([]);
@@ -340,7 +341,7 @@ const ManualCount = () => {
                   {completeList
                   .length !== 0 ? (
                     <>            
-                      <RecordManualCount completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
+                      <RecordManualCount userID={props.userID} completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
                     </>
                   ) : null}
                 </div>
