@@ -7,7 +7,8 @@ import { GET as GETUNIT } from "../api/submetric/route";
 import { GET as getCompleteList, POST} from "../api/manualcount/route";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort } from "@fortawesome/free-solid-svg-icons";
-const ManualCount = () => {
+
+const ManualCount = (props) => {
   const [postSuccess, setPostSuccess] = useState(false);
   const [completeList, setCompleteList] = useState([]);
   const [unitsList, setUnitsList] = useState([]);
@@ -133,8 +134,8 @@ const ManualCount = () => {
 
   return (
     
-    <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
-<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
+    <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
+<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "white" }}>
   <button
     onClick={sortMaterialsAndVariantsByName}
     style={{
@@ -184,7 +185,7 @@ const ManualCount = () => {
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Partial Amount
                         </div>
-                        <div className="col-span-1 me-5 text-sm flex items-center justify-center">
+                        <div className="col-span-1 ml-0 me-24 text-sm flex items-center justify-center">
                           Unit
                         </div>
                       </div>
@@ -305,7 +306,7 @@ const ManualCount = () => {
                                       onChange={(event) =>
                                         handleUnitChange(index, variantIndex, event)
                                       }
-                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="block ml-2 w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
                                        {unitsList
                                               .filter((unit) => material.metric_id === unit.metric_id)
@@ -340,7 +341,7 @@ const ManualCount = () => {
                   {completeList
                   .length !== 0 ? (
                     <>            
-                      <RecordManualCount completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
+                      <RecordManualCount userID={props.userID} completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
                     </>
                   ) : null}
                 </div>

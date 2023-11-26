@@ -8,7 +8,8 @@ import AddMaterialDiscard from "./AddMaterialDiscard"
 import { FaInbox } from "react-icons/fa";
 import ClearDiscardList from "./ClearDiscardList"
 import AddNewReason from "./AddNewReason";
-const DiscardedList = () => {
+
+const DiscardedList = (props) => {
   //stores all ordered products
   const [discardedList, setDiscardedList] = useState([]); // list for rendering
   const [usedItemList, setUsedItemList] = useState([]); // reference list for adding new items, stores the material/variant id
@@ -351,7 +352,7 @@ const DiscardedList = () => {
 
   return (
     <div
-      className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
+      className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg"
       style={{ backgroundColor: "#526D82", color: "white" }}
     >
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
@@ -456,7 +457,13 @@ const DiscardedList = () => {
                                         disabled
                                       />
                                       
-                                      ) : null
+                                      ) : <input
+                                      key={variantIndex}
+                                      value={"None"}
+                                      id="large"
+                                      className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      disabled
+                                    />
                                     }
                                   </div>
                                 </div>
@@ -651,9 +658,9 @@ const DiscardedList = () => {
                 <div className="flex justify-end px-10 py-4">
                   {discardedList.length !== 0 ? (
                     <>
+                      <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
                       <ClearDiscardList onConfirmClear={() => {setDiscardedList([]); setUsedItemList([])}} />
-                      <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials} />
-                      <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() =>{ setDiscardedList([]); setUsedItemList([]) }} />
+                      <RecordDiscard userID={props.userID} discardedList={discardedList} metricList={metricList} onConfirmClear={() =>{ setDiscardedList([]); setUsedItemList([]) }} />
                     
                     </>
                       ) 

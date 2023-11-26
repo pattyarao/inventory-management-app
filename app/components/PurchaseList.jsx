@@ -9,7 +9,7 @@ import ClearPurchaseList from "./ClearPurchaseList";
 import { GET as GETVAR } from "../api/purchasevariant/route";
 import { GET as GETUNIT } from "../api/submetric/route";
 
-const PurchaseList = () => {
+const PurchaseList = (props) => {
   //stores all ordered products
   const [purchaseList, setPurchaseList] = useState([]);
   const [usedItemList, setUsedItemList] = useState([]); 
@@ -98,8 +98,6 @@ const handleAddMaterials = (discardItem) => {
             unit: item.REF_METRIC.id, 
             quantity: 1, 
             id: item.id, 
-            reason_id: null,
-            partialamount: 0,
           })
 
           console.log("case 4 insert successful", updatedDiscardedList);
@@ -120,9 +118,6 @@ const handleAddMaterials = (discardItem) => {
             finalAmount: 0,
             unit: item.REF_METRIC.id, 
             quantity: 1,  
-            reason_id: null,
-            partialamount: 0,
-            finalPartialAmount: 0,
           }
         ]
       }
@@ -290,7 +285,7 @@ const handleAddMaterials = (discardItem) => {
 
   return (
     <div
-      className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
+      className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg"
       style={{ backgroundColor: "#526D82", color: "white" }}
     >
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
@@ -552,7 +547,7 @@ const handleAddMaterials = (discardItem) => {
                       <ClearPurchaseList
                         onConfirmClear={() => setPurchaseList([])}
                       />
-                      <RecordPurchase  purchaseList={purchaseList}  onConfirmClear={() => setPurchaseList([])} />
+                      <RecordPurchase  userID={props.userID} purchaseList={purchaseList}  onConfirmClear={() => setPurchaseList([])} />
                     </>
                   ) : null}
                 </div>

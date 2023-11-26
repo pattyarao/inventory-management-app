@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import withAuthentication from "../auth";
 import MaterialList from "../components/MaterialList";
 import Navbar from "../components/Navbar";
+import Loader from "../components/Loader";
 // import { GET as GETModels } from '../api/modelchoices/route';
 
-const MaterialStockLevel = () => {
+const MaterialStockLevel = ({userType, userInfo}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [sortOption, setSortOption] = useState('predictionValue'); // Default sort option
@@ -40,20 +42,24 @@ const MaterialStockLevel = () => {
   };
 
   useEffect (() => console.log(predmodels), [predmodels])
-
+  if (!userType) {
+    return (
+      <Loader/>
+    );
+  }
   return (
-    <>
-      <Navbar userType={"Stock Controller"} />
+    <div className="w-full">
+      <Navbar userType={userType} email={userInfo.email}  />
       <div className="p-8 bg-[#F1F3F8]">
         {/* Header */}
-        <div
-          className="flex items-center justify-center w-full h-16 px-10 rounded-md bg-[#8D93AB]"
-        >
-          <h1 className="font-black text-xl">Material Stock Levels</h1>
+        <div className="w-full top-0 sticky bg-slate-400 p-4 rounded-md flex justify-between">
+          <h1 className="text-2xl font-black">
+            Material Stock Level
+          </h1>
         </div>
 
         {/* Search bar and dropdown for options */}
-        <div className="w-full mt-8 p-3 rounded">
+        <div className="w-full rounded">
           <div className="p-6 flex items-center">
             <input
               type="text"
@@ -106,8 +112,8 @@ const MaterialStockLevel = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default MaterialStockLevel;
+export default withAuthentication(MaterialStockLevel, ['Stock Controller'])

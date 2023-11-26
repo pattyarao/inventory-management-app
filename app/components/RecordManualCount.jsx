@@ -12,7 +12,7 @@ const RecordManualCount = (props) => {
  
   const handleSubmit = () => {
     const postData = () => {
-      const postResponse = props.postMaterial(props.completeList, "4601007f-506d-4e36-acbc-dd8ff126de78");
+      const postResponse = props.postMaterial(props.completeList, props.userID);
       console.log(postResponse);
     }
     postData();

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import AddProductOffer from "./AddProductOffer";
 import ViewProduct from "./ViewProduct";
 import { GET } from "../api/productlist/route";
+import Loader from "./Loader"
 //import RecordOrder from "./RecordOrder";
 
 const ProductOfferList = () => {
@@ -14,6 +15,7 @@ const [selectedProduct, setSelectedProduct] = useState(null);
 const [showProductDetailsModal, setShowProductDetailsModal] = useState(false);
 const [sortOption, setSortOption] = useState("Sort A-Z");
 const [filterOption, setFilterOption] = useState("All");
+const [isLoading, setIsLoading] = useState(true);
 
 const sortedProductList = () => {
   switch (sortOption) {
@@ -56,6 +58,8 @@ useEffect(() => {
       }
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -109,12 +113,15 @@ const toggleProductStatus = (productToToggle) => {
 
   return (
     <div className="w-full flex flex-col items-center gap-4">
-      <div className="w-full flex flex-col text-xs">
+      {isLoading ? ( <Loader/>) : (
+
+
+<div className="w-full flex flex-col text-xs">
         <div className="flex flex-col">
           <div className="w-full flex flex-col items-center gap-4">
             <div className="w-full flex flex-col text-xs">
               <div className="flex flex-col">
-                {productList.length !== 0 ? (
+                {productList.length > 0 ? (
                   <>
                     <div className="flex justify-end">
                       <select className="text-sm px-3 py-2 mb-5 mr-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
@@ -177,8 +184,7 @@ const toggleProductStatus = (productToToggle) => {
                   </>
                 ) : (
                   <div
-                    className="w-full p-20 mb-4 text-xs rounded-lg"
-                    style={{ backgroundColor: "#9DB2BF", color: "#27374D" }}
+                    className="w-full p-20 mb-4 text-xs rounded-lg bg-[#9DB2BF] text-[#27374D]"
                   >
                     <div className="font-black text-xl flex items-center justify-center">
                       Your Product List is Empty
@@ -200,6 +206,10 @@ const toggleProductStatus = (productToToggle) => {
           </div>
         </div>
       </div>
+
+
+      )}
+      
     </div>
   );
 };

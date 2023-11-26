@@ -8,7 +8,7 @@ import { GET as GETMAT } from "../api/purchase/route";
 
 const RecordOrder = (props) => {
 
-  const [userID, setUserID] = useState("b3a1e7a7-2932-435b-b07b-9a0d64cf4637");
+  const [userID, setUserID] = useState(props.userID);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [success, setSuccess] = useState(true);
