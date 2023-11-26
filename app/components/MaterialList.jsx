@@ -7,7 +7,7 @@ import { GET as GETMaterialMaster } from '../api/materialmaster/route';
 
 const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
   const [materials, setMaterials] = useState([]);
-  const [filterOption, setFilterOption] = useState('predictedValue'); // Default filter option
+  const [filterOption, setFilterOption] = useState('All'); // Default filter option
   const [prediction, setPrediction] = useState([]);
 
   useEffect(() => {
@@ -166,13 +166,13 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
       <div className="m-auto w-full">
         <div className="flex flex-col gap-4">
           {sortedMaterials.map((material, index) => (
-            <div id={material.id} key={index} className="p-4 flex flex-col rounded-md">
+            <div id={material.id} key={index} className=" flex flex-col rounded-md">
               <div
                 className={`${
                   view === 'grid'
                     ? 'grid grid-cols-4 gap-4 items-center'
                     : 'flex justify-between items-center'
-                } p-2 bg-[#F1F3F8] rounded-lg`}
+                } bg-[#F1F3F8] rounded-lg`}
               >
                 <p className="pl-10 text-left font-semibold w-1/5 whitespace-normal">
                   {material.name}</p>

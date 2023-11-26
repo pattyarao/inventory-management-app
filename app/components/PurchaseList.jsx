@@ -285,7 +285,7 @@ const handleAddMaterials = (discardItem) => {
 
   return (
     <div
-      className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg"
+      className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg"
       style={{ backgroundColor: "#526D82", color: "white" }}
     >
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">

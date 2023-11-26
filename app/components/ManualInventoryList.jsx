@@ -134,8 +134,8 @@ const ManualCount = (props) => {
 
   return (
     
-    <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
-<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
+    <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
+<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "white" }}>
   <button
     onClick={sortMaterialsAndVariantsByName}
     style={{
