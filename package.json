@@ -9,20 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@supabase/supabase-js": "^2.38.5",
-=======
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
-    "@radix-ui/react-dropdown-menu": "^2.0.6",
-    "@supabase/supabase-js": "^2.38.5",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "lucide-react": "^0.291.0",
->>>>>>> 6bb4295d3e6f2a9049a2dc134e477805e05fccca
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18",
