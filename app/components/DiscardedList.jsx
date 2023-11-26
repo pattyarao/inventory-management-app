@@ -6,7 +6,8 @@ import { GET as GETUNIT } from "../api/submetric/route";
 import RecordDiscard from "./RecordDiscard";
 import AddMaterialDiscard from "./AddMaterialDiscard"
 import { FaInbox } from "react-icons/fa";
-
+import ClearDiscardList from "./ClearDiscardList"
+import AddNewReason from "./AddNewReason";
 const DiscardedList = () => {
   //stores all ordered products
   const [discardedList, setDiscardedList] = useState([]); // list for rendering
@@ -17,24 +18,19 @@ const DiscardedList = () => {
   const [loading, setLoading] = useState(true);
   const [metricList, setMetricList] = useState([])
   const [unitsList, setUnitsList] = useState([]);
+  const [addReasonCondition, setAddReasonCondition] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
-      try {
-        const response = await GETREASON()
-        const {reason, error} = await response.json()
-        const response2 = await GETMETRIC()
-        const {metric, error2} = await response2.json()
-        if (error || error2 ) {
+        const response = await GETMETRIC()
+        const {metric, error} = await response.json()
+        if (error) {
           setError(error)
-        } else {
-          setReasonList(reason)
+        } 
+        else {
           setLoading(false);
           setMetricList(metric)
         }
-      } catch (error) {
-        setError(error);
-      }
     }
 
     async function getUnits() {
@@ -55,6 +51,22 @@ const DiscardedList = () => {
     getUnits();
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const getUnits = async () => {
+      const response = await GETREASON()
+      const {reason, error} = await response.json()
+
+      if (error) {
+        setError(error)
+        console.log(error)
+        return;
+      }
+
+      setReasonList(reason)
+    }
+    getUnits()
+  }, [addReasonCondition])
 
   console.log(metricList)
 
@@ -197,25 +209,6 @@ const DiscardedList = () => {
 
   console.log(discardedList)
 
-  // const addVariant = (productIndex) => {
-  //   const newVariant = { variantName: 0, amount: 0, unit: 0, quantity: 1 };
-  //   const newDiscardedList = [...discardedList];
-  //   newDiscardedList[productIndex].variants.push(newVariant);
-  //   setDiscardedList(newDiscardedList);
-  // };
-  
-  //handles changes with the input if number is manually typed in
-  // const handleVariantNameChange = (productIndex, variantIndex, event) => {
-  //   const newDiscardedList = [...discardedList];
-  //   if (event.target.value === "Add New Variant") {
-      
-  //     return;
-  //   }
-  //   newDiscardedList[productIndex].variants[variantIndex].variantName =
-  //     event.target.value;
-  //   setDiscardedList(newDiscardedList);
-  // };
-
   const handleUnitChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
     newDiscardedList[productIndex].variants[variantIndex].unit = event.target.value;
@@ -342,9 +335,18 @@ const DiscardedList = () => {
   };
   
   const handleReasonChange = (productIndex, variantIndex, event) => {
+    
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].reason_id = event.target.value;
-    setDiscardedList(newDiscardedList);
+    if (event.target.value === "Add New Reason") {
+      setAddReasonCondition(true)
+    }
+    else {
+      newDiscardedList[productIndex].variants[variantIndex].reason_id = event.target.value;
+      setDiscardedList(newDiscardedList);
+    }
+
+    
+    
   }
 
   return (
@@ -646,10 +648,11 @@ const DiscardedList = () => {
                     </>
                   )}
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end px-10 py-4">
                   {discardedList.length !== 0 ? (
                     <>
-                      <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
+                      <ClearDiscardList onConfirmClear={() => {setDiscardedList([]); setUsedItemList([])}} />
+                      <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials} />
                       <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() =>{ setDiscardedList([]); setUsedItemList([]) }} />
                     
                     </>
@@ -662,7 +665,13 @@ const DiscardedList = () => {
           </div>
         </div>
       </div>
+        {/** where modals for adding new things will be placed */}
+        { addReasonCondition ? (
+          <AddNewReason onClose={() => {setAddReasonCondition(false)}} />
+        ) : null }
     </div>
+
+    
   );
 };
 
