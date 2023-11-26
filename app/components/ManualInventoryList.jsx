@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import RecordManualCount from "./RecordManualCount";
 import ClearManualCount from "./ClearManualCount";
 import Navbar from "./Navbar";
+import Loader from "./Loader";
 import { GET as GETUNIT } from "../api/submetric/route";
 import { GET as getCompleteList, POST} from "../api/manualcount/route";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +14,8 @@ const ManualCount = (props) => {
   const [completeList, setCompleteList] = useState([]);
   const [unitsList, setUnitsList] = useState([]);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -37,6 +40,7 @@ const ManualCount = (props) => {
       } catch (error) {
         console.error(error);
       }
+      setIsLoading(false)
     }
     
       async function getUnits() {
@@ -62,26 +66,7 @@ const ManualCount = (props) => {
     console.log('updated complete list:', completeList);
   }, [completeList])
 
-  const [sortOrder, setSortOrder] = useState("ascending");
-  
-  const sortMaterialsAndVariantsByName = () => {
-    const sortedMaterials = [...materialList].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    const sortedVariants = [...variantsList].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
 
-    if (sortOrder === "ascending") {
-      setMaterialList(sortedMaterials);
-      setVariantsList(sortedVariants);
-      setSortOrder("descending");
-    } else {
-      setMaterialList(sortedMaterials.reverse());
-      setVariantsList(sortedVariants.reverse());
-      setSortOrder("ascending");
-    }
-  };
   
   const handleUnitChange = (productIndex, variantIndex, event) => {
     const newManualCount = [...completeList];
@@ -133,23 +118,10 @@ const ManualCount = (props) => {
   };
 
   return (
-    
-    <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
-<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "white" }}>
-  <button
-    onClick={sortMaterialsAndVariantsByName}
-    style={{
-      padding: "5px 10px", // Example padding
-      borderRadius: "5px", // Example border radius
-      display: "flex", // Make button inline with icon
-      alignItems: "center", // Align items vertically
-    }}
-  >
-    Sort{" "}
-    <FontAwesomeIcon icon={faSort} style={{ marginLeft: "5px" }} />
-  </button>
-</div>
-
+    <div className="w-full flex flex-col items-center gap-4">
+      {isLoading ? ( <Loader/>) : (
+      
+      <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
 
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
         <div className="col-span-5 md:col-span-5 text-xl font-bold">
@@ -330,10 +302,8 @@ const ManualCount = (props) => {
                       ))}
                       </div>
                     </>
-                  
                   ) : (
-                    <div
-                    >
+                    <div>
                     </div>
                   )}
                 </div>
@@ -350,12 +320,11 @@ const ManualCount = (props) => {
           </div>
         </div>
       </div>
-
-
     </div>
-  );
-};
+    )}
+    </div>
+    )}
+      
 
 
 export default ManualCount
-;
