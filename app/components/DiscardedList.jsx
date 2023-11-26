@@ -6,6 +6,7 @@ import { GET as GETUNIT } from "../api/submetric/route";
 import RecordDiscard from "./RecordDiscard";
 import AddMaterialDiscard from "./AddMaterialDiscard"
 import { FaInbox } from "react-icons/fa";
+import ClearPurchaseList from "./ClearPurchaseList";
 
 const DiscardedList = (props) => {
   //stores all ordered products
@@ -454,7 +455,13 @@ const DiscardedList = (props) => {
                                         disabled
                                       />
                                       
-                                      ) : null
+                                      ) : <input
+                                      key={variantIndex}
+                                      value={"None"}
+                                      id="large"
+                                      className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      disabled
+                                    />
                                     }
                                   </div>
                                 </div>
@@ -650,6 +657,9 @@ const DiscardedList = (props) => {
                   {discardedList.length !== 0 ? (
                     <>
                       <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
+                      <ClearPurchaseList
+                        onConfirmClear={() => setDiscardedList([])}
+                      />
                       <RecordDiscard userID={props.userID} discardedList={discardedList} metricList={metricList} onConfirmClear={() =>{ setDiscardedList([]); setUsedItemList([]) }} />
                     
                     </>

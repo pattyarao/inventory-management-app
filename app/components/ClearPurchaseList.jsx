@@ -14,7 +14,7 @@ const ClearPurchaseList = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Clear Purchase List
+        Clear List
       </button>
 
       {showModal ? (
@@ -50,7 +50,7 @@ const ClearPurchaseList = (props) => {
                     />
                   </svg>
                   <div className="flex justify-center p-5 mb-5 text-2xl">
-                    Are you sure you want to clear the Purchase List?
+                    Are you sure you want to clear the list?
                   </div>
 
                   <div className="flex justify-center">
