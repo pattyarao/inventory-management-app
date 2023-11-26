@@ -3,9 +3,15 @@
 import withAuthentication from "../auth";
 import ProductOfferList from "../components/ProductOfferList";
 import Navbar from "../components/Navbar";
+import Loader from "../components/Loader";
 //import AddProductSales from "../components/AddProductSales";
 
 const ProductOfferings = ({userType, userInfo}) => {
+  if (!userType) {
+    return (
+      <Loader/>
+    );
+  }
   return (
     <>
     <Navbar  userType={userType} email={userInfo.email}/>

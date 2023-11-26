@@ -3,15 +3,13 @@
 import withAuthentication from "../auth";
 import PurchaseList from "../components/PurchaseList";
 import Navbar from "../components/Navbar";
-
+import Loader from "../components/Loader";
 
 
 const RecordPurchases = ({userType, userInfo}) => {
   if (!userType) {
     return (
-      <div>
-        <p>Loading</p>
-      </div>
+      <Loader/>
     );
   }
   return (

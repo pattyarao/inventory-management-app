@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import withAuthentication from "../auth";
 import MaterialList from "../components/MaterialList";
 import Navbar from "../components/Navbar";
+import Loader from "../components/Loader";
 // import { GET as GETModels } from '../api/modelchoices/route';
 
 const MaterialStockLevel = ({userType, userInfo}) => {
@@ -43,9 +44,7 @@ const MaterialStockLevel = ({userType, userInfo}) => {
   useEffect (() => console.log(predmodels), [predmodels])
   if (!userType) {
     return (
-      <div>
-        <p>Loading</p>
-      </div>
+      <Loader/>
     );
   }
   return (

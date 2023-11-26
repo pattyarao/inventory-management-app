@@ -6,7 +6,7 @@ import withAuthentication from "../auth";
 //icons
 import { IoIosArrowForward } from "react-icons/io";
 import { FiSearch } from "react-icons/fi";
-
+import Loader from "../components/Loader";
 import useUpdateVariantStatus from "../../hooks/useUpdateVariantStatus";
 
 const MaterialMasterlist = ({userType, userInfo}) => {
@@ -52,7 +52,11 @@ const MaterialMasterlist = ({userType, userInfo}) => {
   const filteredMaterials = masterlist.filter((material) =>
     material.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  if (!userType) {
+    return (
+      <Loader/>
+    );
+  }
   return (
     <div className="w-full">
       <Navbar userType={userType} email={userInfo.email} />

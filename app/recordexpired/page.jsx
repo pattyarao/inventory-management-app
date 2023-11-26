@@ -3,13 +3,11 @@
 import withAuthentication from "../auth";
 import DiscardedList from "../components/DiscardedList";
 import Navbar from "../components/Navbar";
-
+import Loader from "../components/Loader";
 const RecordExpired = ({userType, userInfo}) => {
   if (!userType) {
     return (
-      <div>
-        <p>Loading</p>
-      </div>
+      <Loader/>
     );
   }
   return (

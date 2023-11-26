@@ -3,6 +3,7 @@
 import ManualInventoryList from "../components/ManualInventoryList";
 import Navbar from "../components/Navbar";
 import withAuthentication from "../auth";
+import Loader from "../components/Loader";
 
 
 
@@ -11,6 +12,11 @@ import withAuthentication from "../auth";
 
 
 const RecordManualCount = ({userType, userInfo}) => {
+  if (!userType) {
+    return (
+      <Loader/>
+    );
+  }
   return (
     <>
     <Navbar userType={userType} email={userInfo.email} />
