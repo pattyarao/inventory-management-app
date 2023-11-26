@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+
 import ManualInventoryList from "../components/ManualInventoryList";
 import Navbar from "../components/Navbar";
+import withAuthentication from "../auth";
 
 
 
@@ -9,16 +10,16 @@ import Navbar from "../components/Navbar";
 
 
 
-const RecordManualCount = () => {
+const RecordManualCount = ({userType, userInfo}) => {
   return (
     <>
-    <Navbar userType={"Stock Controller"}/>
+    <Navbar userType={userType} email={userInfo.email} />
     <div className="w-full min-h-screen flex flex-col justify-center items-center gap-2" style={{ backgroundColor: '#27374D', color: 'white' }}>
       
       <div className="mt-1 w-[100%] px-10 py-4 bg-blue-400 rounded-lg" style={{ backgroundColor: '#526D82', color: 'white' }}>
         <h1 className="font-black text-xl">Manual Inventory Count</h1>
       </div>
-        <ManualInventoryList/>
+        <ManualInventoryList userID={userInfo.user_id}/>
       </div>
     </>
 
@@ -27,4 +28,4 @@ const RecordManualCount = () => {
   );
 };
 
-export default RecordManualCount;
+export default withAuthentication(RecordManualCount, ['Stock Controller'])

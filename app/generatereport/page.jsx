@@ -16,9 +16,4 @@ const ReportGeneration = ({ userType, userInfo }) => {
   );
 };
 
-export default withAuthentication(ReportGeneration, [
-  "Owner",
-  "Stock Controller",
-  "Manufacturing Head",
-  "Sales Person",
-]);
+export default withAuthentication(ReportGeneration, ["Owner"]);

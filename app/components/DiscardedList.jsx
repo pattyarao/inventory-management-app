@@ -7,7 +7,7 @@ import RecordDiscard from "./RecordDiscard";
 import AddMaterialDiscard from "./AddMaterialDiscard"
 import { FaInbox } from "react-icons/fa";
 
-const DiscardedList = () => {
+const DiscardedList = (props) => {
   //stores all ordered products
   const [discardedList, setDiscardedList] = useState([]); // list for rendering
   const [usedItemList, setUsedItemList] = useState([]); // reference list for adding new items, stores the material/variant id
@@ -650,7 +650,7 @@ const DiscardedList = () => {
                   {discardedList.length !== 0 ? (
                     <>
                       <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
-                      <RecordDiscard discardedList={discardedList} metricList={metricList} onConfirmClear={() =>{ setDiscardedList([]); setUsedItemList([]) }} />
+                      <RecordDiscard userID={props.userID} discardedList={discardedList} metricList={metricList} onConfirmClear={() =>{ setDiscardedList([]); setUsedItemList([]) }} />
                     
                     </>
                       ) 

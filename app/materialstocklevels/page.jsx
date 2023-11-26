@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import withAuthentication from "../auth";
 import MaterialList from "../components/MaterialList";
 import Navbar from "../components/Navbar";
 // import { GET as GETModels } from '../api/modelchoices/route';
 
-const MaterialStockLevel = () => {
+const MaterialStockLevel = ({userType, userInfo}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [sortOption, setSortOption] = useState('predictionValue'); // Default sort option
@@ -40,10 +41,16 @@ const MaterialStockLevel = () => {
   };
 
   useEffect (() => console.log(predmodels), [predmodels])
-
+  if (!userType) {
+    return (
+      <div>
+        <p>Loading</p>
+      </div>
+    );
+  }
   return (
     <>
-      <Navbar userType={"Stock Controller"} />
+      <Navbar userType={userType} email={userInfo.email}  />
       <div className="p-8 bg-[#F1F3F8]">
         {/* Header */}
         <div
@@ -110,4 +117,4 @@ const MaterialStockLevel = () => {
   );
 };
 
-export default MaterialStockLevel;
+export default withAuthentication(MaterialStockLevel, ['Stock Controller'])

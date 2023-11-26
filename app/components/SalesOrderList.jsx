@@ -5,7 +5,7 @@ import AddProductSales from "./AddProductSales";
 import ClearOrderList from "./ClearOrderList";
 import RecordOrder from "./RecordOrder";
 
-const SalesOrderList = () => {
+const SalesOrderList = (props) => {
   //stores all ordered products
   const [orderList, setOrderList] = useState([]);
 
@@ -196,7 +196,7 @@ const SalesOrderList = () => {
                 {orderList.length !== 0 ? (
                     <>
                     <ClearOrderList onConfirmClear={() => handleClear()}/>
-                    <RecordOrder orderList={orderList} onConfirmClear={() => setOrderList([])} />
+                    <RecordOrder userID={props.userID} orderList={orderList} onConfirmClear={() => setOrderList([])} />
                   </>
                 ) : null}
               </div>
