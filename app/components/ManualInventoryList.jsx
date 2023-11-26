@@ -184,7 +184,7 @@ const ManualCount = () => {
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Partial Amount
                         </div>
-                        <div className="col-span-1 me-5 text-sm flex items-center justify-center">
+                        <div className="col-span-1 ml-0 me-24 text-sm flex items-center justify-center">
                           Unit
                         </div>
                       </div>
@@ -305,7 +305,7 @@ const ManualCount = () => {
                                       onChange={(event) =>
                                         handleUnitChange(index, variantIndex, event)
                                       }
-                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="block ml-2 w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
                                        {unitsList
                                               .filter((unit) => material.metric_id === unit.metric_id)
