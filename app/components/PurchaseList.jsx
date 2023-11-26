@@ -180,9 +180,10 @@ const handleAddMaterials = (discardItem) => {
 
 
   const addVariant = (productIndex) => {
-    const newVariant = { variantName: "", amount: 0, unit: "", quantity: 1};
+    
 
     const newPurchaseList = [...purchaseList];
+    const newVariant = { name: newPurchaseList[productIndex].id, amount: 0, finalAmount: 0, unit: newPurchaseList[productIndex].mainMetric, quantity: 1};
     newPurchaseList[productIndex].variants.push(newVariant);
     setPurchaseList(newPurchaseList);
   };
@@ -449,6 +450,8 @@ const handleAddMaterials = (discardItem) => {
                                 </div>
 
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
+                                {material.id != variant.name ? 
+                                  (
                                   <button
                                     disabled={variant.name != material.id ? true : false}
                                     onClick={() =>
@@ -460,7 +463,10 @@ const handleAddMaterials = (discardItem) => {
                                     <span className="m-auto text-2xl font-bold text-white">
                                       −
                                     </span>
-                                  </button>
+                                  </button>): (
+                                    ""
+                                  )
+                                  }
                                   <input
                                     
                                     type="number"
@@ -475,7 +481,8 @@ const handleAddMaterials = (discardItem) => {
                                     }
                                     disabled={variant.name != material.id ? false : true}
                                   />
-                                  <button
+                                  {material.id != variant.name ? 
+                                  (<button
                                     onClick={() =>
                                       handleIncrement(index, variantIndex)
                                     }
@@ -485,7 +492,10 @@ const handleAddMaterials = (discardItem) => {
                                     <span className="m-auto text-2xl font-bold text-white">
                                       +
                                     </span>
-                                  </button>
+                                  </button>): (
+                                    ""
+                                  )
+                                  }
                                   {edit ? (
                                     <button
                                       className="ms-3 col-span-1 p-2 flex items-center justify-center rounded-lg cursor-pointer"

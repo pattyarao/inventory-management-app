@@ -3,30 +3,59 @@ import { useState, useEffect } from "react";
 import RecordManualCount from "./RecordManualCount";
 import ClearManualCount from "./ClearManualCount";
 import Navbar from "./Navbar";
+import { GET as GETUNIT } from "../api/submetric/route";
 import { GET as getCompleteList, POST} from "../api/manualcount/route";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort } from "@fortawesome/free-solid-svg-icons";
 const ManualCount = () => {
+  const [postSuccess, setPostSuccess] = useState(false);
   const [completeList, setCompleteList] = useState([]);
+  const [unitsList, setUnitsList] = useState([]);
   const [error, setError] = useState(null);
   useEffect(() => {
-      async function fetchData() {
+    async function fetchData() {
+      try {
+        const response = await getCompleteList();
+        const { materials, error } = await response.json();
+    
+        if (error) {
+          setError(error);
+        } else {
+          // Iterate through materials variants and set the unit to "1"
+          const modifiedMaterials = materials.map((material) => ({
+            ...material,
+            variants: material.variants.map((variant) => ({
+              ...variant,
+              unit: "1",
+              finalPartialAmount: 0
+            })),
+          }));
+          setCompleteList(modifiedMaterials);
+          console.log('New Complete List Data:', modifiedMaterials);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+      async function getUnits() {
         try {
-          const response = await getCompleteList();
-          const { materials, error } = await response.json();
+          const response = await GETUNIT();
+          const { metrics, error } = await response.json();
   
           if (error) {
             setError(error);
           } else {
-            setCompleteList(materials);
-            console.log('New Complete List Data:', materials);
+            setUnitsList(metrics);
           }
         } catch (error) {
-          console.error(error)
+          setError(error.message);
+          
         }
       }
+      getUnits();
       fetchData();
-  }, [])
+  }, [postSuccess])
 
   useEffect(() => {
     console.log('updated complete list:', completeList);
@@ -53,6 +82,17 @@ const ManualCount = () => {
     }
   };
   
+  const handleUnitChange = (productIndex, variantIndex, event) => {
+    const newManualCount = [...completeList];
+    newManualCount[productIndex].variants[variantIndex].unit = event.target.value;
+
+   
+
+      let ratio = parseFloat(event.target.value)
+      newManualCount[productIndex].variants[variantIndex].finalPartialAmount = ratio * newManualCount[productIndex].variants[variantIndex].amount;
+      setCompleteList(newManualCount);
+    
+  };
 
 
 
@@ -65,11 +105,13 @@ const ManualCount = () => {
 
   const handleAmtChange = (productIndex, variantIndex, event) => {
 
-    const newCompleteList = [...completeList];
+    const newManualCount = [...completeList];
+    newManualCount[productIndex].variants[variantIndex].amount = event.target.value;
 
-    newCompleteList[productIndex].variants[variantIndex].amount = event.target.valueAsNumber;
+      let ratio = parseFloat(newManualCount[productIndex].variants[variantIndex].unit)
 
-    setCompleteList(newCompleteList);
+      newManualCount[productIndex].variants[variantIndex].finalPartialAmount = ratio * event.target.value;
+      setCompleteList(newManualCount);
   };
 
   const handleIncrement = (productIndex, variantIndex) => {
@@ -157,20 +199,24 @@ const ManualCount = () => {
                               color: "#27374D",
                             }}
                           >
-                            <div className="col-span-5 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
 
-                              <div className="ml-0 font-black text-xl ms-20 mt-1"> 
-                                {material.name}
+                            {material.variants.length > 0 ? (
+                              <div className="col-span-5 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
+                                <div className="ml-0 font-black text-xl ms-20 mt-1"> 
+                                  {material.name}
+                                </div>
                               </div>
-                            </div>
-
-
+                            ) : null}
+                            
+                            
                             {material.variants.map((variant, variantIndex) => (
                               
                               <>
                                 {variantIndex !== 0 ? (
                                   <div className="col-span-5 me-5 mt-3" />
                                 ) : null}
+
+                                
 
                                 <div className="col-span-1 me-5">
                                   <div className="relative">
@@ -186,7 +232,7 @@ const ManualCount = () => {
                                       id="large"
                                       class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-                                      {variant.name === material.name ? "Generic" : variant.name}
+                                      {variant.name === material.name ? "No Variation" : variant.name}
                                     </li>
                                   </div>
                                 </div>
@@ -253,24 +299,21 @@ const ManualCount = () => {
                                 {/** to be updated with unit feature */}
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
                                   <div className="relative">
-                                    <select
+                                  <select
                                       id="large"
                                       value={variant.unit}
                                       onChange={(event) =>
-                                        handleUnitChange(
-                                          index,
-                                          variantIndex,
-                                          event,
-                                        )
+                                        handleUnitChange(index, variantIndex, event)
                                       }
-                                      class="block w-full ml-10 px-5 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
-                                      <option value="0">g</option>
-                                      <option value="1">mg</option>
-                                      <option value="2">kg</option>
-                                      <option value="3">ml</option>
-                                      <option value="4">l</option>
-                                      <option value="5"></option>
+                                       {unitsList
+                                              .filter((unit) => material.metric_id === unit.metric_id)
+                                              .map((unit) => (
+                                                  <option key={unit.id} value={unit.ratio}>
+                                                      {unit.abbreviation}
+                                                  </option>
+                                              ))}
                                     </select>
                                   </div>
                                 </div>
@@ -297,7 +340,7 @@ const ManualCount = () => {
                   {completeList
                   .length !== 0 ? (
                     <>            
-                      <RecordManualCount completeList={completeList} postMaterial={POST}/>
+                      <RecordManualCount completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
                     </>
                   ) : null}
                 </div>

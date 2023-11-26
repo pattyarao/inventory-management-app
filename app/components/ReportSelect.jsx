@@ -29,9 +29,12 @@ const ReportSelect = () => {
           >
             Material Transaction Report
           </button>
-        <button className={`w-full p-2 rounded-md flex items-center justify-center drop-shadow-md border border-slate-300 text-sm transition ease duration-70 ${
-              choice === 3 ? "bg-[#8D93AB]" : "bg-[#F1F3F8]"
-            }`}>button</button>
+        <button 
+            onClick={() => handleLinkClick(3)}
+            className={`w-full p-2 rounded-md flex items-center justify-center drop-shadow-md border border-slate-300 text-sm transition ease duration-70 ${
+            choice === 3 ? "bg-[#8D93AB]" : "bg-[#F1F3F8]"
+            }`}>Rejected Orders Report
+        </button>
         </div>
       </div>
 

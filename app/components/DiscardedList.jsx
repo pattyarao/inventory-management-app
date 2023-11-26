@@ -295,11 +295,7 @@ const DiscardedList = () => {
   
   const handleIncrement = (productIndex, variantIndex) => {
     const newDiscardedList = [...discardedList];
-
-    if (!newDiscardedList[productIndex].variants[variantIndex].quantity) {
-      newDiscardedList[productIndex].variants[variantIndex].quantity = 1;
-    }
-
+    
     newDiscardedList[productIndex].variants[variantIndex].quantity++;
     setDiscardedList(newDiscardedList);
   };
@@ -640,7 +636,7 @@ const DiscardedList = () => {
                         <FaInbox style={{ fontSize: '20em'}} />
                         <div className="flex flex-col">
                             <div className="text-3xl justify-center text-grey ">
-                                Your <b>Expired Material List</b> is <b>Empty</b>
+                                Your Discard List is Empty
                             </div>
                             <div className="text-black text-xl mt-6">
                                 <AddMaterialDiscard purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
