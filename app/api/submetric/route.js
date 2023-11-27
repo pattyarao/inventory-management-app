@@ -1,4 +1,5 @@
 import supabase from "../../supabase";
+import { NextResponse } from "next/server";
 
 export async function GET() {
     const { data: metrics, error } = await supabase
@@ -41,12 +42,12 @@ export async function POST(newUnit) {
           .upsert(unitList);
   
         if (unitError) {
-          return { error: unitError };
+          return NextResponse.json( { error: unitError }, {status: 500});
         }
       } catch (error) {
-        return { error: error.message };
+        return NextResponse.json({error: error.message}, {status: 500});
       }
       // You can continue with more queries or return a success status as needed.
-      return { success: true };
+      return NextResponse.json({ success: true }, {status: 200});
    
   }

@@ -14,7 +14,7 @@ const ClearPurchaseList = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Clear List
+        Clear Purchase List
       </button>
 
       {showModal ? (
@@ -71,7 +71,7 @@ const ClearPurchaseList = (props) => {
                         props.onConfirmClear();
                       }}
                     >
-                      Yes, I'm Sure
+                      {"Yes, I'm Sure"}
                     </button>
                   </div>
                 </div>

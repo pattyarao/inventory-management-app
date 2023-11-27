@@ -2,17 +2,20 @@ import supabase from "../../supabase";
 
 export async function GET(start_date, end_date, selectedOptions) {
   try {
-    const { data, error } = await supabase
-      .rpc('summary_rejorders', { start_date, end_date })
-      .in('name', selectedOptions);
+    const { data: detailedReport, error } = await supabase
+      .from("DETAILED_DISCREPANCY")
+      .select()
+      .gte('transaction_date', start_date) 
+      .lt('transaction_date', end_date)
+      .in('material_name', selectedOptions);
 
     if (error) {
       throw error;
     }
 
-    if (Array.isArray(data)) {
+    if (Array.isArray(detailedReport)) {
       const json = {
-        data: data,
+        detailedReport: detailedReport,
       };
 
       return new Response(JSON.stringify(json), {
@@ -20,12 +23,12 @@ export async function GET(start_date, end_date, selectedOptions) {
         headers: { "Content-Type": "application/json" },
       });
     } else {
-      // Handle the case where data is not an array
-      throw new Error("RPC response data is not an array");
+      // Handle the case where detailedReport is not an array
+      throw new Error("detailedReport is not an array");
     }
   } catch (error) {
     // Handle other errors, e.g., network issues, Supabase client setup, etc.
-    console.error("Error fetching summary rejorders:", error);
+    console.error("Error fetching detailed report:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,

@@ -449,7 +449,7 @@ export async function GET(request, {params}) {
       });
     }
 
-
+    console.log("FORECASTED: ", forecastedRestock)
 
     //GET THE DIFFERENCE BETWEEN forecastedRestock and currentStock, then update the values in suggestedRestock
     // console.log("forecasted Restock", forecastedRestock)
@@ -467,7 +467,7 @@ export async function GET(request, {params}) {
         }
     }
 
-
+    
     const json = {
       data: suggestedRestock,
     };

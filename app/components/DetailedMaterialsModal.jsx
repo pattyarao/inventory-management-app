@@ -3,11 +3,12 @@ import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
 import { useState, useEffect } from "react";
 
 const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose }) => {
-  if (!isVisible) return null;
+  
 
   const [groupedData, setGroupedData] = useState({});
   const [reportData, setReportData] = useState([]); 
   const currentDate = new Date().toLocaleDateString('en-GB');
+  const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
   useEffect(() => {
     async function getMaterials() {
 
@@ -55,10 +56,11 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
     groupData();
   }, [reportData]);
 
-
+  if (!isVisible) return null;
 
   console.log(groupedData)
-
+  
+  if (!isVisible) return null;
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black backdrop-filter backdrop-blur-lg">
       <div className="w-[90%] h-[90vh] bg-white rounded-md shadow-lg overflow-y-auto">
@@ -66,7 +68,7 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
               <div className="w-full flex justify-between items-center">
                 <div>
                   <h2 className="text-2xl font-black">{choice} Drilled Down Report</h2>
-                  <p className="text-sm">Created at: {currentDate}</p>
+                  <p className="text-sm">Created at: {currentDate} {currentTime}</p>
                 </div>
                 <button className="text-black py-2 px-6 bg-gray-200 hover:bg-red-500 hover:text-white rounded-md transition ease duration-70"
                 onClick={onClose}>
@@ -83,13 +85,10 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
               <tr>
-                <th className="border-b px-4 py-2">Date</th>
-                <th className="border-b px-4 py-2">Material Name</th>
-                <th className="border-b px-4 py-2">Quantity</th>
-                <th className="border-b px-4 py-2">Transaction Type</th>
-                <th className="border-b px-4 py-2">User</th>
-                <th className="border-b px-4 py-2">Variation</th>
-                <th className="border-b px-4 py-2">Amount</th>
+                <th className="border-b px-4 py-2 text-left">Date of Transaction</th>
+                <th className="border-b px-4 py-2 text-left">Transaction Type</th>
+                <th className="border-b px-4 py-2 text-left">Recording Staff</th>
+                <th className="border-b px-4 py-2 text-right">Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -97,13 +96,10 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
                 .filter((item) => item.variation === "No Variation")
                 .map((item, index) => (
                   <tr key={index}>
-                    <td className="border-b px-4 py-2">{new Date(item.date).toLocaleDateString("en-GB")}</td>
-                    <td className="border-b px-4 py-2">{item.material_name}</td>
-                    <td className="border-b px-4 py-2">{item.qty}</td>
-                    <td className="border-b px-4 py-2">{item.transac_type}</td>
-                    <td className="border-b px-4 py-2">{item.user}</td>
-                    <td className="border-b px-4 py-2">{item.variation}</td>
-                    <td className="border-b px-4 py-2">{item.amount}</td>
+                    <td className="border-b px-4 py-2 text-left">{new Date(item.date).toLocaleDateString("en-GB")}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
+                    <td className="border-b px-4 py-2 text-left">{item.user}</td>
+                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
                   </tr>
                 ))}
             </tbody>
@@ -120,13 +116,12 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
             <table className="min-w-full bg-white border border-gray-300">
                 <thead>
                 <tr>
-                    <th className="border-b px-4 py-2">Date</th>
-                    <th className="border-b px-4 py-2">Material Name</th>
-                    <th className="border-b px-4 py-2">Quantity</th>
-                    <th className="border-b px-4 py-2">Transaction Type</th>
-                    <th className="border-b px-4 py-2">User</th>
-                    <th className="border-b px-4 py-2">Variation</th>
-                    <th className="border-b px-4 py-2">Amount</th>
+                  <th className="border-b px-4 py-2 text-left">Date of Transaction</th>
+                  <th className="border-b px-4 py-2 text-left">Quantity</th>
+                  <th className="border-b px-4 py-2 text-left">Transaction Type</th>
+                  <th className="border-b px-4 py-2 text-left">Recording Staff</th>
+                  <th className="border-b px-4 py-2 text-left">Variation</th>
+                  <th className="border-b px-4 py-2 text-right">Amount</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -134,13 +129,13 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
                     .filter((item) => item.variation !== "No Variation")
                     .map((item, index) => (
                     <tr key={index}>
-                         <td className="border-b px-4 py-2">{new Date(item.date).toLocaleDateString("en-GB")}</td>
-                        <td className="border-b px-4 py-2">{item.material_name}</td>
-                        <td className="border-b px-4 py-2">{item.qty}</td>
-                        <td className="border-b px-4 py-2">{item.transac_type}</td>
-                        <td className="border-b px-4 py-2">{item.user}</td>
-                        <td className="border-b px-4 py-2">{item.variation}</td>
-                        <td className="border-b px-4 py-2">{item.amount}</td>
+                         <td className="border-b px-4 py-2 text-left">{new Date(item.date).toLocaleDateString("en-GB")}</td>
+                          <td className="border-b px-4 py-2 text-left">{item.qty}</td>
+                          <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
+                          <td className="border-b px-4 py-2 text-left">{item.user}</td>
+                          <td className="border-b px-4 py-2 text-left">{item.variation}</td>
+                          <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
+                    
                     </tr>
                     ))}
                 </tbody>
@@ -149,7 +144,7 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
         </div>
         ))}
 
-            <h1>*** END OF REPORT ***</h1>
+<h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
             </div>
 
       </div>

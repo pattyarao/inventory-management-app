@@ -1,5 +1,5 @@
 import supabase from "../../supabase";
-
+import { NextResponse } from "next/server";
 
 export async function GET() {
   const { data: variants, error } = await supabase
@@ -37,11 +37,11 @@ export async function POST(variants) {
       }]);
 
     if (error) {
-      return { error };
+      return NextResponse.json( { error: error }, {status: 500});
     }
 
-    return { newVariant: data[0] }; // Assuming data is an array with the newly inserted variant
+    return NextResponse.json({ success: true }, {status: 200});// Assuming data is an array with the newly inserted variant
   } catch (error) {
-    return { error: error.message };
+    return NextResponse.json({error: error.message}, {status: 500});
   }
 }

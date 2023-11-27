@@ -70,7 +70,7 @@ const RecordPurchase = (props) => {
         const updatedMaterial = { ...material };
     
         material.variants.forEach((variant) => {
-          if (variant.name === material.id) {
+          if (variant.name === material.id || variant.name === "") {
             updatedMaterial.qty_available += variant.finalAmount * variant.quantity;
           } else {
             updatedMaterial.qty_available += variant.amount * variant.quantity;

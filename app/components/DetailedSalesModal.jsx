@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import { GET as getDetailedProducts} from '../api/detailedproducts/route';
 
 const DetailedSummaryModal = ({ isVisible, startDate, endDate, choice, onClose }) => {
-  if (!isVisible) return null;
+ 
 
   const [groupedData, setGroupedData] = useState({});
   const [reportData, setReportData] = useState([]); 
   const currentDate = new Date().toLocaleDateString('en-GB');
+  const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
   useEffect(() => {
     async function getSales() {
 
@@ -53,15 +54,15 @@ const DetailedSummaryModal = ({ isVisible, startDate, endDate, choice, onClose }
   
     groupData();
   }, [reportData]);
-
+  if (!isVisible) return null;
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black backdrop-filter backdrop-blur-lg">
-      <div className="w-[90%] h-[90vh] bg-white rounded-md shadow-lg overflow-y-auto pb-8">
+      <div className="w-[70%] h-[90vh] bg-white rounded-md shadow-lg overflow-y-auto pb-8">
         <div className="w-full">
           <div className="w-full flex justify-between items-center px-6 py-2 bg-neutral-400/80 top-0 sticky">
             <div>
             <h2 className="text-2xl font-bold ">Drilled Down Sales Report</h2>
-            <p className="text-sm">Created at: {currentDate}</p>
+            <p className="text-sm">Created at: {currentDate} {currentTime}</p>
             </div>
             <div>
             <button
@@ -79,11 +80,9 @@ const DetailedSummaryModal = ({ isVisible, startDate, endDate, choice, onClose }
                 <table className="min-w-full bg-white border border-gray-300">
                   <thead>
                     <tr>
-                      <th className="border-b border-r text-left px-4 py-2">Date</th>
-                      <th className="border-b border-r text-left px-4 py-2">Product Name</th>
-                      <th className="border-b border-r text-left px-4 py-2">Product Status</th>
-                      <th className="border-b border-r text-left px-4 py-2">User</th>
-                      <th className="border-b border-r text-left px-4 py-2">Quantity Ordered</th>
+                      <th className="border-b border-r text-left px-4 py-2">Date of Transaction</th>
+                      <th className="border-b border-r text-left px-4 py-2">Recording Sales Person</th>
+                      <th className="border-b border-r text-left px-4 py-2 text-right">Quantity Ordered</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -92,10 +91,8 @@ const DetailedSummaryModal = ({ isVisible, startDate, endDate, choice, onClose }
                         <td className="border-b border-r px-4 py-2">
                         {new Date(item.date).toLocaleDateString("en-GB")}
                         </td>
-                        <td className="border-b border-r px-4 py-2">{item.product_name}</td>
-                        <td className="border-b border-r px-4 py-2">{item.product_status}</td>
                         <td className="border-b border-r px-4 py-2">{item.user}</td>
-                        <td className="border-b border-r px-4 py-2">{item.qty_ordered}</td>
+                        <td className="border-b border-r px-4 py-2 text-right">{item.qty_ordered} units</td>
                       </tr>
                     ))}
                   </tbody>
@@ -103,7 +100,7 @@ const DetailedSummaryModal = ({ isVisible, startDate, endDate, choice, onClose }
             </div>
           </div>
         ))}
-        <h1 className="text-3xl font-bold mt-8 text-center">*** END OF REPORT ***</h1>
+        <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
       </div>
 
       </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import useSignup from "../../hooks/useSignup";
 import { New_Tegomin } from "next/font/google";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const AddEmployee = ({
   handleClose,
@@ -16,6 +17,7 @@ const AddEmployee = ({
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
   const [role, setRole] = useState("Owner");
   const router = useRouter();
 
@@ -31,6 +33,9 @@ const AddEmployee = ({
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
+  const handleConfirmPassword = (e) => {
+    setConfirmPass(e.target.value);
+  };
 
   const handleSelectRole = (event) => {
     setRole(event.target.value);
@@ -43,6 +48,11 @@ const AddEmployee = ({
     password,
     selectedRole
   ) => {
+    if (confirmPass !== password) {
+      return toast("Passwords do not match.", {
+        type: "error",
+      });
+    }
     const newEmployeeData = await signup(
       firstName,
       lastName,
@@ -79,74 +89,68 @@ const AddEmployee = ({
   };
 
   return (
-    <div className="fixed min-w-full min-h-screen flex flex-col items-center justify-center bg-black/80">
-      <div className="w-[50%] p-4 flex justify-between items-center bg-[#393B44] rounded-t-md">
-        <p className="text-xl text-white font-bold uppercase">
-          Add New Employee
-        </p>
-        <p onClick={handleClose} className="cursor-pointer">
-          Cancel
-        </p>
-      </div>
-      <div className="w-[50%] px-4 py-8 bg-[#D6E0F0] flex flex-col items-center justify-center gap-6 rounded-b-md">
-        <div className="flex justify-between items-center gap-6">
-          <div className="firstname_input">
-            <p>First Name</p>
-            <input
-              className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
-              type="text"
-              onChange={handleFirstnameChange}
-              value={firstname}
-            />
-          </div>
-          <div className="lastname_input">
-            <p>Last Name</p>
-            <input
-              className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
-              type="text"
-              onChange={handleLastNameChange}
-              value={lastname}
-            />
-          </div>
-        </div>
-        <div className="flex justify-between items-center gap-6">
-          <div className="email_input">
-            <p>Email</p>
-            <input
-              className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
-              type="text"
-              onChange={handleEmailChange}
-              value={email}
-            />
-          </div>
-          <div className="password_input">
-            <p>Password</p>
-            <input
-              className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
-              type="password"
-              onChange={handlePasswordChange}
-              value={password}
-            />
-          </div>
-        </div>
-
-        <div className="w-[85%] py-2 flex items-center justify-center gap-6 bg-[#8D93AB] rounded-md ">
-          <p className="font-bold">Assign Role</p>
+    
+    <div className="fixed w-full h-screen flex items-center justify-center bg-black/80">
+      <div className="w-[70%] h-[70vh] p-8 bg-slate-300 rounded-md drop-shadow-md flex flex-col justify-center items-center gap-8">
+        <div className="w-full flex items-center justify-between">
           <div className="">
-            <select
-              className="w-full pl-2 pr-16 py-2 bg-white border border-black rounded-lg text-sm focus:outline-none"
-              id="role"
-              onChange={handleSelectRole}
-              value={role}
-            >
-              <option value="Owner">Owner</option>
-              <option value="Stock Controller">Stock Controller</option>
-              <option value="Manufacturing Head">Manufacturing Head</option>
-              <option value="Sales Person">Sales Person</option>
-            </select>
+            <h1 className="font-black text-lg">Add an employee.</h1>
+            <p className="text-sm">
+              Input employee details in the given fields.
+            </p>
+          </div>
+          <div className="w-[50%] p-4 flex flex-col items-center justify-between gap-4 bg-white rounded-md drop-shadow-lg">
+            <div className="w-full text-sm flex items-center justify-between gap-4">
+              <p>First Name</p>
+              <input
+                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                type="text"
+                onChange={handleFirstnameChange}
+                value={firstname}
+              />
+            </div>
+            <div className="w-full text-sm flex items-center justify-between gap-4">
+              <p>Last Name</p>
+              <input
+                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                type="text"
+                onChange={handleLastNameChange}
+                value={lastname}
+              />
+            </div>
+            <div className="w-full text-sm flex items-center justify-between gap-4">
+              <p>Email</p>
+              <input
+                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                type="text"
+                onChange={handleEmailChange}
+                value={email}
+              />
+            </div>
+            <div className="w-full text-sm flex items-center justify-between gap-4">
+              <p>Password</p>
+              <input
+                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                type="password"
+                onChange={handlePasswordChange}
+                value={password}
+              />
+            </div>
+            <div className="w-full text-sm flex items-center justify-between gap-4">
+              <p>Confirm Password</p>
+              <input
+                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                type="password"
+                onChange={handleConfirmPassword}
+                value={confirmPass}
+              />
+            </div>
           </div>
         </div>
-        <div>
+        <div className="w-full flex items-center justify-end gap-10">
+          <p onClick={handleClose} className="cursor-pointer">
+           Cancel
+         </p>
           <button
             className="bg-[#526D82] py-2 px-4 text-white font-semibold rounded-md"
             onClick={(e) =>

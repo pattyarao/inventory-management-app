@@ -28,7 +28,8 @@ const AddMaterialPurchase = (props) => {
                 (purchaseMaterial) => purchaseMaterial.id !== material.id
               )
             );
-
+            console.log("TRIGGERED")
+            console.log(filteredMaterials)
             setMaterialsList(filteredMaterials);
             setFilteredProductsList(filteredMaterials);
             setLoading(false); // Data has been loaded
@@ -40,7 +41,7 @@ const AddMaterialPurchase = (props) => {
       getMaterials();
     }, [showModal]);
     
-
+    console.log(materialsList)
 
 
 

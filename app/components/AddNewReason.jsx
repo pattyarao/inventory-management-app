@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { NEWREASON as POST } from "../api/discard/route";
+import { POST } from "../api/discard/newreason/route";
 
 const AddNewReason = (props) => {
 

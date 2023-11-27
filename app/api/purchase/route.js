@@ -1,29 +1,30 @@
 import supabase from "../../supabase";
+import { NextResponse } from "next/server";
 
 export async function GET() {
-    const { data: materials, error } = await supabase
-    .from("MD_RAW_MATERIALS")
-    .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
-    .eq("status", "TRUE") 
+  const { data: materials, error } = await supabase
+  .from("MD_RAW_MATERIALS")
+  .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
+  .eq("status", "TRUE") 
 
-    console.log(materials)
-
-  if (error) {
-    return new Response(JSON.stringify({ error }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const json = {
-    materials: materials,
-  };
-
-  return new Response(JSON.stringify(json), {
-    status: 200,
+if (error) {
+  return new Response(JSON.stringify({ error }), {
+    status: 500,
     headers: { "Content-Type": "application/json" },
   });
 }
+
+const json = {
+  materials: materials,
+};
+
+return new Response(JSON.stringify(json), {
+  status: 200,
+  headers: { "Content-Type": "application/json" },
+});
+}
+
+
 
 // POST function
 export async function POST(variantPurchases, directPurchases, user_id) {
@@ -35,12 +36,12 @@ export async function POST(variantPurchases, directPurchases, user_id) {
       .select()
 
     if (purchaseError) {
-      return { error: purchaseError };
+      return NextResponse.json( { error: purchaseError }, {status: 500});
     }
 
     // Ensure that purchaseData is not null before proceeding
     if (!purchaseData || purchaseData.length === 0) {
-      return { error: "Failed to insert the purchase record." };
+      return NextResponse.json( { error: "Failed to insert the purchase record." }, {status: 500});
     }
 
     // Get the ID of the newly inserted purchase
@@ -60,10 +61,10 @@ export async function POST(variantPurchases, directPurchases, user_id) {
         .upsert(variantUpsertData);
 
       if (variantError) {
-        return { error: variantError };
+        return NextResponse.json( {error: variantError }, {status: 500});
       }
     } catch (error) {
-      return { error: error.message };
+      return NextResponse.json({error: error.message}, {status: 500});
     }
 
     // Perform queries for direct purchases
@@ -80,16 +81,16 @@ export async function POST(variantPurchases, directPurchases, user_id) {
         .upsert(directPurchaseUpsertData);
 
       if (directPurchaseError) {
-        return { error: directPurchaseError };
+        return NextResponse.json( {error: directPurchaseError }, {status: 500});
       }
     } catch (error) {
-      return { error: error.message };
+      return NextResponse.json({error: error.message}, {status: 500});
     }
 
     // You can continue with more queries or return a success status as needed.
-    return { success: true };
+    return NextResponse.json({ success: true }, {status: 200});
   } catch (error) {
-    return { error: error.message };
+    return NextResponse.json({error: error.message}, {status: 500});
   }
 }
 
@@ -107,12 +108,12 @@ export async function PATCH(purchases) {
       .upsert(updates)
 
     if (error) {
-      return { error };
+      return NextResponse.json({error: error.message}, {status: 500});
     }
 
     // If there's no error, the updates were successful
-    return { success: true };
+    return NextResponse.json({ success: true }, {status: 200});
   } catch (error) {
-    return { error: error.message };
+    return NextResponse.json({error: error.message}, {status: 500});
   }
 }

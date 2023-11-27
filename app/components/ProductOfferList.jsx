@@ -112,11 +112,11 @@ const toggleProductStatus = (productToToggle) => {
   
 
   return (
-    <div className="w-full flex flex-col items-center gap-4">
+     <div className="w-full flex flex-col items-center gap-4">
       {isLoading ? ( <Loader/>) : (
 
 
-<div className="w-full flex flex-col text-xs">
+      <div className="w-full flex flex-col text-xs">
         <div className="flex flex-col">
           <div className="w-full flex flex-col items-center gap-4">
             <div className="w-full flex flex-col text-xs">

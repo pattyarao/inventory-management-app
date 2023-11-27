@@ -35,6 +35,12 @@ const ReportSelect = () => {
             choice === 3 ? "bg-[#8D93AB]" : "bg-[#F1F3F8]"
             }`}>Rejected Orders Report
         </button>
+        <button 
+            onClick={() => handleLinkClick(4)}
+            className={`w-full p-2 rounded-md flex items-center justify-center drop-shadow-md border border-slate-300 text-sm transition ease duration-70 ${
+            choice === 4 ? "bg-[#8D93AB]" : "bg-[#F1F3F8]"
+            }`}>Discrepancy Report
+        </button>
         </div>
       </div>
 

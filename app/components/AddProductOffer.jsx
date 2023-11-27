@@ -1,13 +1,15 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
+import AddNewUnit from "./AddNewUnit";
 import { GET } from "../api/rawmaterials/route";
 import { POST } from "../api/productlist/route";
 import { GET as GETUNIT } from "../api/submetric/route";
 
 const AddProductOffer = ({ addProductToList }) => {
   const [productName, setProductName] = useState("");
-
+  const [addUnitCondition, setAddUnitCondition] = useState(false);
   const handleProductNameChange = (e) => {
     setProductName(e.target.value);
   };
@@ -66,7 +68,7 @@ const AddProductOffer = ({ addProductToList }) => {
     }
     getMaterials();
     getUnits();
-  }, []);
+  }, [addUnitCondition]);
 
   console.log(newMaterial)
 
@@ -99,6 +101,10 @@ const AddProductOffer = ({ addProductToList }) => {
 
 
 const handleMaterialUnitChange = (e) => {
+  if (e.target.value === "Add New Unit") {
+    setAddUnitCondition(true);
+    return;
+  }
   setNewMaterial((prevMaterial) => {
       const updatedMaterial = { ...prevMaterial, unit: e.target.value };
 
@@ -461,9 +467,9 @@ const handleMaterialUnitChange = (e) => {
                           />
                         </div>
                         <div className="flex justify-center space-x-4 mb-4 pl-3 pr-52">
-                          <label className="w-32 text-right mt-2">Unit</label>
+                          <label className="w-56 text-right mt-2">Unit</label>
                           <select
-                            className="w-24 p-2 rounded"
+                            className="w-48 p-2 rounded"
                             style={{
                               backgroundColor: "#DDE6ED",
                               color: "#27374D",
@@ -476,6 +482,8 @@ const handleMaterialUnitChange = (e) => {
                                         {unit.name} ({unit.abbreviation})
                                     </option>
                                 ))}
+                                <option disabled>─────────────</option>
+                                <option>Add New Unit</option>
                           </select>
                         </div>
                         <div className="flex items-center justify-center">
@@ -573,13 +581,16 @@ const handleMaterialUnitChange = (e) => {
                         type="button"
                         onClick={handleAddProduct}
                       >
-                        &nbsp;&nbsp;&nbsp;&nbsp;Save&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;Save New Product&nbsp;&nbsp;&nbsp;&nbsp;
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            {addUnitCondition ? (
+              <AddNewUnit onClose={() => setAddUnitCondition(false)} />
+            ) : null}
           </div>
           <div className="opacity-75 fixed inset-0 z-40 bg-black"></div>
         </>
