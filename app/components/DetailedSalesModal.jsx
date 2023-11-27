@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { GET as getDetailedProducts} from '../api/detailedproducts/route';
 
 const DetailedSummaryModal = ({ isVisible, startDate, endDate, choice, onClose }) => {
-  if (!isVisible) return null;
+ 
 
   const [groupedData, setGroupedData] = useState({});
   const [reportData, setReportData] = useState([]); 
@@ -54,7 +54,7 @@ const DetailedSummaryModal = ({ isVisible, startDate, endDate, choice, onClose }
   
     groupData();
   }, [reportData]);
-
+  if (!isVisible) return null;
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black backdrop-filter backdrop-blur-lg">
       <div className="w-[70%] h-[90vh] bg-white rounded-md shadow-lg overflow-y-auto pb-8">
