@@ -4,7 +4,7 @@ export async function GET(start_date, end_date, selectedOptions) {
 
 
     const { data: detailedReport, error } = await supabase
-    .from("MAT_DETAILED_REPORT")
+    .from("FINAL_DETAILED_MATERIAL")
     .select()
     .gte('date', start_date) 
     .lt('date', end_date)

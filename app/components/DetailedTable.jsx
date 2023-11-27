@@ -182,7 +182,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                     <td className="border-b px-4 py-2 text-left">{new Date(item.date).toLocaleDateString("en-GB")}</td>
                     <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
                     <td className="border-b px-4 py-2 text-left">{item.user}</td>
-                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
+                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount} {item.metric_unit}</td>
                   </tr>
                 ))}
             </tbody>
@@ -217,7 +217,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                     <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
                     <td className="border-b px-4 py-2 text-left">{item.user}</td>
                     <td className="border-b px-4 py-2 text-left">{item.variation}</td>
-                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
+                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount} {item.metric_unit}</td>
                   </tr>
                 ))}
             </tbody>
