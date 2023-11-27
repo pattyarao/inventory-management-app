@@ -3,7 +3,7 @@ import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
 import { useState, useEffect } from "react";
 
 const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose }) => {
-  if (!isVisible) return null;
+  
 
   const [groupedData, setGroupedData] = useState({});
   const [reportData, setReportData] = useState([]); 
@@ -56,7 +56,7 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
     groupData();
   }, [reportData]);
 
-
+  if (!isVisible) return null;
 
   console.log(groupedData)
 
