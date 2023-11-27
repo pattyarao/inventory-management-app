@@ -8,43 +8,39 @@ const AddMaterialPurchase = (props) => {
   const [materialsList, setMaterialsList] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Add loading state
-    //determines if the modal for adding a product is shown or not
-    const [showModal, setShowModal] = useState(false);
-  
-    useEffect(() => {
-      async function getMaterials() {
-        try {
-          const response = await GET();
-          const { materials, error } = await response.json();
-    
-          if (error) {
-            setError(error);
-            console.log("err0 " + error);
-          } else {
-            
-            // Filter out materials that are already in props.purchaseList
-            const filteredMaterials = materials.filter((material) =>
-              props.purchaseList.every(
-                (purchaseMaterial) => purchaseMaterial.id !== material.id
-              )
-            );
-            console.log("TRIGGERED")
-            console.log(filteredMaterials)
-            setMaterialsList(filteredMaterials);
-            setFilteredProductsList(filteredMaterials);
-            setLoading(false); // Data has been loaded
-          }
-        } catch (error) {
-          setError(error.message);
+  //determines if the modal for adding a product is shown or not
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    async function getMaterials() {
+      try {
+        const response = await GET();
+        const { materials, error } = await response.json();
+
+        if (error) {
+          setError(error);
+          console.log("err0 " + error);
+        } else {
+          // Filter out materials that are already in props.purchaseList
+          const filteredMaterials = materials.filter((material) =>
+            props.purchaseList.every(
+              (purchaseMaterial) => purchaseMaterial.id !== material.id,
+            ),
+          );
+          console.log("TRIGGERED");
+          console.log(filteredMaterials);
+          setMaterialsList(filteredMaterials);
+          setFilteredProductsList(filteredMaterials);
+          setLoading(false); // Data has been loaded
         }
+      } catch (error) {
+        setError(error.message);
       }
-      getMaterials();
-    }, [showModal]);
-    
-    console.log(materialsList)
+    }
+    getMaterials();
+  }, [showModal]);
 
-
-
+  console.log(materialsList);
 
   //closes the modal and removes all previous personalizations
   const handleClose = () => {
@@ -56,7 +52,7 @@ const AddMaterialPurchase = (props) => {
 
   const handleAddtoPurchaseList = () => {
     // Filter selected products based on the 'checked' property
-    console.log(materialsList)
+    console.log(materialsList);
     const selectedMaterials = filteredProductsList.filter((mat) => mat.checked);
 
     // Call the parent component's function to update selected products
@@ -66,7 +62,8 @@ const AddMaterialPurchase = (props) => {
   };
 
   //Sort and Search Mechanisms
-  const [filteredProductsList, setFilteredProductsList] = useState(materialsList);
+  const [filteredProductsList, setFilteredProductsList] =
+    useState(materialsList);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("name-asc"); // Initialize the default sorting option
@@ -86,7 +83,6 @@ const AddMaterialPurchase = (props) => {
       setFilteredProductsList(filteredProducts);
     }
   };
-
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
@@ -190,7 +186,10 @@ const AddMaterialPurchase = (props) => {
                       <option value="name-desc">Sort by Name (Z-A)</option>
                     </select>
                   </div>
-                  <div className="relative overflow-y-auto shadow-md sm:rounded-lg" style={{ maxHeight: "500px", overflowY: "auto" }}>
+                  <div
+                    className="relative overflow-y-auto shadow-md sm:rounded-lg"
+                    style={{ maxHeight: "500px", overflowY: "auto" }}
+                  >
                     {filteredProductsList.length > 0 ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -202,7 +201,10 @@ const AddMaterialPurchase = (props) => {
                         </thead>
                         <tbody>
                           {filteredProductsList.map((product, index) => (
-                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={product.id}>
+                            <tr
+                              className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                              key={product.id}
+                            >
                               <th
                                 scope="row"
                                 className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -219,7 +221,6 @@ const AddMaterialPurchase = (props) => {
                               </th>
                             </tr>
                           ))}
-
                         </tbody>
                       </table>
                     ) : (
@@ -244,13 +245,13 @@ const AddMaterialPurchase = (props) => {
                         Close
                       </button>
                       <button
-                          className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          style={{ backgroundColor: "#097969" }}
-                          type="button"
-                          onClick={() => {
-                            handleAddtoPurchaseList();
-                          }}
-                        >
+                        className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                        style={{ backgroundColor: "#097969" }}
+                        type="button"
+                        onClick={() => {
+                          handleAddtoPurchaseList();
+                        }}
+                      >
                         Add Materials
                       </button>
                     </div>

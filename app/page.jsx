@@ -1,12 +1,8 @@
 "use client";
-import { useAmp } from "next/amp";
-import Image from "next/image";
-import { useEffect } from "react";
-import supabase from "../app/supabase";
+
 import { useRouter } from "next/navigation"; // Import the useRouter hook
 import withAuthentication from "../app/auth";
-import Navbar from "./components/Navbar";
-import Dashboard from "./dashboard/page";
+
 
 const Home = ({ userType, userInfo }) => {
   const router = useRouter();
