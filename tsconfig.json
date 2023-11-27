@@ -29,7 +29,7 @@
     "**/*.ts",
     "**/*.tsx",
     "app/api/signup/route.js"
-  ],
+, "app/api/login/route.js"  ],
   "exclude": [
     "node_modules"
   ]
