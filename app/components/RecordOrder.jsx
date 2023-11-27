@@ -73,16 +73,18 @@ const RecordOrder = (props) => {
     async function summarizeOrders() {
       const updatedOrders = [];
       
-      props.orderList.forEach((product) => {
-     
-            
-            const newOrder = {
-              product_id: product.id,
-              qty_ordered: product.quantity,
-            };
-            updatedOrders.push(newOrder);
- 
-      });
+      if (props.orderList && Array.isArray(props.orderList)) {
+        props.orderList.forEach((product) => {
+          const newOrder = {
+            product_id: product.id,
+            qty_ordered: product.quantity,
+          };
+          updatedOrders.push(newOrder);
+        });
+      } else {
+        console.error("props.orderList is undefined or not an array");
+      }
+      
   
       // Update state with the summarized purchases
       setOrders(updatedOrders);
@@ -99,33 +101,42 @@ const RecordOrder = (props) => {
     async function updateNewQuantities() {
       const materialAmountMap = {};
   
-      for (const product of props.orderList) {
-        // Find all matching ingredients for the current product
-        const matchingIngredients = ingredientsList.filter(
-          (ingredient) => ingredient.product_id === product.id
-        );
-  
-        // Calculate the total qty_available for each matching ingredient
-        matchingIngredients.forEach((matchingIngredient) => {
-          const newAmount = product.quantity * matchingIngredient.qty_needed;
-  
-          const materialId = matchingIngredient.material_id;
-  
-          // Update existing entry or add a new one
-          if (materialAmountMap[materialId]) {
-            materialAmountMap[materialId].qty_available += newAmount;
+      if (props.orderList && Array.isArray(props.orderList)) {
+        for (const product of props.orderList) {
+          if (product && typeof product === 'object' && 'id' in product && 'quantity' in product) {
+            // Find all matching ingredients for the current product
+            const matchingIngredients = ingredientsList.filter(
+              (ingredient) => ingredient.product_id === product.id
+            );
+      
+            // Calculate the total qty_available for each matching ingredient
+            matchingIngredients.forEach((matchingIngredient) => {
+              const newAmount = product.quantity * matchingIngredient.qty_needed;
+      
+              const materialId = matchingIngredient.material_id;
+      
+              // Update existing entry or add a new one
+              if (materialAmountMap[materialId]) {
+                materialAmountMap[materialId].qty_available += newAmount;
+              } else {
+                const metricInfo = matchingIngredient.MD_RAW_MATERIALS?.REF_METRIC;
+                const metric = metricInfo ? metricInfo.metric_unit : "";
+      
+                materialAmountMap[materialId] = {
+                  id: materialId,
+                  qty_available: newAmount,
+                  metric: metric,
+                };
+              }
+            });
           } else {
-            const metricInfo = matchingIngredient.MD_RAW_MATERIALS?.REF_METRIC;
-            const metric = metricInfo ? metricInfo.metric_unit : "";
-  
-            materialAmountMap[materialId] = {
-              id: materialId,
-              qty_available: newAmount,
-              metric: metric,
-            };
+            console.error("Invalid product object:", product);
           }
-        });
+        }
+      } else {
+        console.error("props.orderList is undefined or not an array");
       }
+      
   
       // Adjust qty_available based on qty_available in materialsList
       const updatedQuantities = Object.values(materialAmountMap).map(
