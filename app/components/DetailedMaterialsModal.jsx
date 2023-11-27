@@ -56,7 +56,7 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
     groupData();
   }, [reportData]);
 
-
+  if (!isVisible) return null;
 
   console.log(groupedData)
   
