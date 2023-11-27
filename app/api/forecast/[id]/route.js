@@ -469,7 +469,7 @@ export async function GET(request, {params}) {
 
     
     const json = {
-      data: order_list,
+      data: suggestedRestock,
     };
     
     return NextResponse.json(json, {status:200});

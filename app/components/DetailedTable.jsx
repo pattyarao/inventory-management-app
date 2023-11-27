@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import DetailedSalesModal from "./DetailedSalesModal"
 import DetailedMaterialsModal from "./DetailedMaterialsModal"
 import DetailedRejOrdersModal from "./DetailedRejOrdersModal"
+import DetailedDiscModal from "./DetailedDiscModal"
 
 const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) => {
   const [groupedData, setGroupedData] = useState({});
@@ -10,6 +11,8 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
   const [salesDrillDown, setSalesDrillDown] = useState()
   const [showDetailedMaterialsModal, setDetailedMaterialsShowModal]= useState(false)
   const [showDetailedRejOrdersModal, setDetailedRejOrdersShowModal] = useState(false);
+  const [showDetailedDiscModal, setDetailedDiscShowModal] = useState(false)
+  const [discDrillDown, setDiscDrillDown] = useState()
   const [rejDrillDown, setRejDrillDown] = useState()
   const [materialDrillDown, setMaterialDrillDown] = useState()
   
@@ -39,6 +42,14 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         setDetailedRejOrdersShowModal(true)
       }
 
+      const closeDetailedDiscrepancies = () => {
+        setDetailedDiscShowModal(false)
+      }
+
+      const openDetailedDiscrepancies = () => {
+        setDetailedDiscShowModal(true)
+      }
+
       const handleMaterialDrillDown = (material_name) => {
         setMaterialDrillDown(material_name);
         console.log(materialDrillDown)
@@ -55,6 +66,11 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         setRejDrillDown(name);
         console.log(name)
         openDetailedRejOrders();
+      }
+
+      const handleDiscDrillDown = (name) => {
+        setDiscDrillDown(name);
+        openDetailedDiscrepancies();
       }
   
 
@@ -84,16 +100,6 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
 
         grouped[materialName].push(item);
       });
-    } else if (reportData && reportData.length > 0 && reportType === "detailed" && choice === 3) {
-      reportData.forEach((item) => {
-        const rejMaterialName = item.name;
-        
-        if (!grouped[rejMaterialName]) {
-          grouped[rejMaterialName] = [];
-        }
-
-        grouped[rejMaterialName].push(item);
-      })
     }
 
     setGroupedData(grouped);
@@ -362,7 +368,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                 <tbody>
                   {reportData.map((item, index) => (
                     <tr key={index}>
-                      <td className="border-b border-r px-4 py-2 text-left  cursor-pointer hover:bg-slate-200 transition ease duration-70" onClick={() => handleRejOrdersDrillDown(item.name)}>{item.name}</td>
+                      <td className="border-b border-r px-4 py-2 text-left cursor-pointer hover:bg-slate-200 transition ease duration-70" onClick={() => handleRejOrdersDrillDown(item.name)}>{item.name}</td>
                       <td className="border-b border-r px-4 py-2 text-right" >{item.total_insufficient_qty} {item.metric_unit}</td>
                     </tr>
                   ))}
@@ -378,7 +384,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       );
     } else if (reportType === "detailed" && choice === 4) {
       // Render summary content for reportType 2
-      console.log("SUMMARY REJ ORDERS", groupedData)
+      console.log("SUMMARY DISCREPANCIES", groupedData)
       return (
         <div className="w-full">
       <div className="w-full flex flex-col mb-4 gap-2">
@@ -418,20 +424,21 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       );
     } else if (reportType === "summary" && choice === 4) {
       // Render summary content for reportType 2
-      console.log("SUMMARY REJ ORDERS", groupedData)
+      console.log("SUMMARY DISCREPANCIES", groupedData)
       return (
-        <div className="w-[60%] mx-auto">
-      <div className="w-full flex flex-col mb-4 gap-2">
+        <div className="w-[80%] mx-auto flex flex-col gap-4">
+      <div>
       <h2 className="text-2xl font-bold">Summary Discrepancy Report</h2>
       <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
+      <p className="text-xs italic mt-2">Select a material to view its detailed report</p>
       </div>     
-      <div key="detailed-rejectedorders" className="mb-8">
+      <div className="flex flex-col mb-6">
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
               <tr>
-                <th className="border-b px-4 py-2 text-left">Material Name</th>
-                <th className="border-b px-4 py-2 text-right">Total Discrepancy Amount</th>
+                <th className="border-b border-r px-4 py-2 text-left">Material Name</th>
+                <th className="border-b border-r px-4 py-2 text-right">Total Discrepancy Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -439,12 +446,13 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                 .map((item, index) => (
                   <tr key={index}>
                  
-                    <td className="border-b px-4 py-2 text-left">{item.name}</td>
-                    <td className="border-b px-4 py-2 text-right">{item.total_disc} {item.metric_unit}</td>
+                    <td className="border-b border-r px-4 py-2 text-left cursor-pointer hover:bg-slate-200 transition ease duration-70" onClick={() => handleDiscDrillDown(item.name)}>{item.name}</td>
+                    <td className="border-b border-r px-4 py-2 text-right">{item.total_disc} {item.metric_unit}</td>
                   </tr>
                 ))}
             </tbody>
           </table>
+          <DetailedDiscModal isVisible={showDetailedDiscModal} startDate={startDate} endDate={endDate} choice={discDrillDown} onClose={closeDetailedDiscrepancies}/>
         </div>
       </div>
 
