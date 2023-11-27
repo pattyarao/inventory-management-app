@@ -7,7 +7,6 @@ import { GET as GETPROF } from "../api/productprofile/route";
 import { GET as GETMAT } from "../api/purchase/route";
 
 const RecordOrder = (props) => {
-
   const [userID, setUserID] = useState(props.userID);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -15,47 +14,41 @@ const RecordOrder = (props) => {
   const [ingredientsList, setIngredientsList] = useState([]);
   const [materialsList, setMaterialsList] = useState([]);
   const [shortageList, setShortageList] = useState([]);
-  
+
   const [orders, setOrders] = useState([
-    {order_id: "",
-    product_id: "",
-    qty_ordered: 0}
+    { order_id: "", product_id: "", qty_ordered: 0 },
   ]);
 
   const [newQuantities, setNewQuantities] = useState([
-    {material_id: "",
-    newAmount: 0}
+    { material_id: "", newAmount: 0 },
   ]);
-
 
   useEffect(() => {
     async function getIngredients() {
       try {
         const response = await GETPROF();
         const { ingredients, error } = await response.json();
-          
+
         if (error) {
           setError(error);
-          console.log(error)
+          console.log(error);
         } else {
           setIngredientsList(ingredients);
           setLoading(false); // Data has been loaded
         }
       } catch (error) {
         setError(error.message);
-        
       }
     }
     async function getMaterials() {
       try {
         const response = await GETMAT();
         const { materials, error } = await response.json();
-  
+
         if (error) {
           setError(error);
           console.log("err0 " + error);
         } else {
-          
           // Filter out materials that are already in props.purchaseList
           setMaterialsList(materials);
         }
@@ -67,12 +60,10 @@ const RecordOrder = (props) => {
     getMaterials();
   }, [showModal]);
 
-  
-
   useEffect(() => {
     async function summarizeOrders() {
       const updatedOrders = [];
-      
+
       if (props.orderList && Array.isArray(props.orderList)) {
         props.orderList.forEach((product) => {
           const newOrder = {
@@ -84,44 +75,46 @@ const RecordOrder = (props) => {
       } else {
         console.error("props.orderList is undefined or not an array");
       }
-      
-  
+
       // Update state with the summarized purchases
       setOrders(updatedOrders);
     }
 
-    
-    
-
-    
     summarizeOrders();
   }, [props]);
 
   useEffect(() => {
     async function updateNewQuantities() {
       const materialAmountMap = {};
-  
+
       if (props.orderList && Array.isArray(props.orderList)) {
         for (const product of props.orderList) {
-          if (product && typeof product === 'object' && 'id' in product && 'quantity' in product) {
+          if (
+            product &&
+            typeof product === "object" &&
+            "id" in product &&
+            "quantity" in product
+          ) {
             // Find all matching ingredients for the current product
             const matchingIngredients = ingredientsList.filter(
-              (ingredient) => ingredient.product_id === product.id
+              (ingredient) => ingredient.product_id === product.id,
             );
-      
+
             // Calculate the total qty_available for each matching ingredient
             matchingIngredients.forEach((matchingIngredient) => {
-              const newAmount = product.quantity * matchingIngredient.qty_needed;
-      
+              const newAmount =
+                product.quantity * matchingIngredient.qty_needed;
+
               const materialId = matchingIngredient.material_id;
-      
+
               // Update existing entry or add a new one
               if (materialAmountMap[materialId]) {
                 materialAmountMap[materialId].qty_available += newAmount;
               } else {
-                const metricInfo = matchingIngredient.MD_RAW_MATERIALS?.REF_METRIC;
+                const metricInfo =
+                  matchingIngredient.MD_RAW_MATERIALS?.REF_METRIC;
                 const metric = metricInfo ? metricInfo.metric_unit : "";
-      
+
                 materialAmountMap[materialId] = {
                   id: materialId,
                   qty_available: newAmount,
@@ -136,15 +129,12 @@ const RecordOrder = (props) => {
       } else {
         console.error("props.orderList is undefined or not an array");
       }
-      
-  
+
       // Adjust qty_available based on qty_available in materialsList
       const updatedQuantities = Object.values(materialAmountMap).map(
         (entry) => {
-          const material = materialsList.find(
-            (mat) => mat.id === entry.id
-          );
-  
+          const material = materialsList.find((mat) => mat.id === entry.id);
+
           if (material) {
             entry.qty_available = material.qty_available - entry.qty_available;
             entry.name = material.name; // Add the name of the material
@@ -152,16 +142,15 @@ const RecordOrder = (props) => {
             if (entry.qty_available < 0) {
               // Check if entry already exists in shortageList
               const existingEntryIndex = shortageList.findIndex(
-                (shortageEntry) => shortageEntry.id === entry.id
+                (shortageEntry) => shortageEntry.id === entry.id,
               );
-  
+
               if (existingEntryIndex !== -1) {
                 // If entry exists, update the existing value
                 setShortageList((prevShortageList) => {
                   const updatedShortageList = [...prevShortageList];
-                  updatedShortageList[existingEntryIndex].qty_available = Math.abs(
-                    entry.qty_available
-                  );
+                  updatedShortageList[existingEntryIndex].qty_available =
+                    Math.abs(entry.qty_available);
                   return updatedShortageList;
                 });
               } else {
@@ -176,28 +165,20 @@ const RecordOrder = (props) => {
               }
             }
           }
-  
+
           return entry;
-        }
+        },
       );
 
       setNewQuantities(updatedQuantities);
-      setSuccess(!(updatedQuantities.some((entry) => entry.qty_available < 0)));
-      
-      
-      
+      setSuccess(!updatedQuantities.some((entry) => entry.qty_available < 0));
     }
-  
+
     updateNewQuantities();
   }, [props.orderList, ingredientsList, materialsList]);
   console.log(shortageList);
   console.log(newQuantities);
   console.log(orders);
-  
-
-
-
- 
 
   const handleSubmit = async () => {
     // Check if there are negative qty_available values in newQuantities
@@ -206,7 +187,7 @@ const RecordOrder = (props) => {
         // Assuming you have the 'orders' data available
         const postResult = await POSTFAIL(shortageList, userID);
         setShowModal(true);
-  
+
         if (postResult.error) {
           setError(postResult.error);
           console.log(postResult.error);
@@ -219,7 +200,7 @@ const RecordOrder = (props) => {
         // Assuming you have the 'orders' data available
         const postResult = await POST(orders, userID);
         setShowModal(true);
-  
+
         if (postResult.error) {
           setError(postResult.error);
           console.log(postResult.error);
@@ -244,7 +225,6 @@ const RecordOrder = (props) => {
       }
     }
   };
-  
 
   return (
     <>
@@ -302,8 +282,10 @@ const RecordOrder = (props) => {
                       className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#27374D" }}
                       type="button"
-                      onClick={() => {setShowModal(false);
-                        props.onConfirmClear();}}
+                      onClick={() => {
+                        setShowModal(false);
+                        props.onConfirmClear();
+                      }}
                     >
                       Confirm
                     </button>
@@ -354,36 +336,38 @@ const RecordOrder = (props) => {
                   >
                     Insufficient Materials
                   </div>
-              
+
                   {newQuantities.map((entry, index) => {
-                      if (entry.qty_available < 0) {
-                        return (
-                          <div key={index}>
-                            <div
-                              className="w-full p-1 mb-1 text-xs rounded-lg"
-                              style={{
-                                backgroundColor: "#9DB2BF",
-                                color: "#27374D",
-                              }}
-                            >
-                              <div className="text-center col-span-3 md:col-span-4 font-black text-lg">
-                                {Math.abs(entry.qty_available)} {entry.metric} of {entry.name}
-                              </div>
+                    if (entry.qty_available < 0) {
+                      return (
+                        <div key={index}>
+                          <div
+                            className="w-full p-1 mb-1 text-xs rounded-lg"
+                            style={{
+                              backgroundColor: "#9DB2BF",
+                              color: "#27374D",
+                            }}
+                          >
+                            <div className="text-center col-span-3 md:col-span-4 font-black text-lg">
+                              {Math.abs(entry.qty_available)} {entry.metric} of{" "}
+                              {entry.name}
                             </div>
                           </div>
-                        );
-                      }
-                      return null; // Return null for entries with non-negative qty_available
-                    })}
-                  
+                        </div>
+                      );
+                    }
+                    return null; // Return null for entries with non-negative qty_available
+                  })}
 
                   <div className="flex justify-center">
                     <button
                       className="text-white mt-4 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#27374D" }}
                       type="button"
-                      onClick={() => {setShowModal(false);
-                        props.onConfirmClear();}}
+                      onClick={() => {
+                        setShowModal(false);
+                        props.onConfirmClear();
+                      }}
                     >
                       Confirm
                     </button>

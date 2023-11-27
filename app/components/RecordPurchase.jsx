@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { PATCH, POST } from "../api/purchase/route";
 
 const RecordPurchase = (props) => {
-
   //replace userID with current user logic
   const [userID, setUserID] = useState(props.userID);
 
@@ -12,33 +11,27 @@ const RecordPurchase = (props) => {
   const [showModal, setShowModal] = useState(false);
 
   const [purchases, setPurchases] = useState([
-    {material_id: "",
-    variation_id: "",
-    qty_purchased: 0}
+    { material_id: "", variation_id: "", qty_purchased: 0 },
   ]);
 
   const [directPurchases, setDirectPurchases] = useState([
-    {material_id: "",
-    qty_purchased: 0,
-    amt: 0}
+    { material_id: "", qty_purchased: 0, amt: 0 },
   ]);
 
   const [newQuantities, setNewQuantities] = useState([
-    {material_id: "",
-    newAmount: 0}
+    { material_id: "", newAmount: 0 },
   ]);
 
   useEffect(() => {
     async function summarizePurchase() {
       const updatedPurchases = [];
       const updatedDirectPurchases = [];
-      
-  
+
       props.purchaseList.forEach((material) => {
         material.variants.forEach((variant) => {
           if (variant.name === material.id) {
             // Add to directPurchases
-            
+
             const newDirectPurchase = {
               material_id: material.id,
               qty_purchased: variant.quantity,
@@ -56,7 +49,7 @@ const RecordPurchase = (props) => {
           }
         });
       });
-  
+
       // Update state with the summarized purchases
       setPurchases(updatedPurchases);
       setDirectPurchases(updatedDirectPurchases);
@@ -64,49 +57,43 @@ const RecordPurchase = (props) => {
 
     async function newQuantity() {
       const newQuantity = [];
-    
+
       props.purchaseList.forEach((material) => {
         // Create a copy of the material
         const updatedMaterial = { ...material };
-    
+
         material.variants.forEach((variant) => {
           if (variant.name === material.id || variant.name === "") {
-            updatedMaterial.qty_available += variant.finalAmount * variant.quantity;
+            updatedMaterial.qty_available +=
+              variant.finalAmount * variant.quantity;
           } else {
             updatedMaterial.qty_available += variant.amount * variant.quantity;
           }
-
-
         });
-    
+
         // Add the updated material to the newQuantity array
         newQuantity.push(updatedMaterial);
       });
-    
+
       // Update state with the summarized quantities
       setNewQuantities(newQuantity);
     }
-    
+
     summarizePurchase();
     newQuantity();
   }, [props]);
 
-  console.log(newQuantities)
-  
-
+  console.log(newQuantities);
 
   const handleSubmit = async () => {
-   
-
     try {
       // Assuming you have the 'variants' data available
       const postResult = await POST(purchases, directPurchases, userID);
-      setShowModal(true)
+      setShowModal(true);
       if (postResult.error) {
         setError(postResult.error);
         console.log(postResult.error);
       } else {
-   
       }
     } catch (error) {
       setError(error.message);
@@ -119,18 +106,11 @@ const RecordPurchase = (props) => {
         setError(patchResult.error);
         console.log(patchResult.error);
       } else {
-   
       }
     } catch (error) {
       setError(error.message);
     }
-
-
-   
   };
-
-
-  
 
   return (
     <>
@@ -139,7 +119,6 @@ const RecordPurchase = (props) => {
         style={{ backgroundColor: "#097969", color: "white" }}
         type="button"
         onClick={() => handleSubmit()}
-
       >
         Record Purchase
       </button>
@@ -189,9 +168,10 @@ const RecordPurchase = (props) => {
                       className="text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                       style={{ backgroundColor: "#27374D" }}
                       type="button"
-                      onClick={() => {setShowModal(false);
-                        props.onConfirmClear();}}
-
+                      onClick={() => {
+                        setShowModal(false);
+                        props.onConfirmClear();
+                      }}
                     >
                       Confirm
                     </button>
@@ -203,7 +183,7 @@ const RecordPurchase = (props) => {
 
           <div className="opacity-75 fixed inset-0 z-40 bg-black"></div>
         </>
-      )  : null}
+      ) : null}
     </>
   );
 };
