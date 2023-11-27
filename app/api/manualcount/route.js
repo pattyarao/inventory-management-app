@@ -9,7 +9,8 @@ function checkDiscrepancy(discrepancyList, availableAmountList, macount_id) {
         if (!(item.totalamount === availableAmountList[index].qty_available)) {
             discrepancyData.push({
                 material_id: item.id,
-                qty_disc: availableAmountList[index].qty_available - item.totalamount,
+                // tracks discrepancy amount and the amount added to the system (+ value means x amount has been added while - value means x amount has been removed)
+                qty_disc:  item.totalamount - availableAmountList[index].qty_available,
                 macount_id: macount_id
             })
         }
