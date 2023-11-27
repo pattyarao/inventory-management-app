@@ -10,8 +10,7 @@ export async function POST(req, res) {
     //CREATE USER
     const { data, error } = await supabase.auth.admin.createUser({
       email: reqdata.email,
-      password: reqdata.password,
-      email_confirm: true,
+      password: reqdata.password
     });
 
     if (error) {
