@@ -37,7 +37,7 @@ export async function POST(variants) {
       }]);
 
     if (error) {
-      return { error };
+      return NextResponse.json( { error: error }, {status: 500});
     }
 
     return NextResponse.json({ success: true }, {status: 200});// Assuming data is an array with the newly inserted variant
