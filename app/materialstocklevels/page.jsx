@@ -11,6 +11,7 @@ const MaterialStockLevel = ({userType, userInfo}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [sortOption, setSortOption] = useState('nameAscending'); // Default sort option
+  const [loading, setLoading] = useState(false);
   const [predmodels, setPredmodels] = useState([])
 
   useEffect(() => {
@@ -41,7 +42,13 @@ const MaterialStockLevel = ({userType, userInfo}) => {
     setSortOption(e.target.value);
   };
 
-  useEffect (() => console.log(predmodels), [predmodels])
+  useEffect (() => console.log(predmodels), [predmodels]);
+
+  const handleLoadingChange = (newLoadingState) => {
+    // Update loading state in MaterialStockLevel
+    setLoading(newLoadingState);
+  };
+
   if (!userType) {
     return (
       <Loader/>
@@ -98,13 +105,17 @@ const MaterialStockLevel = ({userType, userInfo}) => {
             </div>
           </div>
 
-          {/* Material List component with fixed "list" view */}
-          <MaterialList
-            searchTerm={searchTerm}
-            view="list"
-            sortOption={sortOption}
-            selected_model={selectedOption}
-          />
+          {/* Conditionally render loader or MaterialList */}
+          {loading && (
+            <Loader />
+          )}
+            <MaterialList
+              searchTerm={searchTerm}
+              view="list"
+              sortOption={sortOption}
+              selected_model={selectedOption}
+              onLoadingChange={handleLoadingChange} // Pass the callback function
+            />
 
           {/* You can use the selectedOption state as needed in your application */}
           {selectedOption && (
