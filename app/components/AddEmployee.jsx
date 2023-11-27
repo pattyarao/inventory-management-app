@@ -4,6 +4,7 @@ import { useState } from "react";
 import useSignup from "../../hooks/useSignup";
 import { New_Tegomin } from "next/font/google";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const AddEmployee = ({
   handleClose,
@@ -16,6 +17,7 @@ const AddEmployee = ({
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPass, setConfirmPass] = useState("") 
   const [role, setRole] = useState("Owner");
   const router = useRouter();
 
@@ -31,6 +33,9 @@ const AddEmployee = ({
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
+  const handleConfirmPassword = (e) => {
+    setConfirmPass(e.target.value);
+  };
 
   const handleSelectRole = (event) => {
     setRole(event.target.value);
@@ -43,6 +48,11 @@ const AddEmployee = ({
     password,
     selectedRole
   ) => {
+    if (confirmPass !== password){
+      return toast("Passwords do not match.", {
+        type: "error"
+      })
+    }
     const newEmployeeData = await signup(
       firstName,
       lastName,
@@ -126,6 +136,15 @@ const AddEmployee = ({
               type="password"
               onChange={handlePasswordChange}
               value={password}
+            />
+          </div>
+          <div className="">
+            <p>Confirm Password</p>
+            <input
+              className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+              type="password"
+              onChange={handleConfirmPassword}
+              value={confirmPass}
             />
           </div>
         </div>
