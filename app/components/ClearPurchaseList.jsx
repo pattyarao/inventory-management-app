@@ -71,7 +71,7 @@ const ClearPurchaseList = (props) => {
                         props.onConfirmClear();
                       }}
                     >
-                      Yes, I'm Sure
+                      {"Yes, I'm Sure"}
                     </button>
                   </div>
                 </div>

@@ -3,7 +3,7 @@ import { GET as getDetailedMaterials} from '../api/detailedmaterials/route';
 import { useState, useEffect } from "react";
 
 const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose }) => {
-  if (!isVisible) return null;
+  
 
   const [groupedData, setGroupedData] = useState({});
   const [reportData, setReportData] = useState([]); 
@@ -56,10 +56,11 @@ const DetailedMaterialsModal = ({ isVisible, startDate, endDate, choice, onClose
     groupData();
   }, [reportData]);
 
-
+  if (!isVisible) return null;
 
   console.log(groupedData)
-
+  
+  if (!isVisible) return null;
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black backdrop-filter backdrop-blur-lg">
       <div className="w-[90%] h-[90vh] bg-white rounded-md shadow-lg overflow-y-auto">
