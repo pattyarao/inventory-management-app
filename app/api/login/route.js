@@ -1,4 +1,4 @@
-import supabase from "@/app/supabase";
+import supabase from "../../supabase";
 import {NextRequest, NextResponse} from "next/server";
 
 export async function POST(req){
