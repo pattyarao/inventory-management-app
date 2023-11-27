@@ -3,10 +3,11 @@ import { GET as getDetailedDisc} from '../api/detaileddiscrepancy/route';
 import { useState, useEffect } from "react";
 
 const DetailedDiscModal = ({ isVisible, startDate, endDate, choice, onClose }) => {
-  if (!isVisible) return null;
+  
 
   const [reportData, setReportData] = useState([]); 
   const currentDate = new Date().toLocaleDateString('en-GB');
+  if (!isVisible) return null;
   useEffect(() => {
     async function getDetailedDiscrepancies() {
 
