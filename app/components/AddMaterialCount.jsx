@@ -144,7 +144,7 @@ const AddMaterialCount = () => {
                         </thead>
                         <tbody>
                           {filteredProductsList.map((product, index) => (
-                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                            <tr key={product.id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                               <th
                                 scope="row"
                                 className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"

@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DetailedSalesModal from "./DetailedSalesModal"
 import DetailedMaterialsModal from "./DetailedMaterialsModal"
+import DetailedRejOrdersModal from "./DetailedRejOrdersModal"
 
 const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) => {
   const [groupedData, setGroupedData] = useState({});
   const [showDetailedSalesModal, setDetailedSalesShowModal]= useState(false)
   const [salesDrillDown, setSalesDrillDown] = useState()
   const [showDetailedMaterialsModal, setDetailedMaterialsShowModal]= useState(false)
+  const [showDetailedRejOrdersModal, setDetailedRejOrdersShowModal] = useState(false);
+  const [rejDrillDown, setRejDrillDown] = useState()
   const [materialDrillDown, setMaterialDrillDown] = useState()
   
 
@@ -28,6 +31,14 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         setDetailedMaterialsShowModal(true)
       };
 
+      const closeDetailedRejOrders = () => {
+        setDetailedRejOrdersShowModal(false)
+      }
+
+      const openDetailedRejOrders = () => {
+        setDetailedRejOrdersShowModal(true)
+      }
+
       const handleMaterialDrillDown = (material_name) => {
         setMaterialDrillDown(material_name);
         console.log(materialDrillDown)
@@ -39,6 +50,12 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
         // console.log(materialDrillDown)
         openDetailedSalesModal()
       };
+
+      const handleRejOrdersDrillDown = (name) => {
+        setRejDrillDown(name);
+        console.log(name)
+        openDetailedRejOrders();
+      }
   
 
   const currentDate = new Date().toLocaleDateString('en-GB');
@@ -67,6 +84,16 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
 
         grouped[materialName].push(item);
       });
+    } else if (reportData && reportData.length > 0 && reportType === "detailed" && choice === 3) {
+      reportData.forEach((item) => {
+        const rejMaterialName = item.name;
+        
+        if (!grouped[rejMaterialName]) {
+          grouped[rejMaterialName] = [];
+        }
+
+        grouped[rejMaterialName].push(item);
+      })
     }
 
     setGroupedData(grouped);
@@ -182,7 +209,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                     <td className="border-b px-4 py-2 text-left">{new Date(item.date).toLocaleDateString("en-GB")}</td>
                     <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
                     <td className="border-b px-4 py-2 text-left">{item.user}</td>
-                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
+                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount} {item.metric_unit}</td>
                   </tr>
                 ))}
             </tbody>
@@ -217,7 +244,7 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                     <td className="border-b px-4 py-2 text-left">{item.transac_type}</td>
                     <td className="border-b px-4 py-2 text-left">{item.user}</td>
                     <td className="border-b px-4 py-2 text-left">{item.variation}</td>
-                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount}</td>
+                    <td className={`border-b px-4 py-2 text-right ${item.transac_type === 'Purchased' ? 'text-green-500' : 'text-red-500'}`}>{item.amount} {item.metric_unit}</td>
                   </tr>
                 ))}
             </tbody>
@@ -318,11 +345,12 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
       return (
         <div className="w-[80%] mx-auto flex flex-col gap-4">
           <div>
-          <h2 className="text-2xl font-bold">Summarized Rejected Orders Report</h2>
-          <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
+            <h2 className="text-2xl font-bold">Summarized Rejected Orders Report</h2>
+            <p className="font-semibold">Created at: {currentDate} {currentTime}</p>
+            <p className="text-xs italic mt-2">Select a material to view its detailed report</p>
           </div>
-          <div key="Summary Rejected Orders" className="flex flex-col mb-6">
-            {/* <h2 className="w-full py-1 px-4 rounded-t-md text-center text-xl font-bold bg-slate-300 hover:bg-slate-400 cursor-pointer transition ease duration-70" onClick={() => handleMaterialDrillDown(materialName)}>{materialName}</h2> */}
+          <div className="flex flex-col mb-6">
+            {/* <h2 className="w-full py-1 px-4 rounded-t-md text-center text-xl font-bold bg-slate-300 hover:bg-slate-400 cursor-pointer transition ease duration-70" onClick={() => handleRejOrdersDrillDown(item.name)}>{item.name}</h2> */}
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-300">
                 <thead>
@@ -334,13 +362,13 @@ const DetailedTable = ({ reportData, reportType, choice, startDate, endDate  }) 
                 <tbody>
                   {reportData.map((item, index) => (
                     <tr key={index}>
-                      <td className="border-b border-r px-4 py-2 text-left">{item.name}</td>
+                      <td className="border-b border-r px-4 py-2 text-left  cursor-pointer hover:bg-slate-200 transition ease duration-70" onClick={() => handleRejOrdersDrillDown(item.name)}>{item.name}</td>
                       <td className="border-b border-r px-4 py-2 text-right" >{item.total_insufficient_qty} {item.metric_unit}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {/* <DetailedMaterialsModal isVisible={showDetailedMaterialsModal} startDate={startDate} endDate={endDate} choice={materialDrillDown} onClose={closeDetailedMaterials}/> */}
+              <DetailedRejOrdersModal isVisible={showDetailedRejOrdersModal} startDate={startDate} endDate={endDate} choice={rejDrillDown} onClose={closeDetailedRejOrders}/>
             </div>
           </div>
         <h1 className="text-3xl font-bold mt-8 text-center">*END OF REPORT*</h1>
