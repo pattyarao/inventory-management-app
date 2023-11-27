@@ -1,12 +1,13 @@
 import supabase from "../../supabase";
 
-export async function GET() {
-  const { data: materials, error } = await supabase
-    .from("MD_RAW_MATERIALS")
-    .select("id, qty_available, name, REF_METRIC(id, metric_unit)")
-    .order("name", {ascending: true});
+export async function GET(start_date, end_date, selectedOptions) {
 
-  console.log("Materials fetched:", materials);
+    const { data: detailedReport, error } = await supabase
+    .from("DETAILED_DISCREPANCY")
+    .select()
+    .gte('transaction_date', start_date) 
+    .lt('transaction_date', end_date)
+    .in('material_name', selectedOptions)
 
   if (error) {
     return new Response(JSON.stringify({ error }), {
@@ -16,7 +17,7 @@ export async function GET() {
   }
 
   const json = {
-    materials: materials,
+    detailedReport: detailedReport,
   };
 
   return new Response(JSON.stringify(json), {

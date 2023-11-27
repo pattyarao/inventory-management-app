@@ -169,8 +169,5 @@ export async function POST(manualcountList, user_id) {
     }
 
 
-    return new Response('post success', {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-    });
+    
 }

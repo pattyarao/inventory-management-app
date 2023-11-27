@@ -1,17 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
 import RecordManualCount from "./RecordManualCount";
-import ClearManualCount from "./ClearManualCount";
-import Navbar from "./Navbar";
+import AddNewUnit from "./AddNewUnit";
+import Loader from "./Loader";
 import { GET as GETUNIT } from "../api/submetric/route";
 import { GET as getCompleteList, POST} from "../api/manualcount/route";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort } from "@fortawesome/free-solid-svg-icons";
-const ManualCount = () => {
+
+const ManualCount = (props) => {
   const [postSuccess, setPostSuccess] = useState(false);
   const [completeList, setCompleteList] = useState([]);
   const [unitsList, setUnitsList] = useState([]);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [addUnitCondition, setAddUnitCondition] = useState(false);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -36,6 +40,7 @@ const ManualCount = () => {
       } catch (error) {
         console.error(error);
       }
+      setIsLoading(false)
     }
     
       async function getUnits() {
@@ -55,34 +60,55 @@ const ManualCount = () => {
       }
       getUnits();
       fetchData();
-  }, [postSuccess])
+  }, [postSuccess, addUnitCondition])
 
   useEffect(() => {
     console.log('updated complete list:', completeList);
   }, [completeList])
 
   const [sortOrder, setSortOrder] = useState("ascending");
-  
+ 
   const sortMaterialsAndVariantsByName = () => {
-    const sortedMaterials = [...materialList].sort((a, b) =>
+    const sortedMaterials = [...completeList].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    const sortedVariants = [...variantsList].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
+  
+    const updatedCompleteList = sortedMaterials.map(material => {
+      const sortedMaterialVariants = material.variants.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      return {
+        ...material,
+        variants: sortedMaterialVariants,
+      };
+    });
+  
     if (sortOrder === "ascending") {
-      setMaterialList(sortedMaterials);
-      setVariantsList(sortedVariants);
+      setCompleteList(updatedCompleteList);
       setSortOrder("descending");
     } else {
-      setMaterialList(sortedMaterials.reverse());
-      setVariantsList(sortedVariants.reverse());
+      const reversedMaterials = updatedCompleteList.reverse();
+      const reversedVariants = reversedMaterials.map(material => {
+        return {
+          ...material,
+          variants: material.variants.reverse(),
+        };
+      });
+      setCompleteList(reversedVariants);
       setSortOrder("ascending");
     }
   };
   
+  
+
+
+
+  
   const handleUnitChange = (productIndex, variantIndex, event) => {
+    if (event.target.value === "Add New Unit") {
+      setAddUnitCondition(true);
+      return;
+    }
     const newManualCount = [...completeList];
     newManualCount[productIndex].variants[variantIndex].unit = event.target.value;
 
@@ -132,9 +158,11 @@ const ManualCount = () => {
   };
 
   return (
-    
-    <div className="w-[80%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
-<div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
+    <div className="w-full flex flex-col items-center gap-4">
+      {isLoading ? ( <Loader/>) : (
+      
+      <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
+        <div className="w-[6%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
   <button
     onClick={sortMaterialsAndVariantsByName}
     style={{
@@ -184,7 +212,7 @@ const ManualCount = () => {
                         <div className="col-span-1 me-5 text-sm flex items-center justify-center">
                           Partial Amount
                         </div>
-                        <div className="col-span-1 me-5 text-sm flex items-center justify-center">
+                        <div className="col-span-1 ml-0 me-24 text-sm flex items-center justify-center">
                           Unit
                         </div>
                       </div>
@@ -223,7 +251,7 @@ const ManualCount = () => {
                                     <li
                                       value={variant.name}
                                       onChange={(event) =>
-                                        handleVariantNameChange(
+                                        handlenameChange(
                                           index,
                                           variantIndex,
                                           event,
@@ -305,7 +333,7 @@ const ManualCount = () => {
                                       onChange={(event) =>
                                         handleUnitChange(index, variantIndex, event)
                                       }
-                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="block ml-2 w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
                                        {unitsList
                                               .filter((unit) => material.metric_id === unit.metric_id)
@@ -314,6 +342,8 @@ const ManualCount = () => {
                                                       {unit.abbreviation}
                                                   </option>
                                               ))}
+                                        <option disabled>─────────────</option>
+                                        <option>Add New Unit</option>
                                     </select>
                                   </div>
                                 </div>
@@ -329,10 +359,8 @@ const ManualCount = () => {
                       ))}
                       </div>
                     </>
-                  
                   ) : (
-                    <div
-                    >
+                    <div>
                     </div>
                   )}
                 </div>
@@ -340,7 +368,7 @@ const ManualCount = () => {
                   {completeList
                   .length !== 0 ? (
                     <>            
-                      <RecordManualCount completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
+                      <RecordManualCount userID={props.userID} completeList={completeList} postMaterial={POST} onConfirmClear={() =>{ setPostSuccess((prev) => (!prev)) }}/>
                     </>
                   ) : null}
                 </div>
@@ -349,12 +377,14 @@ const ManualCount = () => {
           </div>
         </div>
       </div>
-
-
     </div>
-  );
-};
+    )}
+          {addUnitCondition ? (
+        <AddNewUnit onClose={() => setAddUnitCondition(false)} />
+      ) : null}
+    </div>
+    )}
+      
 
 
 export default ManualCount
-;

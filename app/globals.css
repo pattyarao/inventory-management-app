@@ -9,4 +9,24 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 
+.loader{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+}
 
+.loader::after{
+  content: "";
+  width: 45px;
+  height: 45px;
+  border: 8px solid #D6E0F0;
+  border-top-color: grey;
+  border-radius: 50%;
+  animation: loading 0.75s ease infinite;
+}
+
+@keyframes loading {
+  from { transform: rotate(0turn) }
+  to { transform: rotate(1turn) }
+}

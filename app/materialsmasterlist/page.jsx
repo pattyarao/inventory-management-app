@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-
+import withAuthentication from "../auth";
 //icons
 import { IoIosArrowForward } from "react-icons/io";
 import { FiSearch } from "react-icons/fi";
-
+import Loader from "../components/Loader";
 import useUpdateVariantStatus from "../../hooks/useUpdateVariantStatus";
 
-const MaterialMasterlist = () => {
+const MaterialMasterlist = ({userType, userInfo}) => {
   const { updateVariantStatus } = useUpdateVariantStatus();
   const [masterlist, setMasterlist] = useState([]);
   const [error, setError] = useState(null);
@@ -52,10 +52,14 @@ const MaterialMasterlist = () => {
   const filteredMaterials = masterlist.filter((material) =>
     material.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  if (!userType) {
+    return (
+      <Loader/>
+    );
+  }
   return (
     <div className="w-full">
-      <Navbar userType={"Stock Controller"} />
+      <Navbar userType={userType} email={userInfo.email} />
       <div className="w-full p-4 flex flex-col gap-4">
         <div className="w-full top-0 sticky bg-slate-400 p-4 rounded-md flex justify-between">
           <h1 className="text-2xl font-black">
@@ -146,7 +150,7 @@ const MaterialMasterlist = () => {
   );
 };
 
-export default MaterialMasterlist;
+export default withAuthentication(MaterialMasterlist, ['Stock Controller']);
 
 // import { useRouter } from "next/navigation";
 // import Navbar from "../components/Navbar";

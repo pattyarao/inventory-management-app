@@ -3,9 +3,15 @@
 import Navbar from "../components/Navbar";
 import withAuthentication from "../auth";
 import ReportSelect from "../components/ReportSelect";
+import Loader from "../components/Loader";
 
 
 const ReportGeneration = ({ userType, userInfo }) => {
+  if (!userType) {
+    return (
+      <Loader/>
+    );
+  }
   return (
     <div className="w-full h-screen flex flex-col items-center justify-start bg-[#F1F3F8]">
       <Navbar userType={userType} email={userInfo.email} />
@@ -16,9 +22,4 @@ const ReportGeneration = ({ userType, userInfo }) => {
   );
 };
 
-export default withAuthentication(ReportGeneration, [
-  "Owner",
-  "Stock Controller",
-  "Manufacturing Head",
-  "Sales Person",
-]);
+export default withAuthentication(ReportGeneration, ["Owner"]);

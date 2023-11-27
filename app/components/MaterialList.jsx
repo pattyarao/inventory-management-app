@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { GET as GETMaterialMaster } from '../api/materialmaster/route';
+import Loader from "../components/Loader";
 // import { GET as GETForecast } from '../api/forecast/route';
 
 
 const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
   const [materials, setMaterials] = useState([]);
-  const [filterOption, setFilterOption] = useState('predictedValue'); // Default filter option
+  const [filterOption, setFilterOption] = useState('All'); // Default filter option
   const [prediction, setPrediction] = useState([]);
+  const [loading, setLoading] = useState(false); // loading state
 
   useEffect(() => {
     async function getMaterials() {
@@ -60,21 +62,27 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
     //   }
     // }
 
-    async function forecast(){
-      console.log("Model Selected: ", selected_model)
-      const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/api/forecast/' + selected_model)
-      if (response.status === 200) {
-        const data = await response.json();
-        setPrediction(data.data);
-        console.log(response)
-      } else {
-        console.error('API Error:', response);
+      async function forecast() {
+        setLoading(true);
+  
+        try {
+          const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/api/forecast/' + selected_model);
+  
+          if (response.status === 200) {
+            const data = await response.json();
+            setPrediction(data.data);
+          } else {
+            console.error('API Error:', response);
+          }
+        } catch (error) {
+          console.error('Error fetching forecast:', error);
+        } finally {
+          setLoading(false);
+        }
       }
-    }
-
-    // getForecast();
-    forecast();
-  }, [selected_model]);
+  
+      forecast();
+    }, [selected_model]);
 
   useEffect (() => console.log(prediction), [prediction])
 
@@ -150,6 +158,13 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
         <h1 className="pl-10 w-1/5 whitespace-normal text-center font-black text-xl text-black">
           Suggested Restock Amount
         </h1>
+        <div className="flex items-center">
+        {loading && (
+        <div className="flex items-right">
+          <Loader />
+        </div>
+      )}
+        </div>
         <select
           className="p-3 ml-2 rounded-md bg-white"
           value={filterOption}
@@ -166,13 +181,13 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
       <div className="m-auto w-full">
         <div className="flex flex-col gap-4">
           {sortedMaterials.map((material, index) => (
-            <div id={material.id} key={index} className="p-4 flex flex-col rounded-md">
+            <div id={material.id} key={index} className=" flex flex-col rounded-md">
               <div
                 className={`${
                   view === 'grid'
                     ? 'grid grid-cols-4 gap-4 items-center'
                     : 'flex justify-between items-center'
-                } p-2 bg-[#F1F3F8] rounded-lg`}
+                } bg-[#F1F3F8] rounded-lg`}
               >
                 <p className="pl-10 text-left font-semibold w-1/5 whitespace-normal">
                   {material.name}</p>
@@ -189,18 +204,6 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model }) => {
                         : `${prediction[material.id]} ${material.REF_METRIC.metric_unit || ""}`
                   ) : "No Data"}
                 </p>
-
-                {/* <p
-                  className={`w-fit px-8 py-8 rounded-md rounded-tl-none rounded-bl-none ${
-                    calculatePriority(material.qty_available, material.suggested_amt) === 1
-                      ? 'bg-red-300'
-                      : calculatePriority(material.qty_available, material.suggested_amt) === 2
-                      ? 'bg-yellow-200'
-                      : calculatePriority(material.qty_available, material.suggested_amt) === 3
-                      ? 'bg-lime-200'
-                      : 'bg-neutral-200'
-                  }`}
-                ></p> */}
                 <p
                   className={`w-flex p-2 text-right font-semibold w-2/5 whitespace-normal rounded-md rounded-tl-none rounded-bl-none ${
                     'bg-[#F1F3F8]'
