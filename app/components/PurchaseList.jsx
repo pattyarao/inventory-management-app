@@ -67,8 +67,6 @@ const PurchaseList = (props) => {
 // Function to update the selected products
 const handleAddMaterials = (discardItem) => {
 
-    
-
   // store each id into usedItemList
   let idList = []
   let updatedDiscardedList = [...purchaseList] // remove the asyncronous nature of setDiscardedList
@@ -93,11 +91,10 @@ const handleAddMaterials = (discardItem) => {
       updatedDiscardedList.map((discarded) => {
         if (discarded.id === item.id) {
           discarded.variants.push({ 
-            name: item.name, 
+            name: item.id, 
             amount: null, 
             unit: item.REF_METRIC.id, 
             quantity: 1, 
-            id: item.id, 
           })
 
           console.log("case 4 insert successful", updatedDiscardedList);
@@ -270,19 +267,36 @@ const handleAddMaterials = (discardItem) => {
 
   const handleRemove = (productIndex, variantIndex) => {
     const newPurchaseList = [...purchaseList];
-    const removedMaterial = newPurchaseList[productIndex];
-    newPurchaseList[productIndex].variants.splice(variantIndex, 1);
+    const newUsedItemList = [...usedItemList];
 
+    let idToRemove;
+    // determine if variant or id
+    if (newPurchaseList[productIndex].id === newPurchaseList[productIndex].variants[variantIndex].name) {
+      idToRemove = newPurchaseList[productIndex].id
+    }
+    else {
+      idToRemove = newPurchaseList[productIndex].variants[variantIndex].name
+    }
+
+    newPurchaseList[productIndex].variants.splice(variantIndex, 1);
+  
     // Check if there are no more variants in the product
     if (newPurchaseList[productIndex].variants.length === 0) {
       newPurchaseList.splice(productIndex, 1);
-
-      setRemovedMaterials(removedMaterials.concat(removedMaterial));
-
     }
     setPurchaseList(newPurchaseList);
-  };
 
+    // remove id from the usedItemList
+    newUsedItemList.map((item, index) => {
+      if (item.id === idToRemove) {
+        newUsedItemList.splice(index, 1)
+      }
+    })
+
+    setUsedItemList(newUsedItemList)
+
+  };
+console.log(usedItemList)
   return (
     <div
       className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg"
@@ -539,12 +553,12 @@ const handleAddMaterials = (discardItem) => {
                   )}
                 </div>
                 <div className="flex justify-end">
-                  <AddMaterialPurchase purchaseList={purchaseList}  onAddMaterials={handleAddMaterials}/>
+                  <AddMaterialPurchase purchaseList={usedItemList}  onAddMaterials={handleAddMaterials}/>
 
                   {purchaseList.length !== 0 ? (
                     <>
                       <ClearPurchaseList
-                        onConfirmClear={() => setPurchaseList([])}
+                        onConfirmClear={() => {setPurchaseList([]); setUsedItemList([])}}
                       />
                       <RecordPurchase  userID={props.userID} purchaseList={purchaseList}  onConfirmClear={() => setPurchaseList([])} />
                     </>

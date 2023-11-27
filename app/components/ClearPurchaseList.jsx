@@ -14,7 +14,7 @@ const ClearPurchaseList = (props) => {
         type="button"
         onClick={() => setShowModal(true)}
       >
-        Clear List
+        Clear Purchase List
       </button>
 
       {showModal ? (
