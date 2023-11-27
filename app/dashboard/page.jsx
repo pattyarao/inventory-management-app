@@ -1,4 +1,3 @@
-import { render } from "react-dom";
 import ManufacturerHome from "../components/ManufacturerHome";
 import OwnerHome from "../components/OwnerHome";
 import SalesPersonHome from "../components/SalesPersonHome";
