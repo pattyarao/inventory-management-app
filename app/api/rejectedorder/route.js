@@ -1,4 +1,5 @@
 import supabase from "../../supabase";
+import { NextResponse } from "next/server";
 
 // POST function
 export async function POST(orders, user_id) {
@@ -10,12 +11,12 @@ export async function POST(orders, user_id) {
       .select()
 
     if (orderError) {
-      return { error: orderError };
+      return NextResponse.json( { error: orderError }, {status: 500});
     }
 
     // Ensure that purchaseData is not null before proceeding
     if (!orderData || orderData.length === 0) {
-      return { error: "Failed to insert the order record." };
+      return NextResponse.json( { error: "Failed to insert the order record." }, {status: 500});
     }
 
     // Get the ID of the newly inserted purchase
@@ -34,15 +35,15 @@ export async function POST(orders, user_id) {
         .upsert(ordersData);
 
       if (orderItemError) {
-        return { error: orderItemError };
+        return NextResponse.json( {error: orderItemError }, {status: 500});
       }
     } catch (error) {
-      return { error: error.message };
+      return NextResponse.json({error: error.message}, {status: 500});
     }
     // You can continue with more queries or return a success status as needed.
-    return { success: true };
+    return NextResponse.json({ success: true }, {status: 200});
   } catch (error) {
-    return { error: error.message };
+    return NextResponse.json({error: error.message}, {status: 500});
   }
 }
 
