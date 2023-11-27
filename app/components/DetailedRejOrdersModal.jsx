@@ -3,7 +3,7 @@ import { GET as getDetailedRejOrders} from '../api/detailedrejected/route';
 import { useState, useEffect } from "react";
 
 const DetailedRejOrdersModal = ({ isVisible, startDate, endDate, choice, onClose }) => {
-  if (!isVisible) return null;
+  
 
   const [reportData, setReportData] = useState([]); 
   const currentDate = new Date().toLocaleDateString('en-GB');
@@ -33,7 +33,7 @@ const DetailedRejOrdersModal = ({ isVisible, startDate, endDate, choice, onClose
     getRejectedOrders();
   }, [choice]);
 
-
+  if (!isVisible) return null;
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black backdrop-filter backdrop-blur-lg">
       <div className="w-[70%] h-[90vh] bg-white rounded-md shadow-lg overflow-y-auto pb-8">
