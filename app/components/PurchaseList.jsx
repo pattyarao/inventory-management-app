@@ -411,7 +411,7 @@ const handleAddMaterials = (discardItem) => {
                                         event,
                                       )
                                     }
-                                    disabled={variant.name != material.id ? true : false}
+                                    disabled={(variant.name != material.id ? true : false) && variant.name !== ""}
                                   />
                                 </div>
 
@@ -419,7 +419,7 @@ const handleAddMaterials = (discardItem) => {
                                   <div className="relative">
                                     <select
                                         id="large"
-                                        disabled={variant.name != material.id ? true : false}
+                                        disabled={(variant.name != material.id ? true : false) && variant.name !== ""}
                                         value={variant.unit}
                                         onChange={(event) =>
                                             handleUnitChange(
@@ -448,7 +448,6 @@ const handleAddMaterials = (discardItem) => {
                                 {material.id != variant.name ? 
                                   (
                                   <button
-                                    disabled={variant.name != material.id ? true : false}
                                     onClick={() =>
                                       handleDecrement(index, variantIndex)
                                     }

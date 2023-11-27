@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import AddNewUnit from "./AddNewUnit";
 import { GETMETRIC, GETREASON } from "../api/helper/route";
 import { GET as GETUNIT } from "../api/submetric/route";
 import RecordDiscard from "./RecordDiscard";
@@ -17,6 +18,7 @@ const DiscardedList = (props) => {
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [addUnitCondition, setAddUnitCondition] = useState(false);
   const [metricList, setMetricList] = useState([])
   const [unitsList, setUnitsList] = useState([]);
   const [addReasonCondition, setAddReasonCondition] = useState(false)
@@ -51,7 +53,7 @@ const DiscardedList = (props) => {
     }
     getUnits();
     fetchData();
-  }, []);
+  }, [addUnitCondition]);
 
   useEffect(() => {
     const getUnits = async () => {
@@ -123,6 +125,7 @@ const DiscardedList = (props) => {
               id: item.id, 
               reason_id: null,
               partialamount: 0,
+              finalPartialAmount: 0,
             })
 
             console.log("case 4 insert successful", updatedDiscardedList);
@@ -212,17 +215,30 @@ const DiscardedList = (props) => {
 
   const handleUnitChange = (productIndex, variantIndex, event) => {
     const newDiscardedList = [...discardedList];
-    newDiscardedList[productIndex].variants[variantIndex].unit = event.target.value;
+    if (event.target.value === "Add New Unit") {
+      setAddUnitCondition(true);
+      return;
+    } else { 
+      
+      newDiscardedList[productIndex].variants[variantIndex].unit = event.target.value;
 
-    const selectedUnit = unitsList.find((unit) => unit.id === newDiscardedList[productIndex].variants[variantIndex].unit);
+      const selectedUnit = unitsList.find((unit) => unit.id === newDiscardedList[productIndex].variants[variantIndex].unit);
+  
+        let ratio = selectedUnit.ratio
+        newDiscardedList[productIndex].variants[variantIndex].finalAmount = ratio * newDiscardedList[productIndex].variants[variantIndex].amount;
+        setDiscardedList(newDiscardedList);
+    }
 
-      let ratio = selectedUnit.ratio
-      newDiscardedList[productIndex].variants[variantIndex].finalAmount = ratio * newDiscardedList[productIndex].variants[variantIndex].amount;
-      setDiscardedList(newDiscardedList);
+    
+   
     
   };
 
   const handlePartialUnitChange = (productIndex, variantIndex, event) => {
+    if (event.target.value === "Add New Unit") {
+      setAddUnitCondition(true);
+      return;
+    }
     const newDiscardedList = [...discardedList];
     newDiscardedList[productIndex].variants[variantIndex].partialunit = event.target.value;
 
@@ -403,6 +419,9 @@ const DiscardedList = (props) => {
                         <div className="col-span-1 text-sm ms-5">
                           Unit
                         </div>
+                        <div className="col-span-1 text-sm flex items-center justify-center">
+                          Qty. Discarded
+                        </div>
                         <div className="col-span-1 text-sm ms-5">
                           Partial Amount
                         </div>
@@ -412,9 +431,7 @@ const DiscardedList = (props) => {
                         <div className="col-span-1 text-sm ms-5">
                           Reason for Discard
                         </div>
-                        <div className="col-span-1 text-sm flex items-center justify-center">
-                          Qty. Discarded
-                        </div>
+
                       </div>
 
                       {discardedList.map((product, index) => (
@@ -481,16 +498,16 @@ const DiscardedList = (props) => {
                                   />
                                 </div>
 
-                                <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                <div className="mt-3 me-5 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
                                   <div className="relative">
                                     <select
                                       id="large"
-                                      value={product.unit}
+                                      value={variant.unit}
                                       onChange={(event) =>
                                         handleUnitChange(index, variantIndex, event)
                                       }
                                       disabled={variant.id != product.id ? true : false}
-                                      class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="block w-[80%] px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     >
                                        {unitsList
                                               .filter((unit) => product.mainMetric === unit.metric_id)
@@ -499,69 +516,11 @@ const DiscardedList = (props) => {
                                                       {unit.abbreviation}
                                                   </option>
                                               ))}
+                                        <option disabled>────────</option>
+                                        <option>Add New Unit</option>
                                     </select>
                                   </div>
                                 </div>
-
-                                {/** PARTIAL AMOUNT */}
-                                {product.id != variant.id ? (
-                                  <div className="mt-4 col-span-2 grid grid-cols-2 gap-4">
-                                  <div className="flex flex-row h-10 w-full rounded-lg relative bg-transparent">
-                                    <input
-                                      type="number"
-                                      className="outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
-                                      onChange={(event) =>
-                                        handlePartialAmountChange(index, variantIndex, event)
-                                      }
-                                    />
-                                  </div>
-                                  <div className="flex flex-row h-8 w-full rounded-lg relative bg-transparent">
-                                    <div className="relative">
-                                      <select
-                                        id="large"
-                                        value={product.partialunit}
-                                        onChange={(event) =>
-                                          handlePartialUnitChange(index, variantIndex, event)
-                                        }
-                                        class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                      >
-                                          {unitsList
-                                              .filter((unit) => product.mainMetric === unit.metric_id)
-                                              .map((unit) => (
-                                                  <option key={unit.id} value={unit.id}>
-                                                      {unit.abbreviation}
-                                                  </option>
-                                              ))}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div>
-                                ) : (
-                                  <div className="mt-3 col-span-2 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
-                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent"/>
-                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent"/>
-                                  </div>
-                                )}
-
-                                <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent ">
-                                    <select
-                                      id="large"
-                                      onChange={(event) =>
-                                        handleReasonChange(index, variantIndex, event)
-                                      }
-                                      class="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
-                                    >
-                                      <option>Select</option>
-                                      {reasonList.map((reason, index) => (
-                                        <option key={index} value={reason.id}>{reason.reason}</option>
-                                      ))}
-                                      <option disabled>─────────────</option>
-                                      <option>Add New Reason</option> {/** TODO: add new reason modal */}
-                                      
-                                    </select>
-                                </div>
-                                
-                                {/** disabled rendering of +/- for discardItem as the only value needed is the amt provided by the textbox */}
                                 <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
                                   
                                   {product.id != variant.id ? 
@@ -605,9 +564,68 @@ const DiscardedList = (props) => {
                                   )
                                 }
 
-                                  {edit ? (
+                                  
+                                </div>
+                                {/** PARTIAL AMOUNT */}
+                                {product.id != variant.id ? (
+                                  <div className="mt-4 col-span-2 grid grid-cols-2 gap-4">
+                                  <div className="flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                    <input
+                                      type="number"
+                                      className="ms-5 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg "
+                                      onChange={(event) =>
+                                        handlePartialAmountChange(index, variantIndex, event)
+                                      }
+                                    />
+                                  </div>
+                                  <div className="flex flex-row h-8 w-full rounded-lg relative bg-transparent">
+                                    <div className="relative">
+                                      <select
+                                        id="large"
+                                        value={variant.partialunit}
+                                        onChange={(event) =>
+                                          handlePartialUnitChange(index, variantIndex, event)
+                                        }
+                                        class="block w-[80%] px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      >
+                                          {unitsList
+                                              .filter((unit) => product.mainMetric === unit.metric_id)
+                                              .map((unit) => (
+                                                  <option key={unit.id} value={unit.id}>
+                                                      {unit.abbreviation}
+                                                  </option>
+                                              ))}
+                                            <option disabled>────────</option>
+                                            <option>Add New Unit</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                                ) : (
+                                  <div className="mt-3 col-span-2 flex flex-row h-10 w-full rounded-lg relative bg-transparent">
+                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent"/>
+                                    <div className="mt-3 col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent"/>
+                                  </div>
+                                )}
+
+                                <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent ">
+                                    <select
+                                      id="large"
+                                      onChange={(event) =>
+                                        handleReasonChange(index, variantIndex, event)
+                                      }
+                                      class="mt-3 outline-none focus:outline-none text-center h-full w-full me-4 bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none rounded-lg"
+                                    >
+                                      <option>Select</option>
+                                      {reasonList.map((reason, index) => (
+                                        <option key={index} value={reason.id}>{reason.reason}</option>
+                                      ))}
+                                      <option disabled>─────────────</option>
+                                      <option>Add New Reason</option> {/** TODO: add new reason modal */}
+                                    </select>
+                                    {edit ? (
                                     <button
-                                      className="ms-3 col-span-1 p-2 flex items-center justify-center rounded-lg cursor-pointer"
+                                      className="mt-3 h-10 p-2 rounded-lg cursor-pointer"
                                       style={{
                                         backgroundColor: "#FF0000",
                                         color: "#FFFFFF",
@@ -631,6 +649,9 @@ const DiscardedList = (props) => {
                                     </button>
                                   ) : null}
                                 </div>
+                                
+                                {/** disabled rendering of +/- for discardItem as the only value needed is the amt provided by the textbox */}
+
                               </>
                             ))}
 
@@ -676,6 +697,10 @@ const DiscardedList = (props) => {
         { addReasonCondition ? (
           <AddNewReason onClose={() => {setAddReasonCondition(false)}} />
         ) : null }
+
+      {addUnitCondition ? (
+        <AddNewUnit onClose={() => setAddUnitCondition(false)} />
+      ) : null}
     </div>
 
     

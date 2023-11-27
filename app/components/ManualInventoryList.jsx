@@ -1,8 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import RecordManualCount from "./RecordManualCount";
-import ClearManualCount from "./ClearManualCount";
-import Navbar from "./Navbar";
+import AddNewUnit from "./AddNewUnit";
 import Loader from "./Loader";
 import { GET as GETUNIT } from "../api/submetric/route";
 import { GET as getCompleteList, POST} from "../api/manualcount/route";
@@ -15,6 +14,7 @@ const ManualCount = (props) => {
   const [unitsList, setUnitsList] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [addUnitCondition, setAddUnitCondition] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -60,7 +60,7 @@ const ManualCount = (props) => {
       }
       getUnits();
       fetchData();
-  }, [postSuccess])
+  }, [postSuccess, addUnitCondition])
 
   useEffect(() => {
     console.log('updated complete list:', completeList);
@@ -105,6 +105,10 @@ const ManualCount = (props) => {
 
   
   const handleUnitChange = (productIndex, variantIndex, event) => {
+    if (event.target.value === "Add New Unit") {
+      setAddUnitCondition(true);
+      return;
+    }
     const newManualCount = [...completeList];
     newManualCount[productIndex].variants[variantIndex].unit = event.target.value;
 
@@ -338,6 +342,8 @@ const ManualCount = (props) => {
                                                       {unit.abbreviation}
                                                   </option>
                                               ))}
+                                        <option disabled>─────────────</option>
+                                        <option>Add New Unit</option>
                                     </select>
                                   </div>
                                 </div>
@@ -373,6 +379,9 @@ const ManualCount = (props) => {
       </div>
     </div>
     )}
+          {addUnitCondition ? (
+        <AddNewUnit onClose={() => setAddUnitCondition(false)} />
+      ) : null}
     </div>
     )}
       
