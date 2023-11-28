@@ -161,7 +161,7 @@ const ManualCount = (props) => {
     <div className="w-full flex flex-col items-center gap-4">
       {isLoading ? ( <Loader/>) : (
       
-      <div className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg" style={{ backgroundColor: "#D6E0F0", color: "black" }}>
+      <div className="w-full p-10 bg-[#526D82] text-white rounded-lg">
         <div className="ml-3 w-[5%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
   <button
     onClick={sortMaterialsAndVariantsByName}
@@ -197,8 +197,8 @@ const ManualCount = (props) => {
                   .length !== 0 ? (
                     <>
                       <div
-                        className="px-3 w-full grid grid-cols-5 text-xs rounded-lg"
-                        style={{ backgroundColor: "#D6E0F0", color: "black" }} //style for headers
+                        className="px-3 w-full mb-3 grid grid-cols-5 text-xs rounded-lg"
+                        style={{ backgroundColor: "#526D82", color: "white" }} //style for headers
                       >
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Name
@@ -223,8 +223,8 @@ const ManualCount = (props) => {
                           <div
                             className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
                             style={{
-                              backgroundColor: "#D6E0F0",
-                              color: "#27374D",
+                              backgroundColor: "#637B8E",
+                              color: "white",
                             }}
                           >
 
