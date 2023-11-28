@@ -54,14 +54,35 @@ const Onboarding = () => {
         password: password,
       });
 
+
       if (error) {
         console.error("Error during login:", error.message);
         setErrorMessage("Invalid Email or Password")
       } else {
-        // Redirect to the home page after successful login
-        console.log("success!");
-       setErrorMessage("")
+        const user_id =  data.user.id
+        const { data: employee_data, error: employee_error } = await supabase
+        .from("MD_PROFILES")
+        .select("status")
+        .eq("id", user_id) 
+
+        if (employee_error) {
+          console.error("Error getting user:", error.message);
+        }
+
+        const employee_status = employee_data[0].status
+
+        if(employee_status){
+          // Redirect to the home page after successful login
+          console.log("success!");
+          setErrorMessage("")
           router.push("/"); // Replace '/' with the actual path to your home page
+        }
+        else{
+          alert("UNSUCCESSFUL LOGIN");
+          router.push("/onboarding");
+        }
+      
+
         
       }
     }
