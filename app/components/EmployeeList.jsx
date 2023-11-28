@@ -93,6 +93,8 @@ const EmployeeList = () => {
     return fullName.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  
+
   return (
     <>
       {isAddModalShowed && (

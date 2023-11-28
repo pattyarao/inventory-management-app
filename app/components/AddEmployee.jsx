@@ -103,7 +103,7 @@ const AddEmployee = ({
             <div className="w-full text-sm flex items-center justify-between gap-4">
               <p>First Name</p>
               <input
-                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                className="w-[250px] border border-black rounded-md py-0.5 px-2 focus:outline-none"
                 type="text"
                 onChange={handleFirstnameChange}
                 value={firstname}
@@ -112,7 +112,7 @@ const AddEmployee = ({
             <div className="w-full text-sm flex items-center justify-between gap-4">
               <p>Last Name</p>
               <input
-                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                className="w-[250px] border border-black rounded-md py-0.5 px-2 focus:outline-none"
                 type="text"
                 onChange={handleLastNameChange}
                 value={lastname}
@@ -121,7 +121,7 @@ const AddEmployee = ({
             <div className="w-full text-sm flex items-center justify-between gap-4">
               <p>Email</p>
               <input
-                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                className="w-[250px] border border-black rounded-md py-0.5 px-2 focus:outline-none"
                 type="text"
                 onChange={handleEmailChange}
                 value={email}
@@ -130,7 +130,7 @@ const AddEmployee = ({
             <div className="w-full text-sm flex items-center justify-between gap-4">
               <p>Password</p>
               <input
-                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                className="w-[250px] border border-black rounded-md py-0.5 px-2 focus:outline-none"
                 type="password"
                 onChange={handlePasswordChange}
                 value={password}
@@ -139,11 +139,26 @@ const AddEmployee = ({
             <div className="w-full text-sm flex items-center justify-between gap-4">
               <p>Confirm Password</p>
               <input
-                className="border border-black rounded-md py-0.5 px-2 focus:outline-none"
+                className="w-[250px] border border-black rounded-md py-0.5 px-2 focus:outline-none"
                 type="password"
                 onChange={handleConfirmPassword}
                 value={confirmPass}
               />
+            </div>
+            <div className="w-full text-sm flex items-center justify-between gap-4">
+              <p>Select Role</p>
+              <select
+              className="w-[250px] border border-black rounded-md py-0.5 px-2 focus:outline-none"
+              id="role"
+              onChange={handleSelectRole}
+              value={role}
+            >
+              <option value="Owner">Owner</option>
+              <option value="Stock Controller">Stock Controller</option>
+              <option value="Manufacturing Head">Manufacturing Head</option>
+              <option value="Sales Person">Sales Person</option>
+            </select>
+
             </div>
           </div>
         </div>
