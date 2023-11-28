@@ -68,13 +68,13 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center gap-6">
-      <div className="w-[30%] px-10 py-4 bg-blue-400 flex items-center justify-center rounded-lg">
-        <h1 className="font-black text-xl ">Inventory Management System</h1>
+    <div className="w-full min-h-screen flex flex-col justify-center items-center gap-6 bg-gradient-to-br from-[#D6E0F0] to-[#393B44]">
+      <div className="w-[30%] px-10 py-4 flex items-center justify-center rounded-lg">
+        <h1 className="font-black text-3xl text-[#393B44]">Inventory Management System</h1>
       </div>
-      <div className="w-[30%] p-10 bg-blue-300 flex flex-col items-center justify-center gap-6 rounded-lg">
+      <div className="w-[30%] p-10 bg-[#D6E0F0]/80 flex flex-col items-center justify-center gap-6 rounded-lg">
         <h3 className="text-center text-2xl font-bold">Sign In</h3>
-        <hr className="w-full border-2 border-blue-800"></hr>
+        <hr className="w-full border-2 border-[#8D93AB]"></hr>
         <div className="w-full flex flex-col items-center gap-4">
         {errorMessage && (
             <div className="text-red-500 text-sm">{errorMessage}</div>
@@ -96,10 +96,9 @@ const Onboarding = () => {
               onChange={handlePasswordChange}
             />
           </div>
-
-          <div>
+          <div clasName="">
             <button
-              className="bg-blue-800 text-white py-2 px-4 rounded-md mt-4"
+              className="bg-[#8D93AB] text-white py-2 px-4 rounded-md mt-4"
               onClick={handleSignIn}
             >
               Login
