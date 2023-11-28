@@ -161,8 +161,8 @@ const ManualCount = (props) => {
     <div className="w-full flex flex-col items-center gap-4">
       {isLoading ? ( <Loader/>) : (
       
-      <div className="w-full p-10 bg-[#526D82] text-white rounded-lg">
-        <div className="ml-3 w-[5%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
+      <div className="w-full p-10 bg-[#D6E0F0] rounded-lg">
+        {/* <div className="ml-3 w-[5%] rounded-md" style={{ backgroundColor: "#27374D", color: "black" }}>
   <button
     onClick={sortMaterialsAndVariantsByName}
     style={{
@@ -175,17 +175,16 @@ const ManualCount = (props) => {
     Sort{" "}
     <FontAwesomeIcon icon={faSort} style={{ marginLeft: "5px" }} />
   </button>
-</div>
+</div> */}
 
 
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
-        <div className="col-span-5 md:col-span-5 text-xl font-bold">
+        <div className="col-span-5 md:col-span-5 text-xl font-black text-[#393B44]">
           Materials List
         </div>
       </div>
       <hr
-        className="w-full border-2 mb-4"
-        style={{ backgroundColor: "#D6E0F0", color: "white" }}
+        className="w-full border-2 mb-4 border-[#393B44]"
       ></hr>
       <div className="w-full flex flex-col items-center gap-4">
         <div className="w-full flex flex-col text-xs">
@@ -197,8 +196,8 @@ const ManualCount = (props) => {
                   .length !== 0 ? (
                     <>
                       <div
-                        className="px-3 w-full mb-3 grid grid-cols-5 text-xs rounded-lg"
-                        style={{ backgroundColor: "#526D82", color: "white" }} //style for headers
+                        className="p-3 w-full mb-3 grid grid-cols-5 text-xs rounded-lg bg-[#8D93AB] text-black font-bold"
+                        
                       >
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Name
@@ -221,11 +220,7 @@ const ManualCount = (props) => {
                       {completeList.map((material, index) => (
                         <div key={index}>
                           <div
-                            className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
-                            style={{
-                              backgroundColor: "#637B8E",
-                              color: "white",
-                            }}
+                            className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg bg-[#8D93AB]"
                           >
 
                             {material.variants.length > 0 ? (
@@ -258,7 +253,7 @@ const ManualCount = (props) => {
                                         )
                                       }
                                       id="large"
-                                      class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      className="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:border-blue-500"
                                     >
                                       {variant.name === material.name ? "No Variation" : variant.name}
                                     </li>
@@ -283,7 +278,7 @@ const ManualCount = (props) => {
                                   
                                   <input
                                     type="number"
-                                    className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
+                                    className="outline-none focus:outline-none text-center w-full bg-gray-50 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
                                     value={variant.quantity}
                                     onChange={(event) =>
                                       handleQtyChange(
@@ -333,7 +328,7 @@ const ManualCount = (props) => {
                                       onChange={(event) =>
                                         handleUnitChange(index, variantIndex, event)
                                       }
-                                      class="block ml-2 w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="block ml-4 w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                                     >
                                        {unitsList
                                               .filter((unit) => material.metric_id === unit.metric_id)
