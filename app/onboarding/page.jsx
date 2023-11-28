@@ -8,6 +8,7 @@ const Onboarding = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [errors, setErrors] = useState({
     email: "",
     password: "",
@@ -55,10 +56,11 @@ const Onboarding = () => {
 
       if (error) {
         console.error("Error during login:", error.message);
+        setErrorMessage("Invalid Email or Password")
       } else {
         // Redirect to the home page after successful login
         console.log("success!");
-       
+       setErrorMessage("")
           router.push("/"); // Replace '/' with the actual path to your home page
         
       }
@@ -74,6 +76,9 @@ const Onboarding = () => {
         <h3 className="text-center text-2xl font-bold">Sign In</h3>
         <hr className="w-full border-2 border-blue-800"></hr>
         <div className="w-full flex flex-col items-center gap-4">
+        {errorMessage && (
+            <div className="text-red-500 text-sm">{errorMessage}</div>
+          )}
           <div className="w-full flex flex-col text-xs">
             <p>Email</p>
             <input
