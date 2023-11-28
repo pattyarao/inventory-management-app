@@ -116,11 +116,6 @@ const MaterialStockLevel = ({userType, userInfo}) => {
               selected_model={selectedOption}
               onLoadingChange={handleLoadingChange} // Pass the callback function
             />
-
-          {/* You can use the selectedOption state as needed in your application */}
-          {selectedOption && (
-            <div className="mt-4">Selected Option: {selectedOption}</div>
-          )}
         </div>
       </div>
     </div>

@@ -193,8 +193,7 @@ const MaterialList = ({ searchTerm, view, sortOption, selected_model, onLoadingC
                     {material.name}
                   </p>
                   <p className="p-6 text-right font-semibold w-2/5 whitespace-normal">
-                    {material.qty_available}
-                    {material.REF_METRIC.metric_unit}
+                    {`${material.qty_available} ${material.REF_METRIC.metric_unit}`}
                   </p>
                   <p className="p-6 font-semibold text-right w-2/5 whitespace-normal">
                     {prediction[material.id] != null ? (
