@@ -3,7 +3,8 @@ import supabase from "../../supabase";
 export async function GET() {
   const { data: models, error } = await supabase
     .from("ML_MODELS")
-    .select("*");
+    .select("*")
+    .order("name", { ascending: true });
 
   if (error) {
     return new Response(JSON.stringify({ error }), {

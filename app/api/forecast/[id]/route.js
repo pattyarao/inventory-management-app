@@ -1,302 +1,28 @@
 import supabase from "../../../supabase";
 import { NextResponse } from "next/server";
+import fetch from 'node-fetch';
 
-function simpleExpSmoothing(order_list) {
-  let predictions = {};
-  let alpha = 0.1
-  const DATA_LIMIT = 3
-
-  // Loop through each product's sales data
-  for (let productId in order_list) {
-    let sales = order_list[productId];
-    let salesValues = sales.map(entry => entry.qty_ordered);
-    let smoothedValues = [salesValues[0]]; // Initialize with first value
-
-    if(salesValues.length > DATA_LIMIT){
-    // Apply exponential smoothing
-    // SES FORMULA => Yt+1 = alpha * At + (1-alpha)(Yt)
-    for (let i = 1; i < salesValues.length; i++) {
-      let smoothedValue = alpha * salesValues[i] + (1 - alpha) * smoothedValues[i - 1];
-      smoothedValues.push(smoothedValue);
-    }
-
-    // Predict future sales
-    let lastSmoothedValue = smoothedValues[smoothedValues.length - 1];
-
-    lastSmoothedValue = alpha * salesValues[salesValues.length - 1] + (1 - alpha) * lastSmoothedValue;
-    predictions[productId] = Math.round(lastSmoothedValue);
-    }
-  }
-
-  return predictions;
-}
-
-
-function additiveDoubleExpSmoothing(order_list) {
-  //AKA HOLT EXPONENTIAL SMOOTHING
-  let predictions = {};
-  let alpha = 0.8
-  let beta = 0.8
-  const DATA_LIMIT = 3
-
-  //FORMULA for Forecasting: F_t+k = S_t + T_t 
-  //WHERE:
-  // F_t+k is the forecasted value
-  // S_t = Smoothed Value (Level)
-  // T_t = Trend Value (Trend)
-
-  // S_t = ALPHA * (current_value) + (1 - ALPHA) * (previous_S_t + previous_trend)
-  // T_t = BETA * (current_S_t - previous_S_t) + (1 - BETA) * previous_T_t
-
-  // Loop through each product's sales data
-  for (let productId in order_list) {
-    let sales = order_list[productId];
-    let salesValues = sales.map(entry => entry.qty_ordered);
-    let smoothedValues = [salesValues[0]]; // Initialize with first value
-    let trendValues = [0]
-    let forecasts = []
-
-
-
-    if(salesValues.length > DATA_LIMIT){
-
-    for (let i = 1; i < salesValues.length; i++) {
-      let smoothedValue = alpha * salesValues[i] + (1 - alpha) * (smoothedValues[i - 1] + trendValues[i - 1]);
-      smoothedValues.push(smoothedValue);
-
-      let trendValue = beta * (smoothedValue - smoothedValues[i - 1]) + (1 - beta) * trendValues[i - 1];
-      trendValues.push(trendValue)
-
-      forecasts.push(smoothedValue + trendValue)
-    }
-
-
-
-    // Predict next sale
-    let lastSmoothedValue = alpha * salesValues[salesValues.length - 1] + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
-    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
-
-    let prediction = lastSmoothedValue + lastTrendValue
-    predictions[productId] = Math.round(prediction);
-    }
-  }
-
-  return predictions;
-}
-
-function multiplicativeDoubleExpSmoothing(order_list) {
-  //AKA HOLT EXPONENTIAL SMOOTHING
-  let predictions = {};
-  let alpha = 0.8
-  let beta = 0.8
-  const DATA_LIMIT = 3
-
-  //FORMULA for Forecasting: F_t+k = S_t * T_t 
-  //WHERE:
-  // F_t+k is the forecasted value
-  // S_t = Smoothed Value (Level)
-  // T_t = Trend Value (Trend)
-
-  // S_t = ALPHA * (current_value / previous_S_t) + (1 - ALPHA) * (previous_S_t + previous_trend)
-  // T_t = BETA * (current_S_t - previous_S_t) + (1 - BETA) * previous_T_t
-
-  // Loop through each product's sales data
-  for (let productId in order_list) {
-    let sales = order_list[productId];
-    let salesValues = sales.map(entry => entry.qty_ordered);
-    let smoothedValues = [salesValues[0]]; // Initialize with first value
-    let trendValues = [0]
-    let forecasts = []
-
-
-
-    if(salesValues.length > DATA_LIMIT){
-
-    for (let i = 1; i < salesValues.length; i++) {
-      let smoothedValue = alpha * (salesValues[i] / smoothedValues[i - 1]) + (1 - alpha) * (smoothedValues[i - 1] + trendValues[i - 1]);
-      smoothedValues.push(smoothedValue);
-
-      let trendValue = beta * (smoothedValues[i] - smoothedValues[i - 1]) + (1 - beta) * trendValues[i - 1];
-      trendValues.push(trendValue);
-
-      forecasts.push(smoothedValue * trendValue);
-    }
-
-
-    // Predict next sale
-    let lastSmoothedValue = alpha * (salesValues[salesValues.length - 1] / smoothedValues[smoothedValues.length - 1]) + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
-    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
-
-    let prediction = lastSmoothedValue + lastTrendValue
-    predictions[productId] = Math.round(prediction);
-    }
-  }
-  console.log(predictions)
-  return predictions;
-}
-
-function additiveTripleExponentialSmoothing(order_list) {
-  //AKA HOLT WINTERS EXPONENTIAL SMOOTHING
-  let predictions = {};
-  let alpha = 0.8
-  let beta = 0.8
-  let gamma = 0.8
-  let M = 3
-  const DATA_LIMIT = 7
-
-  for (let productId in order_list) {
-    let sales = order_list[productId];
-    let salesValues = sales.map(entry => entry.qty_ordered);
-    let seasonalValues = []
-    let seasonalAve = 0
-
-
-    if(salesValues.length > DATA_LIMIT){
-
-    // Initial Values
-
-    //Get the Initial Seasonal Average
-    for (let i = 0; i < M; i++){
-      seasonalAve += salesValues[i]
-    }
-    seasonalAve = seasonalAve / M 
-
-    //Get Initial Seasonal Values 
-    for (let i = 0; i < M; i++){
-      seasonalValues.push(salesValues[i] / seasonalAve)
-    }
-
-    // Initial Values
+async function getPrediction(inputjson, key) {
+  try {
     
-    let smoothedValues = [salesValues[M] - seasonalValues[M - M]]; 
-    let trendValues = [smoothedValues[0] - (salesValues[M - 1] / seasonalValues[M - 1])]
-    seasonalValues.push(gamma * (salesValues[M] - smoothedValues[0]) + (1 - gamma) * seasonalValues[0])
-    let forecasts = [smoothedValues[0] + trendValues[0] + seasonalValues[M - M + 1]]
-    
+    const flaskAPIResponse = await fetch(process.env.ML_API_URL + key, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(inputjson),
+    });
 
-    // Model Application   
-    let k = 0
-    for (let i = M + 1; i < salesValues.length; i++) {
-      let smoothedValue = alpha * (salesValues[i] - seasonalValues[i - M]) + (1 - alpha) * (smoothedValues[k] + trendValues[k]);
-      smoothedValues.push(smoothedValue);
-      
-
-      let trendValue = beta * (smoothedValue - smoothedValues[k]) + (1 - beta) * trendValues[k];
-      trendValues.push(trendValue)
-      
-
-      let seasonalValue = gamma * (salesValues[i] - smoothedValues[i - M]) + (1 - gamma) * seasonalValues[i - M]
-      seasonalValues.push(seasonalValue)
-      
-      forecasts.push(smoothedValue + trendValue + seasonalValue)
-      k++;
+    if (!flaskAPIResponse.ok) {
+      throw new Error('Failed to fetch data from Flask API');
     }
-    // Predict next sale
-    let lastSmoothedValue = alpha * (salesValues[salesValues.length - 1] - seasonalValues[seasonalValues.length - M]) + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
-    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
-    let lastSeasonalValue =  gamma * (salesValues[salesValues.length - 1] - smoothedValues[smoothedValues.length - M]) + (1 - gamma) * seasonalValues[seasonalValues.length - M]
 
-    let prediction = lastSmoothedValue + lastTrendValue + lastSeasonalValue;
-    predictions[productId] = Math.round(prediction);
-    }
+    const predicted_sales = await flaskAPIResponse.json();
+    return predicted_sales;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
   }
-  return predictions;
-}
-
-
-function multiplicativeTripleExponentialSmoothing(order_list) {
-  //AKA HOLT WINTERS EXPONENTIAL SMOOTHING
-  let predictions = {};
-  let alpha = 0.8
-  let beta = 0.8
-  let gamma = 0.8
-  let M = 3
-  const DATA_LIMIT = 7
-
-  for (let productId in order_list) {
-    let sales = order_list[productId];
-    let salesValues = sales.map(entry => entry.qty_ordered);
-    let seasonalValues = []
-    let seasonalAve = 0
-
-
-    if(salesValues.length > DATA_LIMIT){
-
-    // Initial Values
-
-    //Get the Initial Seasonal Average
-    for (let i = 0; i < M; i++){
-      seasonalAve += salesValues[i]
-    }
-    seasonalAve = seasonalAve / M 
-
-    //Get Initial Seasonal Values 
-    for (let i = 0; i < M; i++){
-      seasonalValues.push(salesValues[i] / seasonalAve)
-    }
-
-    // Initial Values
-    
-    let smoothedValues = [salesValues[M] / seasonalValues[M - M]]; 
-    let trendValues = [smoothedValues[0] - (salesValues[M - 1] / seasonalValues[M - 1])]
-    seasonalValues.push(gamma * (salesValues[M] / smoothedValues[0]) + (1 - gamma) * seasonalValues[0])
-    let forecasts = [(smoothedValues[0] + trendValues[0]) * seasonalValues[M - M + 1]]
-    
-
-    // Model Application   
-    let k = 0
-    for (let i = M + 1; i < salesValues.length; i++) {
-      let smoothedValue = alpha * (salesValues[i] / seasonalValues[i - M]) + (1 - alpha) * (smoothedValues[k] + trendValues[k]);
-      smoothedValues.push(smoothedValue);
-      
-
-      let trendValue = beta * (smoothedValue - smoothedValues[k]) + (1 - beta) * trendValues[k];
-      trendValues.push(trendValue)
-      
-
-      let seasonalValue = gamma * (salesValues[i] / smoothedValues[i - M]) + (1 - gamma) * seasonalValues[i - M]
-      seasonalValues.push(seasonalValue)
-      
-      forecasts.push((smoothedValue + trendValue) * seasonalValue)
-      k++;
-    }
-    // Predict next sale
-    let lastSmoothedValue = alpha * (salesValues[salesValues.length - 1] / seasonalValues[seasonalValues.length - M]) + (1 - alpha) * (smoothedValues[smoothedValues.length - 1] + trendValues[trendValues.length - 1]);
-    let lastTrendValue = beta * (lastSmoothedValue - smoothedValues[smoothedValues.length - 1]) + (1 - beta) * trendValues[trendValues.length - 1];
-    let lastSeasonalValue =  gamma * (salesValues[salesValues.length - 1] / smoothedValues[smoothedValues.length - M]) + (1 - gamma) * seasonalValues[seasonalValues.length - M]
-
-    let prediction = (lastSmoothedValue + lastTrendValue) * lastSeasonalValue;
-    predictions[productId] = Math.round(prediction);
-    }
-  }
-  return predictions;
-}
-
-
-function movingAverage(order_list) {
-  let predictions = {};
-  // 7-Day MA
-  let MA = 7
-  const DATA_LIMIT = 7
-
-  // Loop through each product's sales data
-  for (let productId in order_list) {
-    let sales = order_list[productId];
-    let salesValues = sales.map(entry => entry.qty_ordered);
-    
-    if(salesValues.length > DATA_LIMIT){
-    let average = 0; // Initialize with first value
-    
-    for (let i = salesValues.length - 1; i > salesValues.length - 1 - MA; i--) {
-      average += salesValues[i];
-    }
-
-    average /= MA
-    predictions[productId] = Math.round(average);
-    }
-  }
-
-  return predictions;
 }
 
 
@@ -375,19 +101,58 @@ export async function GET(request, {params}) {
 
     //MODAL MAPPING DRAFT: get models in the future
 
-    if (id === "cf357686-8ee1-4b42-b0a1-1996c8a14298") {
-      predicted_sales = additiveDoubleExpSmoothing(order_list);
-    } else if (id === "7532bc26-b259-43d6-b967-3ac12da76c4e") {
-      predicted_sales = multiplicativeDoubleExpSmoothing(order_list);
-    } else if (id === "87b7eca6-73e0-46c4-a5b4-27901bc9dd9c") {
-      predicted_sales = additiveTripleExponentialSmoothing(order_list);
-    } else if (id === "dd5852ac-8e7e-4e46-b24b-633461f276e1") {
-      predicted_sales = multiplicativeTripleExponentialSmoothing(order_list);
-    } else if (id === "7d41c496-f85e-499c-82f5-82b31835c8e2") {
-      predicted_sales = movingAverage(order_list);
-    } else if (id === "9533d69e-e579-4aa3-8c27-428cc6f8fff6") {
-      predicted_sales = simpleExpSmoothing(order_list);
+    const inputjson = {
+      data: order_list,
+    };
+
+    // if (id === "cf357686-8ee1-4b42-b0a1-1996c8a14298") {
+
+    //   // const flaskAPIResponse = await fetch('http://127.0.0.1:5000/holtadd', {
+    //   //   method: 'POST',
+    //   //   headers: {
+    //   //     'Content-Type': 'application/json',
+    //   //   },
+    //   //   body: JSON.stringify(inputjson),
+    //   // });
+    
+    //   // if (!flaskAPIResponse.ok) {
+    //   //   throw new Error(flaskAPIResponse);
+    //   // }
+    
+    //   // predicted_sales = await flaskAPIResponse.json();
+    //   // console.log('Predicted sales:', predicted_sales);
+    //   console.log("hello", process.env.ML_API_URL)
+    //   try {
+    //     predicted_sales = await getPrediction(inputjson, 'holtadd');
+    //     console.log('Predicted sales:', predicted_sales);
+    //     // Handle the predicted sales data here
+    //   } catch (error) {
+    //     console.error('Error calling Flask API:', error);
+    //   }
+
+    //   // predicted_sales = getPrediction(inputjson, 'holtadd')
+        
+    //   // predicted_sales = additiveDoubleExpSmoothing(order_list);
+    // } else if (id === "7532bc26-b259-43d6-b967-3ac12da76c4e") {
+    //   predicted_sales = multiplicativeDoubleExpSmoothing(order_list);
+    // } else if (id === "87b7eca6-73e0-46c4-a5b4-27901bc9dd9c") {
+    //   predicted_sales = additiveTripleExponentialSmoothing(order_list);
+    // } else if (id === "dd5852ac-8e7e-4e46-b24b-633461f276e1") {
+    //   predicted_sales = multiplicativeTripleExponentialSmoothing(order_list);
+    // } else if (id === "7d41c496-f85e-499c-82f5-82b31835c8e2") {
+    //   predicted_sales = movingAverage(order_list);
+    // } else if (id === "9533d69e-e579-4aa3-8c27-428cc6f8fff6") {
+    //   predicted_sales = simpleExpSmoothing(order_list);
+    // }
+
+    try {
+      predicted_sales = await getPrediction(inputjson, id);
+      console.log('Predicted sales:', predicted_sales);
+      // Handle the predicted sales data here
+    } catch (error) {
+      console.error('Error calling Flask API:', error);
     }
+
 
     // predicted_sales = movingAverage(order_list)
 

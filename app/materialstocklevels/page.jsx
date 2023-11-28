@@ -21,7 +21,7 @@ const MaterialStockLevel = ({userType, userInfo}) => {
       if (response.status === 200) {
         const models = await response.json();
         setPredmodels(models.models);
-        setSelectedOption(models.models[0]?.id)
+        setSelectedOption(models.models[0]?.route)
       } else {
         console.error('API Error:', response);
       }
@@ -83,7 +83,7 @@ const MaterialStockLevel = ({userType, userInfo}) => {
               onChange={handleOptionChange}
             >
               {predmodels.map((option, index) => (
-                <option key={index} value={option.id}>
+                <option key={index} value={option.route}>
                   {option.name}
                 </option>
               ))}
