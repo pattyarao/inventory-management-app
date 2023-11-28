@@ -140,14 +140,12 @@ const toggleProductStatus = (productToToggle) => {
                       </select>
                     </div>
                     <div
-                      className="px-3 w-full grid grid-cols-5 text-xs rounded-lg mb-3"
-                      style={{ backgroundColor: "#526D82", color: "white" }}
-                    >
+                      className="px-3 w-full grid grid-cols-5 bg-[#D6E0F0] text-xs rounded-lg mb-3">
                       
-                      <div className="col-span-3 md:col-span-4  text-xl font-semibold ms-5 ">
+                      <div className="col-span-3 md:col-span-4  text-xl font-semibold ms-5 text-black">
                         Name
                       </div>
-                      <div className="col-span-2 md:col-span-1 text-xl font-semibold flex items-center justify-center">
+                      <div className="col-span-2 md:col-span-1 text-xl text-black font-semibold flex items-center justify-center">
                         Status
                       </div>
                     </div>
@@ -161,7 +159,7 @@ const toggleProductStatus = (productToToggle) => {
                             color: "#27374D",
                           }}
                         >
-                          <div className="col-span-3 md:col-span-4  font-black text-xl ms-5 mt-2" key={index} onClick={() => handleProductClick(product)} style={{ cursor: "pointer" }}>
+                          <div className="col-span-3 md:col-span-4 text-black font-black text-xl ms-5 mt-2" key={index} onClick={() => handleProductClick(product)} style={{ cursor: "pointer" }}>
                             {product.name}
                           </div>
 
