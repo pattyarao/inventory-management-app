@@ -329,8 +329,8 @@ const PurchaseList = (props) => {
   console.log(usedItemList);
   return (
     <div
-      className="w-[100%] p-10 bg-blue-300 gap-6 rounded-lg"
-      style={{ backgroundColor: "#526D82", color: "white" }}
+      className="w-[100%] p-10 gap-6 rounded-lg bg-[#D6E0F0]"
+      
     >
       <div className="px-3 w-full grid grid-cols-5 rounded-lg">
         <div className="col-span-3 md:col-span-4 text-xl font-bold">
@@ -363,8 +363,8 @@ const PurchaseList = (props) => {
                   {purchaseList.length !== 0 ? (
                     <>
                       <div
-                        className="px-3 w-full grid grid-cols-5 text-xs rounded-lg"
-                        style={{ backgroundColor: "#526D82", color: "white" }}
+                        className="p-3 mb-4 w-full grid grid-cols-5 text-xs rounded-lg bg-[#8D93AB] text-white font-bold"
+                        
                       >
                         <div className="col-span-1 text-sm flex items-center justify-center">
                           Material Name
@@ -384,11 +384,8 @@ const PurchaseList = (props) => {
                       {purchaseList.map((material, index) => (
                         <div key={index}>
                           <div
-                            className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg"
-                            style={{
-                              backgroundColor: "#9DB2BF",
-                              color: "#27374D",
-                            }}
+                            className="w-full p-3 mb-4 grid grid-cols-5 text-xs rounded-lg bg-[#8D93AB]"
+                            
                           >
                             <div className="col-span-1 flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
                               <button
@@ -424,7 +421,7 @@ const PurchaseList = (props) => {
                                         )
                                       }
                                       id="large"
-                                      class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      class="mt-3 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                                     >
                                       <option value="">None</option>
                                       {variantsList.map(
@@ -482,7 +479,7 @@ const PurchaseList = (props) => {
                                           event,
                                         )
                                       }
-                                      className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                      className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                                     >
                                       {unitsList
                                         .filter(

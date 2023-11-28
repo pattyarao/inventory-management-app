@@ -38,7 +38,7 @@ export async function POST(newUnit) {
         });
   
         const { data: unitData, error: unitError } = await supabase
-          .from("REF_SUBMETRIC") // Check the table name
+          .from("REF_SUBMETRIC")
           .upsert(unitList);
   
         if (unitError) {
@@ -47,7 +47,7 @@ export async function POST(newUnit) {
       } catch (error) {
         return NextResponse.json({error: error.message}, {status: 500});
       }
-      // You can continue with more queries or return a success status as needed.
+
       return NextResponse.json({ success: true }, {status: 200});
    
   }

@@ -31,7 +31,7 @@ export async function POST(orders, user_id) {
       }));
 
       const { data: orderItemData, error: orderItemError } = await supabase
-        .from("TD_REJECTEDORDERITEMS") // Check the table name
+        .from("TD_REJECTEDORDERITEMS") 
         .upsert(ordersData);
 
       if (orderItemError) {
@@ -40,7 +40,7 @@ export async function POST(orders, user_id) {
     } catch (error) {
       return NextResponse.json({error: error.message}, {status: 500});
     }
-    // You can continue with more queries or return a success status as needed.
+
     return NextResponse.json({ success: true }, {status: 200});
   } catch (error) {
     return NextResponse.json({error: error.message}, {status: 500});
