@@ -33,7 +33,7 @@ const useUpdateStatus = () => {
       }
 
       toast.update(toastID.current ?? "", {
-        render: "Employee added!",
+        render: "Status Changed!",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
