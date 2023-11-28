@@ -103,7 +103,10 @@ const EmployeeList = () => {
         <div className="py-4 flex justify-between items-center border-b-2 border-black">
           <h3 className="font-bold text-4xl">Employee Masterlist</h3>
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setShowAddModal(true);
+              setIndex(null);
+            }}
             className="bg-[#8D93AB] py-2 px-6 rounded-md text-[#F1F3F8] font-bold"
           >
             Add Employee
