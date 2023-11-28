@@ -66,38 +66,38 @@ const ManualCount = (props) => {
     console.log('updated complete list:', completeList);
   }, [completeList])
 
-  const [sortOrder, setSortOrder] = useState("ascending");
+  // const [sortOrder, setSortOrder] = useState("ascending");
  
-  const sortMaterialsAndVariantsByName = () => {
-    const sortedMaterials = [...completeList].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+  // const sortMaterialsAndVariantsByName = () => {
+  //   const sortedMaterials = [...completeList].sort((a, b) =>
+  //     a.name.localeCompare(b.name)
+  //   );
   
-    const updatedCompleteList = sortedMaterials.map(material => {
-      const sortedMaterialVariants = material.variants.sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
-      return {
-        ...material,
-        variants: sortedMaterialVariants,
-      };
-    });
+  //   const updatedCompleteList = sortedMaterials.map(material => {
+  //     const sortedMaterialVariants = material.variants.sort((a, b) =>
+  //       a.name.localeCompare(b.name)
+  //     );
+  //     return {
+  //       ...material,
+  //       variants: sortedMaterialVariants,
+  //     };
+  //   });
   
-    if (sortOrder === "ascending") {
-      setCompleteList(updatedCompleteList);
-      setSortOrder("descending");
-    } else {
-      const reversedMaterials = updatedCompleteList.reverse();
-      const reversedVariants = reversedMaterials.map(material => {
-        return {
-          ...material,
-          variants: material.variants.reverse(),
-        };
-      });
-      setCompleteList(reversedVariants);
-      setSortOrder("ascending");
-    }
-  };
+  //   if (sortOrder === "ascending") {
+  //     setCompleteList(updatedCompleteList);
+  //     setSortOrder("descending");
+  //   } else {
+  //     const reversedMaterials = updatedCompleteList.reverse();
+  //     const reversedVariants = reversedMaterials.map(material => {
+  //       return {
+  //         ...material,
+  //         variants: material.variants.reverse(),
+  //       };
+  //     });
+  //     setCompleteList(reversedVariants);
+  //     setSortOrder("ascending");
+  //   }
+  // };
   
   
 
@@ -158,7 +158,7 @@ const ManualCount = (props) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-4">
+    <div className="w-full flex flex-col bg-[#D6E0F0] items-center gap-4">
       {isLoading ? ( <Loader/>) : (
       
       <div className="w-full p-10 bg-[#D6E0F0] rounded-lg">
@@ -278,7 +278,7 @@ const ManualCount = (props) => {
                                   
                                   <input
                                     type="number"
-                                    className="outline-none focus:outline-none text-center w-full bg-gray-50 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
+                                    className="outline-none focus:outline-none text-center w-full rounded bg-gray-50 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
                                     value={variant.quantity}
                                     onChange={(event) =>
                                       handleQtyChange(
