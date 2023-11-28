@@ -13,7 +13,7 @@ const AssignRoles = ({ userType, userInfo }) => {
     );
   }
   return (
-    <main className="w-full h-full flex flex-col items-center justify-between gap-8 bg-[#F1F3F8]">
+    <main className="w-full h-screen flex flex-col items-center justify-between gap-8 bg-[#F1F3F8]">
       <Navbar userType={userType} email={userInfo.email} />
       <EmployeeList />
 

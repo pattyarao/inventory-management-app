@@ -53,7 +53,7 @@ export async function POST(req, res) {
     if (profileError) {
       console.error("Error creating user profile:", profileError.message);
       return NextResponse.json(profileError.message);
-      return;
+      // return;
     }
 
     // Form submitted successfully

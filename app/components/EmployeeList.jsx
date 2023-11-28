@@ -13,6 +13,8 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { HiSortDescending } from "react-icons/hi";
 import { HiSortAscending } from "react-icons/hi";
 import { FiSearch } from "react-icons/fi";
+import { FaSortAlphaDown } from "react-icons/fa";
+import { FaSortAlphaUp } from "react-icons/fa";
 
 //toast
 import { toast } from "react-toastify";
@@ -27,7 +29,7 @@ const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
   const [isEmployeeListChanged, setEmployeeListChanged] = useState(false);
-  const [sort, setSort] = useState("");
+  const [sort, setSort] = useState("ascending");
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
 
@@ -67,21 +69,15 @@ const EmployeeList = () => {
 
   const sortEmployees = (a, b) => {
     const nameA = a.last_name.toUpperCase();
-    const nameB = b.last_name.toUpperCase();
+  const nameB = b.last_name.toUpperCase();
 
-    if (a.user_type !== b.user_type) {
-      // Sort by user type (owners first, then stock controllers, manufacturing heads, and sales persons)
-      return a.user_type - b.user_type;
-    } else {
-      // If user types are the same, then sort by last name
-      if (nameA < nameB) {
-        return sort === "descending" ? 1 : -1;
-      }
-      if (nameA > nameB) {
-        return sort === "descending" ? -1 : 1;
-      }
-      return 0;
-    }
+  // Sort by user type (owners first, then stock controllers, manufacturing heads, and sales persons)
+  if (a.user_type !== b.user_type) {
+    return a.user_type - b.user_type;
+  }
+
+  // Sort by last name
+  return sort === "ascending" ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
   };
 
   const handleSearchChange = (event) => {
@@ -93,8 +89,6 @@ const EmployeeList = () => {
     return fullName.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  
-
   return (
     <>
       {isAddModalShowed && (
@@ -105,7 +99,7 @@ const EmployeeList = () => {
           setEmployeeListChanged={setEmployeeListChanged}
         />
       )}
-      <div className="w-[90%] h-fit mb-8 bg-[#D6E0F0] p-4 flex flex-col gap-4 rounded-md">
+      <div className="w-[90%] h-full mb-8 bg-[#D6E0F0] p-4 flex flex-col gap-4 rounded-md">
         <div className="py-4 flex justify-between items-center border-b-2 border-black">
           <h3 className="font-bold text-4xl">Employee Masterlist</h3>
           <button
@@ -127,25 +121,6 @@ const EmployeeList = () => {
             <FiSearch className="text-slate-400" />
           </div>
           <div className="w-[50%] flex items-center justify-end gap-2">
-            <div className="w-fit px-4 py-2 flex items-center justify-center gap-4 bg-slate-400 rounded-lg">
-              {sort !== "descending" ? (
-                <div
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={() => setSort("descending")}
-                >
-                  <HiSortDescending className="hover:text-white hover:scale-125 transition ease duration-70" />
-                  <p className="text-sm">Sort by Name (Z-A)</p>
-                </div>
-              ) : (
-                <div
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={() => setSort("ascending")}
-                >
-                  <HiSortAscending className="hover:text-white hover:scale-125 transition ease duration-70" />
-                  <p className="text-sm">Sort by Name (A-Z)</p>
-                </div>
-              )}
-            </div>
             <div className="w-fit h-full px-4 py-2 flex items-center justify-center gap-4 bg-slate-400 rounded-lg">
               <BsFillGrid3X2GapFill
                 className={`${
@@ -180,7 +155,6 @@ const EmployeeList = () => {
           >
             {filteredEmployees
               .slice() // Create a shallow copy to avoid modifying the original array
-              .sort(sortEmployees)
               .map((employee, index) => (
                 // parent div
                 <div
