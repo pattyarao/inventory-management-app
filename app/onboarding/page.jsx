@@ -3,6 +3,7 @@
 import { useState } from "react";
 import supabase from "../supabase";
 import { useRouter } from "next/navigation"; // Import the useRouter hook
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3"; // Import reCAPTCHA v3
 
 const Onboarding = () => {
   const router = useRouter();
@@ -13,6 +14,8 @@ const Onboarding = () => {
     email: "",
     password: "",
   });
+  const [loginAttempt, setLoginAttempt] = useState(0); // State variable for login attempts
+  const { executeRecaptcha } = useGoogleReCaptcha(); // Hook to execute reCAPTCHA
 
   const handleEmailChange = (e) => {
     const emailValue = e.target.value;
@@ -49,41 +52,88 @@ const Onboarding = () => {
     setErrors(newErrors);
 
     if (isValid) {
+      if (loginAttempt >= 5) {
+        if (!executeRecaptcha) {
+          console.error("Execute recaptcha not yet available");
+          return;
+        }
+
+        const token = await executeRecaptcha("login");
+        console.log("reCAPTCHA token:", token);
+
+        // Send the token to your server for verification
+        const response = await fetch("/api/verify-recaptcha", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+        console.log("reCAPTCHA verification result:", data);
+
+        if (!data.success) {
+          setErrorMessage("Please complete the CAPTCHA to continue.");
+          setLoginAttempt(0);
+          return;
+        } else {
+          setErrorMessage("Congratulations! You have passed the reCAPTCHA.");
+          setLoginAttempt(0);
+
+        }
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
 
-
       if (error) {
         console.error("Error during login:", error.message);
-        setErrorMessage("Invalid Email or Password")
-      } else {
-        const user_id =  data.user.id
+        setLoginAttempt(prevAttempt => prevAttempt + 1); // Increment login attempt count
+        setErrorMessage(`Invalid Email or Password. Attempt ${loginAttempt + 1}`);
+        if (loginAttempt + 1 >= 5) {
+          setErrorMessage("Too many login attempts. Please complete the CAPTCHA to continue.");
+        }
+      } else {/*
+        const user_id = data.user.id;
         const { data: employee_data, error: employee_error } = await supabase
-        .from("MD_PROFILES")
-        .select("status")
-        .eq("id", user_id) 
+          .from("MD_PROFILES")
+          .select("status")
+          .eq("id", user_id);
 
         if (employee_error) {
-          console.error("Error getting user:", error.message);
+          console.error("Error getting user:", employee_error.message);
         }
 
-        const employee_status = employee_data[0].status
+        const employee_status = employee_data[0].status;
 
-        if(employee_status){
+        if (employee_status) {
           // Redirect to the home page after successful login
           console.log("success!");
-          setErrorMessage("")
+          setErrorMessage("");
           router.push("/"); // Replace '/' with the actual path to your home page
-        }
-        else{
+        } else {
           alert("UNSUCCESSFUL LOGIN");
           router.push("/onboarding");
-        }
-      
+        }*/
+       // Send magic link for MFA
+       const { error: magicLinkError } = await supabase.auth.signInWithOtp({ email });
+       if (magicLinkError) {
+         console.error("Error sending magic link:", magicLinkError.message);
+         setErrorMessage("Error sending magic link. Please try again.");
+         return;
+       }
 
-        
+       setErrorMessage(
+        <>
+          Magic link sent to your email. Please check your inbox.
+          <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline ml-2">
+            Go to Gmail
+          </a>
+        </>
+      );
       }
     }
   };
@@ -97,7 +147,7 @@ const Onboarding = () => {
         <h3 className="text-center text-2xl font-bold">Sign In</h3>
         <hr className="w-full border-2 border-[#8D93AB]"></hr>
         <div className="w-full flex flex-col items-center gap-4">
-        {errorMessage && (
+          {errorMessage && (
             <div className="text-red-500 text-sm">{errorMessage}</div>
           )}
           <div className="w-full flex flex-col text-xs">
@@ -131,4 +181,10 @@ const Onboarding = () => {
   );
 };
 
-export default Onboarding;
+const App = () => (
+  <GoogleReCaptchaProvider reCaptchaKey="6LcbnfoqAAAAAGgKp1okvkHi_dBgJ5fa3zWXNbzO">
+    <Onboarding />
+  </GoogleReCaptchaProvider>
+);
+
+export default App;
