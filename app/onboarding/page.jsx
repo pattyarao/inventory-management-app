@@ -96,7 +96,7 @@ const Onboarding = () => {
         if (loginAttempt + 1 >= 5) {
           setErrorMessage("Too many login attempts. Please complete the CAPTCHA to continue.");
         }
-      } else {/*
+      } else {
         const user_id = data.user.id;
         const { data: employee_data, error: employee_error } = await supabase
           .from("MD_PROFILES")
@@ -117,7 +117,8 @@ const Onboarding = () => {
         } else {
           alert("UNSUCCESSFUL LOGIN");
           router.push("/onboarding");
-        }*/
+        }
+          /*
        // Send magic link for MFA
        const { error: magicLinkError } = await supabase.auth.signInWithOtp({ email });
        if (magicLinkError) {
@@ -133,7 +134,7 @@ const Onboarding = () => {
             Go to Gmail
           </a>
         </>
-      );
+      );*/
       }
     }
   };
